@@ -4,3 +4,6 @@
 [submodule "contrib/Vulkan-Hpp"]
 	path = contrib/Vulkan-Hpp
 	url = https://github.com/KhronosGroup/Vulkan-Hpp.git
+[submodule "contrib/VulkanMemoryAllocator"]
+	path = contrib/VulkanMemoryAllocator
+	url = https://github.com/GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator.git
