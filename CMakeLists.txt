@@ -16,10 +16,14 @@ endif()
 
 find_package(Boost REQUIRED COMPONENTS log)
 
+find_package(Vulkan 1.3.211 EXACT REQUIRED)
+
 add_subdirectory("contrib/VulkanMemoryAllocator")
 add_subdirectory("contrib/fmt")
+set(VULKAN_HPP_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/contrib/Vulkan-Hpp")
 
 file(GLOB WAWY_SDL2_SRCS src/sdl2/*)
 add_library(wawy-sdl2 ${WAWY_SDL2_SRCS})
-target_link_libraries(wawy-sdl2 PRIVATE SDL2::Core fmt::fmt-header-only)
-target_include_directories(wawy-sdl2 PRIVATE src/)
+target_link_libraries(wawy-sdl2 PRIVATE SDL2::Core fmt::fmt-header-only Vulkan::Headers)
+target_compile_definitions(wawy-sdl2 PRIVATE -DVULKAN_HPP_NO_STRUCT_CONSTRUCTORS -DVULKAN_HPP_NO_SPACESHIP_OPERATOR)
+target_include_directories(wawy-sdl2 PRIVATE src/ ${VULKAN_HPP_INCLUDE_DIR})

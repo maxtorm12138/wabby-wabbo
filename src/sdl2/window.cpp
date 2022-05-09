@@ -19,4 +19,32 @@ window::window(
     SDL2_ASSERT(window_ != nullptr, SDL_CreateWindow);
 }
 
+void window::show()
+{
+    SDL_ShowWindow(window_);
+}
+
+std::vector<std::string> window::get_vulkan_instance_extensions() const
+{
+    std::vector<std::string> result;
+
+    unsigned count{0};
+    auto ret = SDL_Vulkan_GetInstanceExtensions(window_, &count, nullptr);
+    SDL2_ASSERT(ret == SDL_TRUE, SDL_Vulkan_GetInstanceExtensions);
+    std::vector<const char *> instance_extensions(count);
+    result.reserve(count);
+    ret = SDL_Vulkan_GetInstanceExtensions(window_, &count, instance_extensions.data());
+    SDL2_ASSERT(ret == SDL_TRUE, SDL_Vulkan_GetInstanceExtensions);
+    std::copy(instance_extensions.begin(), instance_extensions.end(), std::back_inserter(result));
+    return result;
+}
+
+vk::raii::SurfaceKHR window::create_vulkan_surface(const vk::raii::Instance &instance) const
+{
+    VkSurfaceKHR surface;
+    auto ret = SDL_Vulkan_CreateSurface(window_, *instance, &surface);
+    SDL2_ASSERT(ret == SDL_TRUE, SDL_Vulkan_CreateSurface);
+    return vk::raii::SurfaceKHR(instance, surface);
+}
+
 }

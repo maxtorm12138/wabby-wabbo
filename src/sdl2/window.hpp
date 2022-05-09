@@ -7,6 +7,10 @@
 #include "SDL.h"
 #include "SDL_vulkan.h"
 
+// vulkan hpp
+#include "vulkan/vulkan.hpp"
+#include "vulkan/vulkan_raii.hpp"
+
 // std
 #include "string"
 #include "string_view"
@@ -35,7 +39,10 @@ public:
 
 public:
     void show();
+
     std::vector<std::string> get_vulkan_instance_extensions() const;
+    vk::raii::SurfaceKHR create_vulkan_surface(const vk::raii::Instance &instance) const;
+
 private:
     SDL_Window *window_{nullptr};
 }; 
