@@ -1,4 +1,5 @@
-#pragma once
+#ifndef _WAWY_SDL2_WINDOW_HPP
+#define _WAWY_SDL2_WINDOW_HPP
 
 // module
 #include "util/noncopyable.hpp"
@@ -31,7 +32,7 @@ public:
         int y = SDL_WINDOWPOS_UNDEFINED,
         uint32_t flags = SDL_WINDOW_VULKAN | SDL_WINDOW_ALLOW_HIGHDPI);
     
-    window(window &&ohter) noexcept;
+    window(window &&other) noexcept;
 
     window &operator=(window &&other) noexcept;
 
@@ -41,9 +42,12 @@ public:
     void show();
 
     std::vector<std::string> get_vulkan_instance_extensions() const;
+
     vk::raii::SurfaceKHR create_vulkan_surface(const vk::raii::Instance &instance) const;
 
 private:
     SDL_Window *window_{nullptr};
 }; 
 }
+
+#endif
