@@ -5,10 +5,13 @@
 #include "stdexcept"
 #include "string_view"
 
+// boost
+#include "boost/dll.hpp"
+
 namespace wawy::sdl2
 {
 
-class sdl2_error : public std::runtime_error
+class BOOST_SYMBOL_EXPORT sdl2_error : public std::runtime_error
 {
 public:
     sdl2_error(std::string_view sdl2_function_name);

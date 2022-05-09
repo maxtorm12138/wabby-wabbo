@@ -8,19 +8,21 @@
 #include "SDL.h"
 #include "SDL_vulkan.h"
 
-// vulkan hpp
-#include "vulkan/vulkan.hpp"
-#include "vulkan/vulkan_raii.hpp"
+// vulkan
+#include "vulkan/vulkan.h"
 
 // std
 #include "string"
 #include "string_view"
 #include "vector"
 
+// boost
+#include "boost/dll.hpp"
+
 namespace wawy::sdl2
 {
 
-class window : public wawy::util::noncopyable
+class BOOST_SYMBOL_EXPORT window : public wawy::util::noncopyable
 {
 public:
 
@@ -43,7 +45,7 @@ public:
 
     std::vector<std::string> get_vulkan_instance_extensions() const;
 
-    vk::raii::SurfaceKHR create_vulkan_surface(const vk::raii::Instance &instance) const;
+    VkSurfaceKHR create_vulkan_surface(VkInstance instance) const;
 
 private:
     SDL_Window *window_{nullptr};

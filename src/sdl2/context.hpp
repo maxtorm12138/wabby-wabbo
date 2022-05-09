@@ -10,10 +10,13 @@
 // std
 #include "optional"
 
+// boost
+#include "boost/dll.hpp"
+
 namespace wawy::sdl2
 {
 
-class context : public wawy::util::noncopyable
+class BOOST_SYMBOL_EXPORT context : public wawy::util::noncopyable
 {
 public:
     context(uint32_t flags = SDL_INIT_EVERYTHING);

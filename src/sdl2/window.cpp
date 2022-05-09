@@ -59,12 +59,12 @@ std::vector<std::string> window::get_vulkan_instance_extensions() const
     return result;
 }
 
-vk::raii::SurfaceKHR window::create_vulkan_surface(const vk::raii::Instance &instance) const
+VkSurfaceKHR window::create_vulkan_surface(VkInstance instance) const
 {
     VkSurfaceKHR surface;
-    auto ret = SDL_Vulkan_CreateSurface(window_, *instance, &surface);
+    auto ret = SDL_Vulkan_CreateSurface(window_, instance, &surface);
     SDL2_ASSERT(ret == SDL_TRUE, SDL_Vulkan_CreateSurface);
-    return vk::raii::SurfaceKHR(instance, surface);
+	return surface;
 }
 
 }
