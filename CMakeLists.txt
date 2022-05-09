@@ -17,8 +17,9 @@ endif()
 find_package(Boost REQUIRED COMPONENTS log)
 
 add_subdirectory("contrib/VulkanMemoryAllocator")
+add_subdirectory("contrib/fmt")
 
 file(GLOB WAWY_SDL2_SRCS src/sdl2/*)
 add_library(wawy-sdl2 ${WAWY_SDL2_SRCS})
-target_link_libraries(wawy-sdl2 PRIVATE SDL2::Core)
+target_link_libraries(wawy-sdl2 PRIVATE SDL2::Core fmt::fmt-header-only)
 target_include_directories(wawy-sdl2 PRIVATE src/)

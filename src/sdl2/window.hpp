@@ -36,9 +36,6 @@ public:
 public:
     void show();
     std::vector<std::string> get_vulkan_instance_extensions() const;
-
-
-    
 private:
     SDL_Window *window_{nullptr};
 }; 

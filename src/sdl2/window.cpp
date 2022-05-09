@@ -15,9 +15,8 @@ window::window(
     uint32_t flags) :
     window_()
 {
-    if ((window_ = SDL_CreateWindow(title.data(), x, y, w, h, flags)) == nullptr)
-    {
-    }
+    window_ = SDL_CreateWindow(title.data(), x, y, w, h, flags);
+    SDL2_ASSERT(window_ != nullptr, SDL_CreateWindow);
 }
 
 }
