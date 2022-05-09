@@ -25,22 +25,14 @@ enum log_severity
 	fatal
 };
 
-
 class logger : public wawy::util::noncopyable
 {
 public:
 	void add_console_sink(std::ostream &os = std::cerr);
-	void add_file_sink(std::ofstream os);
+	std::ofstream &add_file_sink(std::ofstream os);
+	std::ostream &add_sink(std::unique_ptr<std::ostream> os);
 
-	template<typename ... Args>
-	void add_record(log_severity severity, std::string_view fmt, Args &&... args)
-	{
-		std::string formated_msg = fmt::format(fmt, std::forward<Args>(args)...);
-		do_add_record(severity, formated_msg);
-	}
-
-private:
-	void do_add_record(log_severity severity, std::string_view msg);
+	void add_record(log_severity severity, std::string_view message);
 
 private:
 	std::vector<std::unique_ptr<std::ostream>> sinks_holder_;
@@ -49,22 +41,13 @@ private:
 
 }
 
-template<typename ostream>
-ostream &operator<<(ostream &os, wawy::util::log_severity severity)
-{
-	static const char *names[] = 
-	{
-		"debug",
-		"info",
-		"warning",
-		"error",
-		"fatal"
-	};
 
-	os << names[severity];
-	return os;
-}
-
-#define WLOG(LOGGER, SEVERITY, FMT, ...) (LOGGER).add_record(SEVERITY, FMT, __VA_OPT__(,))
+#define WLOG(LOGGER, SEVERITY, FMT, ...) \
+	do\
+	{\
+		std::string formated_message = fmt::format(FMT, __VA_ARGS__);\
+		LOGGER.add_record(SEVERITY, formated_message);\
+	}\
+	while(false)
 
 #endif
