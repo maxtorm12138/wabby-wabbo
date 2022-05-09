@@ -33,7 +33,7 @@ public:
 	std::ostream &add_sink(std::unique_ptr<std::ostream> os);
 
 	void add_record(log_severity severity, std::string_view message);
-
+	
 private:
 	std::vector<std::unique_ptr<std::ostream>> sinks_holder_;
 	std::vector<std::reference_wrapper<std::ostream>> sinks_;
