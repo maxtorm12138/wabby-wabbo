@@ -47,6 +47,8 @@ public:
 
     VkSurfaceKHR create_vulkan_surface(VkInstance instance) const;
 
+    VkExtent2D get_vulakn_drawable_size() const;
+
 private:
     SDL_Window *window_{nullptr};
 }; 
