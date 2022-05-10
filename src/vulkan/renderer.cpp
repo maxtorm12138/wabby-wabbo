@@ -17,10 +17,10 @@ public:
     renderer_impl(const wawy::sdl2::window &window);
 
 public:
-    void begin_frame();
-    void end_frame();
-    void begin_render_pass();
-    void end_render_pass();
+    void begin_frame() {}
+    void end_frame() {}
+    void begin_render_pass() {}
+    void end_render_pass() {}
 
 private:
     vk::raii::Context context_;

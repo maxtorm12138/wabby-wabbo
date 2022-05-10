@@ -2,7 +2,7 @@
 #define _WAWY_UTIL_API_HPP
 
 #if defined _WIN32 || defined __CYGWIN__
-  #ifdef WAWY_BUILDING_DLL
+  #if defined WAWY_BUILDING_DLL && !defined WAWY_IMPORT_API
     #ifdef __GNUC__
       #define WAWY_API_EXPORT __attribute__ ((dllexport))
     #else

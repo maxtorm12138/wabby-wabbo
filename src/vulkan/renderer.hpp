@@ -4,7 +4,10 @@
 // module
 #include "util/noncopyable.hpp"
 #include "util/api.hpp"
+
+#define WAWY_IMPORT_API
 #include "sdl2/sdl2.hpp"
+#undef WAWY_IMPORT_API
 
 
 namespace wawy::vulkan
