@@ -25,12 +25,13 @@ set(VULKAN_HPP_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/contrib/Vulkan-Hpp")
 file(GLOB WAWY_UTIL_SRCS src/util/*)
 add_library(wawy-util STATIC ${WAWY_UTIL_SRCS})
 target_link_libraries(wawy-util PUBLIC fmt::fmt-header-only)
-target_link_libraries(wawy-util PRIVATE Boost::boost Boost::log)
+target_link_libraries(wawy-util PRIVATE Boost::boost)
 
 file(GLOB WAWY_SDL2_SRCS src/sdl2/*)
-add_library(wawy-sdl2 SHARED ${WAWY_SDL2_SRCS})
-target_link_libraries(wawy-sdl2 PRIVATE SDL2::Core fmt::fmt-header-only Vulkan::Headers Boost::boost wawy-util)
-target_include_directories(wawy-sdl2 PRIVATE src/)
+add_library(wawy-sdl SHARED ${WAWY_SDL2_SRCS})
+target_link_libraries(wawy-sdl PRIVATE SDL2::Core fmt::fmt-header-only Boost::boost wawy-util)
+target_include_directories(wawy-sdl PRIVATE src/)
+set_target_properties(wawy-sdl PROPERTIES VERSION "1.0.0" SOVERSION "1")
 
 
 option (WAWY_TESTS_BUILD "Build tests" OFF)

@@ -8,9 +8,6 @@
 #include "SDL.h"
 #include "SDL_vulkan.h"
 
-// vulkan
-#include "vulkan/vulkan.h"
-
 // std
 #include "string"
 #include "string_view"
@@ -47,7 +44,7 @@ public:
 
     VkSurfaceKHR create_vulkan_surface(VkInstance instance) const;
 
-    VkExtent2D get_vulakn_drawable_size() const;
+    std::pair<uint32_t, uint32_t> get_vulakn_drawable_size() const;
 
 private:
     SDL_Window *window_{nullptr};

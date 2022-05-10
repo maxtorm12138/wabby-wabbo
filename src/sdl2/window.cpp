@@ -67,12 +67,12 @@ VkSurfaceKHR window::create_vulkan_surface(VkInstance instance) const
 	return surface;
 }
 
-VkExtent2D window::get_vulakn_drawable_size() const
+std::pair<uint32_t, uint32_t> window::get_vulakn_drawable_size() const
 {
     int w{0};
     int h{0};
     SDL_Vulkan_GetDrawableSize(window_, &w, &h);
-    return VkExtent2D{.width = static_cast<uint32_t>(w), .height = static_cast<uint32_t>(h)};
+    return std::make_pair(static_cast<uint32_t>(w), static_cast<uint32_t>(h));
 }
 
 }
