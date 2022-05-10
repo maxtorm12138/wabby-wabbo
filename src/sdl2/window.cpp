@@ -3,6 +3,9 @@
 // module
 #include "error.hpp"
 
+// std
+#include "iterator"
+
 namespace wawy::sdl2
 {
 

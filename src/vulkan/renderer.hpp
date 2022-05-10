@@ -3,15 +3,14 @@
 
 // module
 #include "util/noncopyable.hpp"
+#include "util/api.hpp"
 #include "sdl2/sdl2.hpp"
 
-// boost
-#include "boost/dll.hpp"
 
 namespace wawy::vulkan
 {
 class renderer_impl;
-class BOOST_SYMBOL_EXPORT renderer : public wawy::util::noncopyable
+class WAWY_API_EXPORT renderer : public wawy::util::noncopyable
 {
 public:
     renderer(const wawy::sdl2::window &window);

@@ -3,6 +3,7 @@
 
 // module
 #include "util/noncopyable.hpp"
+#include "util/api.hpp"
 
 // sdl2
 #include "SDL.h"
@@ -13,13 +14,11 @@
 #include "string_view"
 #include "vector"
 
-// boost
-#include "boost/dll.hpp"
 
 namespace wawy::sdl2
 {
 
-class BOOST_SYMBOL_EXPORT window : public wawy::util::noncopyable
+class WAWY_API_EXPORT window : public wawy::util::noncopyable
 {
 public:
 
