@@ -30,6 +30,12 @@ enum severity
 class logger : public wawy::util::noncopyable
 {
 public:
+	logger() = default;
+	logger(logger &&other) noexcept;
+	logger &operator=(logger &&other) noexcept;
+	~logger() = default;
+
+public:
 	void add_console_sink(std::ostream &os = std::cerr);
 	std::ofstream &add_file_sink(std::ofstream os);
 	std::ostream &add_sink(std::unique_ptr<std::ostream> os);

@@ -3,6 +3,7 @@
 
 // module
 #include "util/noncopyable.hpp"
+#include "sdl2/sdl2.hpp"
 
 // boost
 #include "boost/dll.hpp"
@@ -13,7 +14,7 @@ class renderer_impl;
 class BOOST_SYMBOL_EXPORT renderer : public wawy::util::noncopyable
 {
 public:
-    renderer();
+    renderer(const wawy::sdl2::window &window);
     ~renderer();
 
 public:

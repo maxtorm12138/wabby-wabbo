@@ -2,6 +2,8 @@
 
 // module
 #include "defines.hpp"
+#include "miscellaneous.hpp"
+
 #include "util/log.hpp"
 
 // std
@@ -11,28 +13,6 @@
 namespace wawy::vulkan::instance
 {
 
-VKAPI_ATTR VkBool32 VKAPI_CALL DebugCallback(
-    VkDebugUtilsMessageSeverityFlagBitsEXT message_severity,
-    VkDebugUtilsMessageTypeFlagsEXT message_type,
-    const VkDebugUtilsMessengerCallbackDataEXT* data, void*)
-{
-    return VK_FALSE;
-}
-
-
-const vk::DebugUtilsMessengerCreateInfoEXT DEBUG_MESSENGER_CREATE_INFO
-{
-    .messageSeverity = vk::DebugUtilsMessageSeverityFlagBitsEXT::eVerbose |
-                       vk::DebugUtilsMessageSeverityFlagBitsEXT::eInfo |
-                       vk::DebugUtilsMessageSeverityFlagBitsEXT::eError |
-                       vk::DebugUtilsMessageSeverityFlagBitsEXT::eWarning,
-
-    .messageType = vk::DebugUtilsMessageTypeFlagBitsEXT::eGeneral |
-                   vk::DebugUtilsMessageTypeFlagBitsEXT::eValidation |
-                   vk::DebugUtilsMessageTypeFlagBitsEXT::ePerformance,
-    
-    .pfnUserCallback = 
-}
 
 vk::raii::Instance build(
     const vk::raii::Context &context,
@@ -49,7 +29,7 @@ vk::raii::Instance build(
 
     std::unordered_set<std::string_view> OPTIONAL_LAYERS {};
     std::unordered_set<std::string_view> OPTIONAL_EXTENSIONS{ EXT_NAME_VK_KHR_get_physical_device_properties2.data(), EXT_NAME_VK_KHR_portability_enumeration.data() };
-    std::transform(desired_extensions.begin(), desired_extensions.end(), std::back_inserter(REQUIRED_EXTENSIONS), str_to_c_str);
+    std::transform(desired_extensions.begin(), desired_extensions.end(), std::back_inserter(REQUIRED_EXTENSIONS), std::mem_fn(&std::string::c_str));
 
     auto enable_layers = REQUIRED_LAYERS;
     // check optional layers
@@ -79,9 +59,7 @@ vk::raii::Instance build(
         },
         vk::DebugUtilsMessengerCreateInfoEXT
         {
-            .messageSeverity = ENABLE_MESSAGE_SEVERITY,
-            .messageType = ENABLE_MESSAGE_TYPE,
-            .pfnUserCallback = &DebugCallback
+            misc::DEBUG_MESSENGER_CREATE_INFO
         }
     };
 
@@ -90,7 +68,5 @@ vk::raii::Instance build(
     #endif
 
     return vk::raii::Instance(context, chain.get<vk::InstanceCreateInfo>());
-
-
 }
 }

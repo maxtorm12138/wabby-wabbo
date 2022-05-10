@@ -29,14 +29,15 @@ target_link_libraries(wawy-util PRIVATE Boost::boost)
 
 file(GLOB WAWY_SDL2_SRCS src/sdl2/*)
 add_library(wawy-sdl SHARED ${WAWY_SDL2_SRCS})
-target_link_libraries(wawy-sdl PRIVATE SDL2::Core fmt::fmt-header-only Boost::boost wawy-util)
+target_link_libraries(wawy-sdl PUBLIC SDL2::Core Boost::boost)
+target_link_libraries(wawy-sdl PRIVATE fmt::fmt-header-only wawy-util)
 target_include_directories(wawy-sdl PRIVATE src/)
 set_target_properties(wawy-sdl PROPERTIES VERSION "1.0.0" SOVERSION "1")
 
 file(GLOB WAWY_VULKAN_SRCS src/vulkan/*)
 add_library(wawy-vk SHARED ${WAWY_VULKAN_SRCS})
 target_compile_definitions(wawy-vk PRIVATE -DVULKAN_HPP_DISPATCH_LOADER_DYNAMIC=1 -DVULKAN_HPP_NO_SETTERS -DVULKAN_HPP_NO_SPACESHIP_OPERATOR -DVULKAN_HPP_NO_CONSTRUCTORS)
-target_link_libraries(wawy-vk PRIVATE Vulkan::Headers wawy-util Boost::boost)
+target_link_libraries(wawy-vk PRIVATE Vulkan::Headers Boost::boost wawy-util wawy-sdl)
 target_include_directories(wawy-vk PRIVATE src/)
 set_target_properties(wawy-vk PROPERTIES VERSION "1.0.0" SOVERSION "1")
 

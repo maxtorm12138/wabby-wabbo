@@ -16,6 +16,19 @@ std::string_view serverity_name(log_severity::severity severity)
 	return names[static_cast<int>(severity)];
 }
 
+logger::logger(logger &&other) noexcept :
+	sinks_holder_(std::move(other.sinks_holder_)),
+	sinks_(std::move(other.sinks_))
+{
+}
+
+logger &logger::operator=(logger &&other) noexcept
+{
+	sinks_holder_ = std::move(other.sinks_holder_);
+	sinks_ = std::move(other.sinks_);
+	return *this;
+}
+
 void logger::add_console_sink(std::ostream &os)
 {
 	sinks_.emplace_back(os);

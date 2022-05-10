@@ -1,6 +1,7 @@
 #include "renderer.hpp"
 
 // module
+#include "miscellaneous.hpp"
 #include "instance.hpp"
 
 // vulkan
@@ -13,7 +14,7 @@ namespace wawy::vulkan
 class renderer_impl : public wawy::util::noncopyable
 {
 public:
-    renderer_impl();
+    renderer_impl(const wawy::sdl2::window &window);
 
 public:
     void begin_frame();
@@ -22,13 +23,14 @@ public:
     void end_render_pass();
 
 private:
-    ::vk::raii::Context context_;
-    instance instance_;
+    vk::raii::Context context_;
+    vk::raii::Instance instance_;
+    vk::raii::DebugUtilsMessengerEXT debug_messenger_;
 };
 
 
-renderer::renderer() :
-    impl_(new renderer_impl)
+renderer::renderer(const wawy::sdl2::window &window) :
+    impl_(new renderer_impl(window))
 {}
 
 renderer::~renderer()
@@ -54,5 +56,15 @@ void renderer::end_render_pass()
 {
     return impl_->end_render_pass();
 }
+
+renderer_impl::renderer_impl(const wawy::sdl2::window &window) :
+    context_(),
+    instance_(wawy::vulkan::instance::build(context_, {}, window.get_vulkan_instance_extensions())),
+#ifdef NDEBUG
+    debug_messenger_(nullptr),
+#else
+    debug_messenger_(instance_, misc::DEBUG_MESSENGER_CREATE_INFO)
+#endif
+{}
 
 }
