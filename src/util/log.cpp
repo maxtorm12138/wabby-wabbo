@@ -3,7 +3,7 @@
 namespace wawy::util
 {
 
-std::string_view serverity_name(log_severity severity)
+std::string_view serverity_name(log_severity::severity severity)
 {
 	static const char *names[] = 
 	{
@@ -13,7 +13,7 @@ std::string_view serverity_name(log_severity severity)
 		"error",
 		"fatal"
 	};
-	return names[severity];
+	return names[static_cast<int>(severity)];
 }
 
 void logger::add_console_sink(std::ostream &os)
@@ -34,11 +34,12 @@ std::ostream &logger::add_sink(std::unique_ptr<std::ostream> os)
 	return static_cast<std::ostream &>(sinks_.back().get());
 }
 
-void logger::add_record(log_severity severity, std::string_view message)
+void logger::add_record(log_severity::severity severity, std::string_view message)
 {
+	auto real_message = fmt::format("<{}> {}\n", serverity_name(severity), message);
 	for (auto sink : sinks_)
 	{
-		sink.get() << fmt::format("<{}> {}\n", serverity_name(severity), message);
+		sink.get() << real_message;
 	}
 }
 

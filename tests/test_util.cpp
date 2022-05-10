@@ -6,7 +6,7 @@
 // std
 #include "sstream"
 
-using wawy::util::log_severity;
+using namespace wawy::util::log_severity;
 
 class LoggerTest : public testing::Test
 {
@@ -31,6 +31,6 @@ protected:
 TEST_F(LoggerTest, normal_output)
 {
     auto &log = *logger_;
-    WLOG(log, wawy::util::debug, "test {} {}", 1, 2);
+    WLOG(log, debug, "test {} {}", 1, 2);
     EXPECT_EQ(sink_->str(), "<debug> test 1 2\n");
 }

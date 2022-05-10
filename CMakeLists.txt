@@ -35,7 +35,6 @@ target_include_directories(wawy-sdl2 PRIVATE src/)
 
 option (WAWY_TESTS_BUILD "Build tests" OFF)
 if (WAWY_TESTS_BUILD)
-    enable_testing()
     add_subdirectory("contrib/googletest")
     add_subdirectory(tests)
 endif ()
