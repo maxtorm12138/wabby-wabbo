@@ -33,6 +33,12 @@ target_link_libraries(wawy-sdl PRIVATE SDL2::Core fmt::fmt-header-only Boost::bo
 target_include_directories(wawy-sdl PRIVATE src/)
 set_target_properties(wawy-sdl PROPERTIES VERSION "1.0.0" SOVERSION "1")
 
+file(GLOB WAWY_VULKAN_SRCS src/vulkan/*)
+add_library(wawy-vk SHARED ${WAWY_VULKAN_SRCS})
+target_compile_definitions(wawy-vk PRIVATE -DVULKAN_HPP_DISPATCH_LOADER_DYNAMIC=1 -DVULKAN_HPP_NO_SETTERS -DVULKAN_HPP_NO_SPACESHIP_OPERATOR -DVULKAN_HPP_NO_CONSTRUCTORS)
+target_link_libraries(wawy-vk PRIVATE Vulkan::Headers wawy-util Boost::boost)
+target_include_directories(wawy-vk PRIVATE src/)
+set_target_properties(wawy-vk PROPERTIES VERSION "1.0.0" SOVERSION "1")
 
 option (WAWY_TESTS_BUILD "Build tests" OFF)
 if (WAWY_TESTS_BUILD)
