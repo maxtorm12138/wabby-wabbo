@@ -2,7 +2,7 @@
 
 // module
 #include "miscellaneous.hpp"
-#include "instance.hpp"
+#include "environment.hpp"
 
 // vulkan
 #include "vulkan/vulkan.hpp"
@@ -11,10 +11,22 @@
 namespace wawy::vulkan
 {
 
+vk::ApplicationInfo build_application_info(const renderer::create_info &create_info)
+{
+    return vk::ApplicationInfo
+    {
+        .pApplicationName = create_info.applicaiton_name.c_str(),
+        .applicationVersion = create_info.application_version,
+        .pEngineName = "wawy-vulkan",
+        .engineVersion = WAWY_VULKAN_VERSION,
+        .apiVersion = VK_API_VERSION_1_1
+    };
+}
+
 class renderer_impl : public wawy::util::noncopyable
 {
 public:
-    renderer_impl(const wawy::sdl2::window &window, std::string_view application_name, uint32_t application_version);
+    renderer_impl(const renderer::create_info &create_info);
 
 public:
     void begin_frame() {}
@@ -23,14 +35,12 @@ public:
     void end_render_pass() {}
 
 private:
-    vk::raii::Context context_;
-    vk::raii::Instance instance_;
-    vk::raii::DebugUtilsMessengerEXT debug_messenger_;
+    vulkan::environment environment_;
     vk::raii::SurfaceKHR surface_;
 };
 
-renderer::renderer(const wawy::sdl2::window &window, std::string_view application_name, uint32_t application_version) :
-    impl_(new renderer_impl(window, application_name, application_version))
+renderer::renderer(const create_info &create_info) :
+    impl_(new renderer_impl(create_info))
 {}
 
 renderer::~renderer()
@@ -57,18 +67,9 @@ void renderer::end_render_pass()
     return impl_->end_render_pass();
 }
 
-renderer_impl::renderer_impl(const wawy::sdl2::window &window, std::string_view application_name, uint32_t application_version) :
-    context_(),
-    instance_(wawy::vulkan::instance::build(
-        context_,
-        { .pApplicationName = application_name.data(), .applicationVersion = application_version, .pEngineName = "wabby-waboo vulkan", .engineVersion = WAWY_VULKAN_VERSION, .apiVersion = VK_API_VERSION_1_1, },
-        window.get_vulkan_instance_extensions())),
-#ifdef NDEBUG
-    debug_messenger_(nullptr),
-#else
-    debug_messenger_(instance_, misc::DEBUG_MESSENGER_CREATE_INFO),
-#endif
-    surface_(instance_, window.create_vulkan_surface(*instance_))
+renderer_impl::renderer_impl(const renderer::create_info &create_info) :
+    environment_(build_application_info(create_info), create_info.windowsystem_extensions),
+    surface_(environment_.instance(), create_info.surface_factory(*environment_.instance()))
 {}
 
 }

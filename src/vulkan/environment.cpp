@@ -1,4 +1,4 @@
-#include "instance.hpp"
+#include "environment.hpp"
 
 // module
 #include "defines.hpp"
@@ -10,14 +10,22 @@
 #include "unordered_set"
 #include "algorithm"
 
-namespace wawy::vulkan::instance
+namespace wawy::vulkan
 {
 
+vk::raii::Instance build_instance(const vk::raii::Context &context, const vk::ApplicationInfo &application_info, const std::vector<std::string> &windowsystem_extensions);
 
-vk::raii::Instance build(
-    const vk::raii::Context &context,
-    const vk::ApplicationInfo &application_info,
-    const std::vector<std::string> &desired_extensions)
+environment::environment(const vk::ApplicationInfo &application_info, const std::vector<std::string> &windowsystem_extensions) :
+    context_(),
+    instance_(build_instance(context_, application_info, windowsystem_extensions)),
+#ifdef NDEBUG
+    debug_messenger_(nullptr)
+#else
+    debug_messenger_(instance_, misc::DEBUG_MESSENGER_CREATE_INFO)
+#endif
+{}
+
+vk::raii::Instance build_instance(const vk::raii::Context &context, const vk::ApplicationInfo &application_info, const std::vector<std::string> &windowsystem_extensions)
 {
     #ifndef NDEBUG
     std::vector<const char *> REQUIRED_LAYERS{ LAYER_NAME_VK_LAYER_KHRONOS_validation.data() };
@@ -29,7 +37,7 @@ vk::raii::Instance build(
 
     std::unordered_set<std::string_view> OPTIONAL_LAYERS {};
     std::unordered_set<std::string_view> OPTIONAL_EXTENSIONS{ EXT_NAME_VK_KHR_get_physical_device_properties2.data(), EXT_NAME_VK_KHR_portability_enumeration.data() };
-    std::transform(desired_extensions.begin(), desired_extensions.end(), std::back_inserter(REQUIRED_EXTENSIONS), std::mem_fn(&std::string::c_str));
+    std::transform(windowsystem_extensions.begin(), windowsystem_extensions.end(), std::back_inserter(REQUIRED_EXTENSIONS), std::mem_fn(&std::string::c_str));
 
     auto enable_layers = REQUIRED_LAYERS;
     // check optional layers
@@ -44,7 +52,6 @@ vk::raii::Instance build(
     std::vector<const char *> extensions;
     std::transform(extension_properties.begin(), extension_properties.end(), std::back_inserter(extensions), [](auto &&prop) { return prop.extensionName.data(); });
     std::copy_if(extensions.begin(), extensions.end(), std::back_inserter(enable_extensions), [&](auto &&extension) { return OPTIONAL_EXTENSIONS.contains(extension); });
-
 
     vk::StructureChain<vk::InstanceCreateInfo, vk::DebugUtilsMessengerCreateInfoEXT> chain
     {

@@ -6,18 +6,33 @@
 #include "util/api.hpp"
 #include "defines.hpp"
 
-#define WAWY_API_IMPORT
-#include "sdl2/sdl2.hpp"
-#undef WAWY_API_IMPORT
+// std
+#include "string"
+#include "vector"
 
+extern "C"
+{
+typedef struct VkSurfaceKHR_T *VkSurfaceKHR;
+typedef struct VkInstance_T *VkInstance;
+}
 
 namespace wawy::vulkan
 {
 class renderer_impl;
+
 class WAWY_API_EXPORT renderer : public wawy::util::noncopyable
 {
 public:
-    renderer(const wawy::sdl2::window &window, std::string_view application_name, uint32_t application_version);
+
+    struct create_info
+    {
+        std::string applicaiton_name;
+        uint32_t application_version;
+        std::function<VkSurfaceKHR(VkInstance)> surface_factory;
+        std::vector<std::string> windowsystem_extensions;
+    };
+
+    renderer(const create_info &create_info);
     ~renderer();
 
 public:
