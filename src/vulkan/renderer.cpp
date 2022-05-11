@@ -26,6 +26,7 @@ private:
     vk::raii::Context context_;
     vk::raii::Instance instance_;
     vk::raii::DebugUtilsMessengerEXT debug_messenger_;
+    vk::raii::SurfaceKHR surface_;
 };
 
 renderer::renderer(const wawy::sdl2::window &window, std::string_view application_name, uint32_t application_version) :
@@ -65,8 +66,9 @@ renderer_impl::renderer_impl(const wawy::sdl2::window &window, std::string_view 
 #ifdef NDEBUG
     debug_messenger_(nullptr),
 #else
-    debug_messenger_(instance_, misc::DEBUG_MESSENGER_CREATE_INFO)
+    debug_messenger_(instance_, misc::DEBUG_MESSENGER_CREATE_INFO),
 #endif
+    surface_(instance_, window.create_vulkan_surface(*instance_))
 {}
 
 }
