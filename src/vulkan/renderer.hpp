@@ -9,6 +9,7 @@
 // std
 #include "string"
 #include "vector"
+#include "functional"
 
 extern "C"
 {
@@ -28,8 +29,9 @@ public:
     {
         std::string applicaiton_name;
         uint32_t application_version;
-        std::function<VkSurfaceKHR(VkInstance)> surface_factory;
         std::vector<std::string> windowsystem_extensions;
+        std::function<VkSurfaceKHR(VkInstance)> fn_make_surface;
+        std::function<std::pair<uint32_t, uint32_t>()> fn_get_window_size;
     };
 
     renderer(const create_info &create_info);

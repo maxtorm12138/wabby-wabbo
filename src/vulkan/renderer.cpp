@@ -3,6 +3,7 @@
 // module
 #include "miscellaneous.hpp"
 #include "environment.hpp"
+#include "hardware.hpp"
 
 // vulkan
 #include "vulkan/vulkan.hpp"
@@ -37,6 +38,7 @@ public:
 private:
     vulkan::environment environment_;
     vk::raii::SurfaceKHR surface_;
+    vulkan::hardware hardware_;
 };
 
 renderer::renderer(const create_info &create_info) :
@@ -69,7 +71,8 @@ void renderer::end_render_pass()
 
 renderer_impl::renderer_impl(const renderer::create_info &create_info) :
     environment_(build_application_info(create_info), create_info.windowsystem_extensions),
-    surface_(environment_.instance(), create_info.surface_factory(*environment_.instance()))
+    surface_(environment_.instance(), create_info.fn_make_surface(*environment_.instance())),
+    hardware_(environment_.instance(), surface_)
 {}
 
 }

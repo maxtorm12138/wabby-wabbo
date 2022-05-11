@@ -8,6 +8,7 @@
 namespace wawy::core
 {
 
+
 class engine_impl : public wawy::util::noncopyable
 {
 public:
@@ -40,7 +41,13 @@ void engine::run()
 
 engine_impl::engine_impl(std::string_view application_name, uint32_t application_version) :
     window_(application_name, 800, 600),
-    renderer_(window_, application_name, application_version)
+    renderer_(vulkan::renderer::create_info {
+        .applicaiton_name = application_name.data(),
+        .application_version = application_version,
+        .windowsystem_extensions = window_.get_vulkan_instance_extensions(),
+        .fn_make_surface = [this](VkInstance instance) { return window_.create_vulkan_surface(instance); },
+        .fn_get_window_size = [this]() { return window_.get_vulakn_drawable_size();},
+    })
 {}
 
 void engine_impl::run()

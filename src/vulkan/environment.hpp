@@ -3,6 +3,7 @@
 
 // module
 #include "util/noncopyable.hpp"
+#include "util/api.hpp"
 
 // vulkan
 #include "vulkan/vulkan.hpp"
@@ -10,8 +11,7 @@
 
 namespace wawy::vulkan
 {
-
-class environment : public wawy::util::noncopyable
+class WAWY_API_HIDE environment : public wawy::util::noncopyable
 {
 public:
     environment(const vk::ApplicationInfo &application_info, const std::vector<std::string> &windowsystem_extensions);
@@ -25,10 +25,5 @@ private:
     vk::raii::Instance instance_;
     vk::raii::DebugUtilsMessengerEXT debug_messenger_;
 };
-
-vk::raii::Instance build(
-    const vk::raii::Context &context,
-    const vk::ApplicationInfo &application_info,
-    const std::vector<std::string> &desired_extensions);
 }
 #endif

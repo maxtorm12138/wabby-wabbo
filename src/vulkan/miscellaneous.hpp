@@ -29,7 +29,7 @@ VKAPI_ATTR VkBool32 VKAPI_CALL debug_callback(
 
 const vk::DebugUtilsMessengerCreateInfoEXT DEBUG_MESSENGER_CREATE_INFO
 {
-    .messageSeverity = vk::DebugUtilsMessageSeverityFlagBitsEXT::eVerbose |
+    .messageSeverity = // vk::DebugUtilsMessageSeverityFlagBitsEXT::eVerbose |
                        vk::DebugUtilsMessageSeverityFlagBitsEXT::eInfo |
                        vk::DebugUtilsMessageSeverityFlagBitsEXT::eError |
                        vk::DebugUtilsMessageSeverityFlagBitsEXT::eWarning,

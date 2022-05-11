@@ -3,6 +3,7 @@
 
 // module
 #include "util/noncopyable.hpp"
+#include "util/api.hpp"
 
 // vulkan
 #include <vulkan/vulkan.hpp>
@@ -11,10 +12,18 @@
 namespace wawy::vulkan
 {
 
-class hardware : public wawy::util::noncopyable
+class WAWY_API_HIDE hardware : public wawy::util::noncopyable
 {
+public:
+    hardware(const vk::raii::Instance &instance, const vk::raii::SurfaceKHR &surface);    
+
+public:
+    const vk::raii::PhysicalDevice &physical_device() const { return physical_device_; }
+    const vk::raii::Device &device() const { return device_; }
+
 private:
     vk::raii::PhysicalDevice physical_device_;
+    vk::raii::Device device_;
 };
 
 }
