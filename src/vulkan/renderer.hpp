@@ -4,10 +4,11 @@
 // module
 #include "util/noncopyable.hpp"
 #include "util/api.hpp"
+#include "defines.hpp"
 
-#define WAWY_IMPORT_API
+#define WAWY_API_IMPORT
 #include "sdl2/sdl2.hpp"
-#undef WAWY_IMPORT_API
+#undef WAWY_API_IMPORT
 
 
 namespace wawy::vulkan
@@ -16,7 +17,7 @@ class renderer_impl;
 class WAWY_API_EXPORT renderer : public wawy::util::noncopyable
 {
 public:
-    renderer(const wawy::sdl2::window &window);
+    renderer(const wawy::sdl2::window &window, std::string_view application_name, uint32_t application_version);
     ~renderer();
 
 public:

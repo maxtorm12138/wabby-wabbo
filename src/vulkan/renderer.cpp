@@ -14,7 +14,7 @@ namespace wawy::vulkan
 class renderer_impl : public wawy::util::noncopyable
 {
 public:
-    renderer_impl(const wawy::sdl2::window &window);
+    renderer_impl(const wawy::sdl2::window &window, std::string_view application_name, uint32_t application_version);
 
 public:
     void begin_frame() {}
@@ -28,9 +28,8 @@ private:
     vk::raii::DebugUtilsMessengerEXT debug_messenger_;
 };
 
-
-renderer::renderer(const wawy::sdl2::window &window) :
-    impl_(new renderer_impl(window))
+renderer::renderer(const wawy::sdl2::window &window, std::string_view application_name, uint32_t application_version) :
+    impl_(new renderer_impl(window, application_name, application_version))
 {}
 
 renderer::~renderer()
@@ -57,9 +56,12 @@ void renderer::end_render_pass()
     return impl_->end_render_pass();
 }
 
-renderer_impl::renderer_impl(const wawy::sdl2::window &window) :
+renderer_impl::renderer_impl(const wawy::sdl2::window &window, std::string_view application_name, uint32_t application_version) :
     context_(),
-    instance_(wawy::vulkan::instance::build(context_, {}, window.get_vulkan_instance_extensions())),
+    instance_(wawy::vulkan::instance::build(
+        context_,
+        { .pApplicationName = application_name.data(), .applicationVersion = application_version, .pEngineName = "wabby-waboo vulkan", .engineVersion = WAWY_VULKAN_VERSION, .apiVersion = VK_API_VERSION_1_1, },
+        window.get_vulkan_instance_extensions())),
 #ifdef NDEBUG
     debug_messenger_(nullptr),
 #else
