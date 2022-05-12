@@ -3,7 +3,7 @@
 // module
 #include "error.hpp"
 
-namespace wawy::sdl2
+namespace wabby::sdl2
 {
 
 context::context(uint32_t flags)

@@ -17,11 +17,11 @@ typedef struct VkSurfaceKHR_T *VkSurfaceKHR;
 typedef struct VkInstance_T *VkInstance;
 }
 
-namespace wawy::vulkan
+namespace wabby::vulkan
 {
 class renderer_impl;
 
-class WAWY_API_EXPORT renderer : public wawy::util::noncopyable
+class WAWY_API_EXPORT renderer : public wabby::util::noncopyable
 {
 public:
 

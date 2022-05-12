@@ -5,11 +5,11 @@
 #include "sdl2/sdl2.hpp"
 #undef WAWY_API_IMPORT
 
-namespace wawy::core
+namespace wabby::core
 {
 
 
-class engine_impl : public wawy::util::noncopyable
+class engine_impl : public wabby::util::noncopyable
 {
 public:
     engine_impl(std::string_view application_name, uint32_t application_version);

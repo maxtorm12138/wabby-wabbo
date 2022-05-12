@@ -2,7 +2,6 @@
 
 // module
 #include "defines.hpp"
-#include "miscellaneous.hpp"
 
 #include "util/log.hpp"
 
@@ -10,8 +9,30 @@
 #include "unordered_set"
 #include "algorithm"
 
-namespace wawy::vulkan
+namespace wabby::vulkan
 {
+
+
+VKAPI_ATTR VkBool32 VKAPI_CALL debug_callback(
+    VkDebugUtilsMessageSeverityFlagBitsEXT message_severity,
+    VkDebugUtilsMessageTypeFlagsEXT message_type,
+    const VkDebugUtilsMessengerCallbackDataEXT* data,
+    void* userdata);
+
+const vk::DebugUtilsMessengerCreateInfoEXT DEBUG_MESSENGER_CREATE_INFO
+{
+    .messageSeverity = // vk::DebugUtilsMessageSeverityFlagBitsEXT::eVerbose |
+                       vk::DebugUtilsMessageSeverityFlagBitsEXT::eInfo |
+                       vk::DebugUtilsMessageSeverityFlagBitsEXT::eError |
+                       vk::DebugUtilsMessageSeverityFlagBitsEXT::eWarning,
+
+    .messageType = vk::DebugUtilsMessageTypeFlagBitsEXT::eGeneral |
+                   vk::DebugUtilsMessageTypeFlagBitsEXT::eValidation |
+                   vk::DebugUtilsMessageTypeFlagBitsEXT::ePerformance,
+    
+    .pfnUserCallback = &debug_callback
+};
+
 
 vk::raii::Instance build_instance(const vk::raii::Context &context, const vk::ApplicationInfo &application_info, const std::vector<std::string> &windowsystem_extensions);
 
@@ -21,7 +42,7 @@ environment::environment(const vk::ApplicationInfo &application_info, const std:
 #ifdef NDEBUG
     debug_messenger_(nullptr)
 #else
-    debug_messenger_(instance_, misc::DEBUG_MESSENGER_CREATE_INFO)
+    debug_messenger_(instance_, DEBUG_MESSENGER_CREATE_INFO)
 #endif
 {}
 
@@ -66,7 +87,7 @@ vk::raii::Instance build_instance(const vk::raii::Context &context, const vk::Ap
         },
         vk::DebugUtilsMessengerCreateInfoEXT
         {
-            misc::DEBUG_MESSENGER_CREATE_INFO
+            DEBUG_MESSENGER_CREATE_INFO
         }
     };
 
@@ -75,5 +96,18 @@ vk::raii::Instance build_instance(const vk::raii::Context &context, const vk::Ap
     #endif
 
     return vk::raii::Instance(context, chain.get<vk::InstanceCreateInfo>());
+}
+
+VKAPI_ATTR VkBool32 VKAPI_CALL debug_callback(
+    VkDebugUtilsMessageSeverityFlagBitsEXT message_severity,
+    VkDebugUtilsMessageTypeFlagsEXT message_type,
+    const VkDebugUtilsMessengerCallbackDataEXT* data,
+    void* userdata)
+{
+    vk::DebugUtilsMessageTypeFlagsEXT type(message_severity);
+    vk::DebugUtilsMessageSeverityFlagsEXT severity(message_severity);
+
+    WLOG(get_logger(), debug, "{} {} {}", vk::to_string(severity), vk::to_string(type), data->pMessage);
+    return VK_FALSE;
 }
 }

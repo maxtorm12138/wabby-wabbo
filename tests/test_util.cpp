@@ -6,7 +6,7 @@
 // std
 #include "sstream"
 
-using namespace wawy::util::log_severity;
+using namespace wabby::util::log_severity;
 
 class LoggerTest : public testing::Test
 {
@@ -15,7 +15,7 @@ protected:
     // Sets up the test fixture.
     virtual void SetUp()
     {
-        logger_.reset(new wawy::util::logger);
+        logger_.reset(new wabby::util::logger);
         std::unique_ptr<std::ostream> sink(new std::stringstream);
         sink_ = static_cast<std::ostringstream *>(&logger_->add_sink(std::move(sink)));
     }
@@ -25,7 +25,7 @@ protected:
     {}
 
     std::ostringstream *sink_;
-    std::unique_ptr<wawy::util::logger> logger_;
+    std::unique_ptr<wabby::util::logger> logger_;
 };
 
 TEST_F(LoggerTest, normal_output)

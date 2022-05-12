@@ -15,10 +15,10 @@
 #include "vector"
 
 
-namespace wawy::sdl2
+namespace wabby::sdl2
 {
 
-class WAWY_API_EXPORT window : public wawy::util::noncopyable
+class WAWY_API_EXPORT window : public wabby::util::noncopyable
 {
 public:
 

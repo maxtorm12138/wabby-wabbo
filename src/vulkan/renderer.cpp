@@ -9,7 +9,7 @@
 #include "vulkan/vulkan.hpp"
 #include "vulkan/vulkan_raii.hpp"
 
-namespace wawy::vulkan
+namespace wabby::vulkan
 {
 
 vk::ApplicationInfo build_application_info(const renderer::create_info &create_info)
@@ -18,13 +18,13 @@ vk::ApplicationInfo build_application_info(const renderer::create_info &create_i
     {
         .pApplicationName = create_info.applicaiton_name.c_str(),
         .applicationVersion = create_info.application_version,
-        .pEngineName = "wawy-vulkan",
+        .pEngineName = "wabby-vulkan",
         .engineVersion = WAWY_VULKAN_VERSION,
         .apiVersion = VK_API_VERSION_1_1
     };
 }
 
-class renderer_impl : public wawy::util::noncopyable
+class renderer_impl : public wabby::util::noncopyable
 {
 public:
     renderer_impl(const renderer::create_info &create_info);

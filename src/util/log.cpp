@@ -1,6 +1,6 @@
 #include "log.hpp"
 
-namespace wawy::util
+namespace wabby::util
 {
 
 std::string_view serverity_name(log_severity::severity severity)

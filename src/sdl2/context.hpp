@@ -11,10 +11,10 @@
 // std
 #include "optional"
 
-namespace wawy::sdl2
+namespace wabby::sdl2
 {
 
-class WAWY_API_EXPORT context : public wawy::util::noncopyable
+class WAWY_API_EXPORT context : public wabby::util::noncopyable
 {
 public:
     context(uint32_t flags = SDL_INIT_EVERYTHING);

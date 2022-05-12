@@ -6,7 +6,7 @@
 // std
 #include "unordered_set"
 
-namespace wawy::vulkan
+namespace wabby::vulkan
 {
 
 const std::vector<std::string_view> REQUIRED_DEVICE_EXTENSION { EXT_NAME_VK_KHR_swapchain };
@@ -18,10 +18,81 @@ std::vector<std::string> check_extensions_supported(const vk::raii::PhysicalDevi
 
 vk::raii::Device build_device(const vk::raii::PhysicalDevice &physical_device);
 
+std::optional<uint32_t> get_present_queue_index(const vk::raii::PhysicalDevice &physical_device, const vk::raii::SurfaceKHR &surface);
+
+std::optional<uint32_t> get_first_queue_index(const vk::raii::PhysicalDevice &physical_device, vk::QueueFlags type);
+
 hardware::hardware(const vk::raii::Instance &instance, const vk::raii::SurfaceKHR &surface) :
     physical_device_(pick_physical_device(instance, surface)),
     device_(build_device(physical_device_))
 {}
+
+
+std::optional<vk::raii::Queue> hardware::queue(QueueType type, const std::optional<std::reference_wrapper<vk::raii::SurfaceKHR>> surface)
+{
+    if (auto cache = queue_index_cache_.find(type); cache != queue_index_cache_.end())
+    {
+        return device_.getQueue(cache->second, 0);
+    }
+
+    auto index = queue_index(type, surface);
+    if (!index.has_value())
+    {
+        return {};
+    }
+
+    queue_index_cache_[type] = *index;
+    return device_.getQueue(*index, 0);
+}
+
+std::optional<uint32_t> hardware::queue_index(QueueType type, const std::optional<std::reference_wrapper<vk::raii::SurfaceKHR>> surface) const
+{
+    switch (type) 
+    {
+        case QueueType::PRESENT:
+            return get_present_queue_index(physical_device_, surface->get());
+            break;
+        case QueueType::GRAPHICS:
+            return get_first_queue_index(physical_device_, vk::QueueFlagBits::eGraphics);
+            break;
+        case QueueType::COMPUTE:
+            throw std::runtime_error("unsupported now");
+            break;
+        case QueueType::TRANSFER:
+            throw std::runtime_error("unsupported now");
+            break;
+    }
+    return {};
+}
+
+
+std::optional<uint32_t> get_present_queue_index(const vk::raii::PhysicalDevice &physical_device, const vk::raii::SurfaceKHR &surface)
+{
+    auto queue_family_properties = physical_device.getQueueFamilyProperties();
+    for (uint32_t i = 0; i < queue_family_properties.size(); i++)
+    {
+        if (physical_device.getSurfaceSupportKHR(i, *surface))
+        {
+            return i;
+        }
+    }
+
+    return {};
+}
+
+std::optional<uint32_t> get_first_queue_index(const vk::raii::PhysicalDevice &physical_device, vk::QueueFlags type)
+{
+    auto queue_family_properties = physical_device.getQueueFamilyProperties();
+    for (uint32_t i = 0; i < queue_family_properties.size(); i++)
+    {
+        if (queue_family_properties[i].queueFlags & type)
+        {
+            return i;
+        }
+    }
+
+    return {};
+}
 
 vk::raii::PhysicalDevice pick_physical_device(const vk::raii::Instance &instance, const vk::raii::SurfaceKHR &surface)
 {
@@ -59,6 +130,18 @@ vk::raii::PhysicalDevice pick_physical_device(const vk::raii::Instance &instance
 
         auto surface_formats = physical_device.getSurfaceFormatsKHR(*surface);
         if (surface_formats.empty())
+        {
+            continue;
+        }
+
+        auto present_queue_index = get_present_queue_index(physical_device, surface);
+        if (!present_queue_index.has_value())
+        {
+            continue;
+        }
+
+        auto graphics_queue_index = get_first_queue_index(physical_device, vk::QueueFlagBits::eGraphics);
+        if (!graphics_queue_index.has_value())
         {
             continue;
         }
@@ -119,4 +202,5 @@ vk::raii::Device build_device(const vk::raii::PhysicalDevice &physical_device)
 
     return vk::raii::Device(physical_device, device_create_info);
 }
+
 }

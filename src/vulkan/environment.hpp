@@ -9,9 +9,9 @@
 #include "vulkan/vulkan.hpp"
 #include "vulkan/vulkan_raii.hpp"
 
-namespace wawy::vulkan
+namespace wabby::vulkan
 {
-class WAWY_API_HIDE environment : public wawy::util::noncopyable
+class WAWY_API_HIDE environment : public wabby::util::noncopyable
 {
 public:
     environment(const vk::ApplicationInfo &application_info, const std::vector<std::string> &windowsystem_extensions);

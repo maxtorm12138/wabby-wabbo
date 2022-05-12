@@ -8,12 +8,12 @@
 // std
 #include "string_view"
 
-namespace wawy::core
+namespace wabby::core
 {
 
 class engine_impl;
 
-class WAWY_API_EXPORT engine : public wawy::util::noncopyable
+class WAWY_API_EXPORT engine : public wabby::util::noncopyable
 {
 public:
     engine(std::string_view application_name, uint32_t application_version);

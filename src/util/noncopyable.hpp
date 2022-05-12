@@ -1,6 +1,6 @@
 #pragma once
 
-namespace wawy::util
+namespace wabby::util
 {
 class noncopyable
 {

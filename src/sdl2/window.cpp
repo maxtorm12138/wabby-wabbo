@@ -6,7 +6,7 @@
 // std
 #include "iterator"
 
-namespace wawy::sdl2
+namespace wabby::sdl2
 {
 
 window::window(

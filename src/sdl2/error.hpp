@@ -9,7 +9,7 @@
 #include "string_view"
 
 
-namespace wawy::sdl2
+namespace wabby::sdl2
 {
 
 class WAWY_API_EXPORT sdl2_error : public std::runtime_error

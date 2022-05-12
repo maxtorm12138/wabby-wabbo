@@ -13,7 +13,7 @@
 // fmt
 #include "fmt/format.h"
 
-namespace wawy::util
+namespace wabby::util
 {
 namespace log_severity
 {
@@ -27,7 +27,7 @@ enum severity
 };
 }
 
-class logger : public wawy::util::noncopyable
+class logger : public wabby::util::noncopyable
 {
 public:
 	logger() = default;

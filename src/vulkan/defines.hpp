@@ -6,7 +6,7 @@
 
 #include "util/api.hpp"
 
-namespace wawy::vulkan
+namespace wabby::vulkan
 {
 constexpr std::string_view EXT_NAME_VK_KHR_portability_subset = "VK_KHR_portability_subset";
 constexpr std::string_view EXT_NAME_VK_KHR_get_physical_device_properties2 = "VK_KHR_get_physical_device_properties2";
@@ -17,6 +17,9 @@ constexpr std::string_view EXT_NAME_VK_KHR_shader_non_semantic_info = "VK_KHR_sh
 constexpr std::string_view EXT_NAME_VK_KHR_portability_enumeration = "VK_KHR_portability_enumeration";
 
 #define WAWY_VULKAN_VERSION WAWY_MAKE_VERSION(1, 0, 0)
+
+enum class QueueType { PRESENT, GRAPHICS, COMPUTE, TRANSFER };
+
 }
 
 #endif

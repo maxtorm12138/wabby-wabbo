@@ -6,7 +6,7 @@
 // sdl2
 #include "SDL.h"
 
-namespace wawy::sdl2
+namespace wabby::sdl2
 {
 
 sdl2_error::sdl2_error(std::string_view sdl2_function_name) :
