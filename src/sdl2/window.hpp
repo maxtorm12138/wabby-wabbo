@@ -1,5 +1,5 @@
-#ifndef _WAWY_SDL2_WINDOW_HPP
-#define _WAWY_SDL2_WINDOW_HPP
+#ifndef _WABBY_SDL2_WINDOW_HPP
+#define _WABBY_SDL2_WINDOW_HPP
 
 // module
 #include "util/noncopyable.hpp"
@@ -18,7 +18,7 @@
 namespace wabby::sdl2
 {
 
-class WAWY_API_EXPORT window : public wabby::util::noncopyable
+class WABBY_API_EXPORT window : public wabby::util::noncopyable
 {
 public:
 

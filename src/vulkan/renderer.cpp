@@ -19,7 +19,7 @@ vk::ApplicationInfo build_application_info(const renderer::create_info &create_i
         .pApplicationName = create_info.applicaiton_name.c_str(),
         .applicationVersion = create_info.application_version,
         .pEngineName = "wabby-vulkan",
-        .engineVersion = WAWY_VULKAN_VERSION,
+        .engineVersion = WABBY_VULKAN_VERSION,
         .apiVersion = VK_API_VERSION_1_1
     };
 }

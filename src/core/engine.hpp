@@ -1,5 +1,5 @@
-#ifndef _WAWY_CORE_ENGINE_HPP
-#define _WAWY_CORE_ENGINE_HPP
+#ifndef _WABBY_CORE_ENGINE_HPP
+#define _WABBY_CORE_ENGINE_HPP
 
 // module
 #include "util/noncopyable.hpp"
@@ -13,7 +13,7 @@ namespace wabby::core
 
 class engine_impl;
 
-class WAWY_API_EXPORT engine : public wabby::util::noncopyable
+class WABBY_API_EXPORT engine : public wabby::util::noncopyable
 {
 public:
     engine(std::string_view application_name, uint32_t application_version);

@@ -1,9 +1,9 @@
 #include "engine.hpp"
 
-#define WAWY_API_IMPORT
+#define WABBY_API_IMPORT
 #include "vulkan/renderer.hpp"
 #include "sdl2/sdl2.hpp"
-#undef WAWY_API_IMPORT
+#undef WABBY_API_IMPORT
 
 namespace wabby::core
 {

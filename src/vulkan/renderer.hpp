@@ -1,5 +1,5 @@
-#ifndef _WAWY_VULKAN_RENDERER_HPP
-#define _WAWY_VULKAN_RENDERER_HPP
+#ifndef _WABBY_VULKAN_RENDERER_HPP
+#define _WABBY_VULKAN_RENDERER_HPP
 
 // module
 #include "util/noncopyable.hpp"
@@ -21,7 +21,7 @@ namespace wabby::vulkan
 {
 class renderer_impl;
 
-class WAWY_API_EXPORT renderer : public wabby::util::noncopyable
+class WABBY_API_EXPORT renderer : public wabby::util::noncopyable
 {
 public:
 

@@ -1,5 +1,5 @@
-#ifndef _WAWY_VULKAN_HARDWARE_HPP
-#define _WAWY_VULKAN_HARDWARE_HPP
+#ifndef _WABBY_VULKAN_HARDWARE_HPP
+#define _WABBY_VULKAN_HARDWARE_HPP
 
 // module
 #include "util/noncopyable.hpp"
@@ -16,7 +16,7 @@
 namespace wabby::vulkan
 {
 
-class WAWY_API_HIDE hardware : public wabby::util::noncopyable
+class WABBY_API_HIDE hardware : public wabby::util::noncopyable
 {
 public:
     hardware(const vk::raii::Instance &instance, const vk::raii::SurfaceKHR &surface);    

@@ -1,5 +1,5 @@
-#ifndef _WAWY_VULKAN_DEFINES_HPP
-#define _WAWY_VULKAN_DEFINES_HPP
+#ifndef _WABBY_VULKAN_DEFINES_HPP
+#define _WABBY_VULKAN_DEFINES_HPP
 
 // std
 #include "string_view"
@@ -16,7 +16,7 @@ constexpr std::string_view EXT_NAME_VK_KHR_swapchain = "VK_KHR_swapchain";
 constexpr std::string_view EXT_NAME_VK_KHR_shader_non_semantic_info = "VK_KHR_shader_non_semantic_info";
 constexpr std::string_view EXT_NAME_VK_KHR_portability_enumeration = "VK_KHR_portability_enumeration";
 
-#define WAWY_VULKAN_VERSION WAWY_MAKE_VERSION(1, 0, 0)
+#define WABBY_VULKAN_VERSION WABBY_MAKE_VERSION(1, 0, 0)
 
 enum class QueueType { PRESENT, GRAPHICS, COMPUTE, TRANSFER };
 

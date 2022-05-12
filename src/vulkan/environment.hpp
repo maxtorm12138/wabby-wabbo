@@ -1,5 +1,5 @@
-#ifndef _WAWY_VULKAN_INSTANCE_HPP
-#define _WAWY_VULKAN_INSTANCE_HPP
+#ifndef _WABBY_VULKAN_INSTANCE_HPP
+#define _WABBY_VULKAN_INSTANCE_HPP
 
 // module
 #include "util/noncopyable.hpp"
@@ -11,7 +11,7 @@
 
 namespace wabby::vulkan
 {
-class WAWY_API_HIDE environment : public wabby::util::noncopyable
+class WABBY_API_HIDE environment : public wabby::util::noncopyable
 {
 public:
     environment(const vk::ApplicationInfo &application_info, const std::vector<std::string> &windowsystem_extensions);

@@ -1,5 +1,5 @@
-#ifndef _WAWY_SDL2_CONTEXT_HPP
-#define _WAWY_SDL2_CONTEXT_HPP
+#ifndef _WABBY_SDL2_CONTEXT_HPP
+#define _WABBY_SDL2_CONTEXT_HPP
 
 // module
 #include "util/noncopyable.hpp"
@@ -14,7 +14,7 @@
 namespace wabby::sdl2
 {
 
-class WAWY_API_EXPORT context : public wabby::util::noncopyable
+class WABBY_API_EXPORT context : public wabby::util::noncopyable
 {
 public:
     context(uint32_t flags = SDL_INIT_EVERYTHING);

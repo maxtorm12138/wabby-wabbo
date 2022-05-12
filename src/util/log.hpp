@@ -1,5 +1,5 @@
-#ifndef _WAWY_UTIL_LOG_HPP
-#define _WAWY_UTIL_LOG_HPP
+#ifndef _WABBY_UTIL_LOG_HPP
+#define _WABBY_UTIL_LOG_HPP
 
 // module
 #include "noncopyable.hpp"
