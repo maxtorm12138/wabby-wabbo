@@ -22,7 +22,10 @@ public:
 
 public:
     std::optional<SDL_Event> poll_event();
+
     SDL_Event wait_event();
+
+    void set_relative_mouse_mode(bool enabled);
 };
 
 }

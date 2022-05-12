@@ -38,4 +38,9 @@ SDL_Event context::wait_event()
     return event;
 }
 
+void context::set_relative_mouse_mode(bool enabled)
+{
+    int ret = SDL_SetRelativeMouseMode(enabled ? SDL_TRUE : SDL_FALSE);
+    SDL2_ASSERT(ret == 0, SDL_SetRelativeMouseMode);
+}
 }
