@@ -1,9 +1,9 @@
 #include "environment.hpp"
 
 // module
+#include "logger.hpp"
 #include "defines.hpp"
 
-#include "util/log.hpp"
 
 // std
 #include "unordered_set"
@@ -104,10 +104,10 @@ VKAPI_ATTR VkBool32 VKAPI_CALL debug_callback(
     const VkDebugUtilsMessengerCallbackDataEXT* data,
     void* userdata)
 {
-    vk::DebugUtilsMessageTypeFlagsEXT type(message_severity);
+    vk::DebugUtilsMessageTypeFlagsEXT type(message_type);
     vk::DebugUtilsMessageSeverityFlagsEXT severity(message_severity);
 
-    WLOG(get_logger(), debug, "{} {} {}", vk::to_string(severity), vk::to_string(type), data->pMessage);
+    WLOG(g_logger, debug, "DebugCallback|{}|{}|{}", vk::to_string(severity), vk::to_string(type), data->pMessage);
     return VK_FALSE;
 }
 }

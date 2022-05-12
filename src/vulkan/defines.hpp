@@ -4,10 +4,12 @@
 // std
 #include "string_view"
 
+// module
 #include "util/api.hpp"
 
 namespace wabby::vulkan
 {
+
 constexpr std::string_view EXT_NAME_VK_KHR_portability_subset = "VK_KHR_portability_subset";
 constexpr std::string_view EXT_NAME_VK_KHR_get_physical_device_properties2 = "VK_KHR_get_physical_device_properties2";
 constexpr std::string_view EXT_NAME_VK_EXT_debug_utils = "VK_EXT_debug_utils";
@@ -16,7 +18,8 @@ constexpr std::string_view EXT_NAME_VK_KHR_swapchain = "VK_KHR_swapchain";
 constexpr std::string_view EXT_NAME_VK_KHR_shader_non_semantic_info = "VK_KHR_shader_non_semantic_info";
 constexpr std::string_view EXT_NAME_VK_KHR_portability_enumeration = "VK_KHR_portability_enumeration";
 
-#define WABBY_VULKAN_VERSION WABBY_MAKE_VERSION(1, 0, 0)
+constexpr std::string_view WABBY_ENGINE_NAME = "wabby-wabbo";
+#define WABBY_ENGINE_VERSION WABBY_MAKE_VERSION(1, 0, 0)
 
 enum class QueueType { PRESENT, GRAPHICS, COMPUTE, TRANSFER };
 

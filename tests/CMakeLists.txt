@@ -15,4 +15,4 @@ gtest_discover_tests(test_util)
 
 add_executable(test_engine test_engine.cpp)
 target_include_directories(test_engine PUBLIC "${CMAKE_SOURCE_DIR}/src")
-target_link_libraries(test_engine PUBLIC wabby-engine)
+target_link_libraries(test_engine PUBLIC wabbyengine)

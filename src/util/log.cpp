@@ -1,5 +1,8 @@
 #include "log.hpp"
 
+// boost
+#include "boost/date_time.hpp"
+
 namespace wabby::util
 {
 
@@ -49,7 +52,8 @@ std::ostream &logger::add_sink(std::unique_ptr<std::ostream> os)
 
 void logger::add_record(log_severity::severity severity, std::string_view message)
 {
-	auto real_message = fmt::format("<{}> {}\n", serverity_name(severity), message);
+	auto now = boost::posix_time::to_iso_extended_string(boost::posix_time::microsec_clock::local_time());
+	auto real_message = fmt::format("<{}|{}> {}\n", now, serverity_name(severity), message);
 	for (auto sink : sinks_)
 	{
 		sink.get() << real_message;
