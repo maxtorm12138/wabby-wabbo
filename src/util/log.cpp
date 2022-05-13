@@ -37,11 +37,10 @@ void logger::add_console_sink(std::ostream &os)
 	sinks_.emplace_back(os);
 }
 
-std::ofstream &logger::add_file_sink(std::ofstream os)
+std::ofstream &logger::add_file_sink(std::string_view file_path)
 {
-	auto p_os = std::make_unique<std::ofstream>(std::move(os));
-	sinks_.emplace_back(*sinks_holder_.emplace_back(std::move(p_os)));
-	return static_cast<std::ofstream &>(sinks_.back().get());
+	std::unique_ptr<std::ostream> sink(new std::ofstream(file_path.data(), std::ios::app | std::ios::out));
+	return static_cast<std::ofstream &>(sinks_.emplace_back(*sinks_holder_.emplace_back(std::move(sink))).get());
 }
 
 std::ostream &logger::add_sink(std::unique_ptr<std::ostream> os)

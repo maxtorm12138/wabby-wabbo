@@ -36,14 +36,18 @@ public:
 	~logger() = default;
 
 public:
+
 	void add_console_sink(std::ostream &os = std::cerr);
-	std::ofstream &add_file_sink(std::ofstream os);
+
+	std::ofstream &add_file_sink(std::string_view file_path);
+
 	std::ostream &add_sink(std::unique_ptr<std::ostream> os);
 
 	void add_record(log_severity::severity severity, std::string_view message);
 	
 private:
 	std::vector<std::unique_ptr<std::ostream>> sinks_holder_;
+
 	std::vector<std::reference_wrapper<std::ostream>> sinks_;
 };
 

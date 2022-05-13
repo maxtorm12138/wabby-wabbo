@@ -21,6 +21,9 @@ namespace wabby::vulkan
 {
 class renderer_impl;
 
+class global_context_initializer
+{};
+
 class WABBY_API_EXPORT renderer : public wabby::util::noncopyable
 {
 public:
@@ -39,10 +42,15 @@ public:
 
 public:
     void begin_frame();
+
     void end_frame();
+
     void begin_render_pass();
+
     void end_render_pass();
+
 private:
+    global_context_initializer global_context_initializer_;
     renderer_impl *impl_;
 };
 }

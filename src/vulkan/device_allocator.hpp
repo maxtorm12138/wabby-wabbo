@@ -31,7 +31,7 @@ public:
     const VmaAllocator &get() const { return allocator_; }
 
 private:
-    VmaAllocator allocator_;
+    VmaAllocator allocator_{VK_NULL_HANDLE};
 };
 
 }

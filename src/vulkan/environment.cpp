@@ -1,7 +1,7 @@
 #include "environment.hpp"
 
 // module
-#include "logger.hpp"
+#include "global_context.hpp"
 #include "defines.hpp"
 
 
@@ -107,7 +107,7 @@ VKAPI_ATTR VkBool32 VKAPI_CALL debug_callback(
     vk::DebugUtilsMessageTypeFlagsEXT type(message_type);
     vk::DebugUtilsMessageSeverityFlagsEXT severity(message_severity);
 
-    WLOG(g_logger, debug, "DebugCallback|{}|{}|{}", vk::to_string(severity), vk::to_string(type), data->pMessage);
+    WLOG(G_LOGGER, debug, "DebugCallback|{}|{}|{}", vk::to_string(severity), vk::to_string(type), data->pMessage);
     return VK_FALSE;
 }
 }

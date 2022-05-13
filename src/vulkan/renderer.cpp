@@ -1,7 +1,7 @@
 #include "renderer.hpp"
 
 // module
-#include "logger.hpp"
+#include "global_context.hpp"
 #include "environment.hpp"
 #include "hardware.hpp"
 #include "device_allocator.hpp"
@@ -23,6 +23,18 @@ vk::ApplicationInfo build_application_info(const renderer::create_info &create_i
         .engineVersion = WABBY_ENGINE_VERSION,
         .apiVersion = VK_API_VERSION_1_1
     };
+}
+
+global_context_initializer initialize_global_context()
+{
+    {
+        wabby::util::logger logger;
+        logger.add_console_sink(std::cout);
+        logger.add_file_sink("vulkan.log");
+        G_LOGGER = std::move(logger);
+    }
+
+    return global_context_initializer{};
 }
 
 class renderer_impl : public wabby::util::noncopyable
@@ -50,6 +62,7 @@ private:
 };
 
 renderer::renderer(const create_info &create_info) :
+    global_context_initializer_(initialize_global_context()),
     impl_(new renderer_impl(create_info))
 {}
 
@@ -86,6 +99,21 @@ renderer_impl::renderer_impl(const renderer::create_info &create_info) :
 }
 
 void renderer_impl::begin_frame()
+{
+
+}
+
+void renderer_impl::end_frame()
+{
+
+}
+
+void renderer_impl::begin_render_pass()
+{
+
+}
+
+void renderer_impl::end_render_pass()
 {
 
 }
