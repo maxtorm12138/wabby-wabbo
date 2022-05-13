@@ -31,16 +31,22 @@ public:
     renderer_impl(const renderer::create_info &create_info);
 
 public:
-    void begin_frame() {}
-    void end_frame() {}
-    void begin_render_pass() {}
-    void end_render_pass() {}
+    void begin_frame();
+    void end_frame();
+    void begin_render_pass();
+    void end_render_pass();
 
 private:
     vulkan::environment environment_;
     vk::raii::SurfaceKHR surface_;
     vulkan::hardware hardware_;
     vulkan::device_allocator allocator_;
+
+    std::vector<vk::raii::Semaphore> image_available_semaphores_;
+    std::vector<vk::raii::Semaphore> render_finishend_semaphores_;
+    std::vector<vk::raii::Fence> in_flight_fences_;
+
+    uint64_t frame_counter;
 };
 
 renderer::renderer(const create_info &create_info) :
@@ -77,6 +83,11 @@ renderer_impl::renderer_impl(const renderer::create_info &create_info) :
     hardware_(environment_.instance(), surface_),
     allocator_(environment_.instance(), hardware_.physical_device(), hardware_.device())
 {
+}
+
+void renderer_impl::begin_frame()
+{
+
 }
 
 }
