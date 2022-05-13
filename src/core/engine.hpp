@@ -1,12 +1,8 @@
 #ifndef _WABBY_CORE_ENGINE_HPP
 #define _WABBY_CORE_ENGINE_HPP
 
-// module
-#include "util/noncopyable.hpp"
-#include "util/api.hpp"
-
-// std
 #include "string_view"
+#include "boost/noncopyable"
 
 namespace wabby::core
 {
