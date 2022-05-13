@@ -12,6 +12,7 @@
 
 // std
 #include "optional"
+#include "unordered_map"
 
 namespace wabby::vulkan
 {

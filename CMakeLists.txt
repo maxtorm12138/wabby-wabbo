@@ -46,6 +46,9 @@ target_compile_definitions(wabbyvk PRIVATE -DVULKAN_HPP_NO_SETTERS -DVULKAN_HPP_
 target_link_libraries(wabbyvk PRIVATE Vulkan::Vulkan Boost::boost wabbyutil fmt::fmt-header-only)
 target_include_directories(wabbyvk PRIVATE src/ ${VMA_INCLUDE_DIR} ${VULKAN_HPP_INCLUDE_DIR})
 set_target_properties(wabbyvk PROPERTIES VERSION "1.0.0" SOVERSION "1")
+if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+    target_compile_options(wabbyvk PRIVATE -Wno-nullability-completeness)
+endif ()
 
 file(GLOB WABBY_ENGINE_SRCS src/core/*)
 add_library(wabbyengine SHARED ${WABBY_ENGINE_SRCS})
