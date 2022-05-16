@@ -2,9 +2,10 @@
 #define _WABBY_VULKAN_HARDWARE_HPP
 
 // module
-#include "util/noncopyable.hpp"
-#include "util/api.hpp"
-#include "defines.hpp"
+#include "vk_defines.hpp"
+
+// boost
+#include "boost/noncopyable.hpp"
 
 // vulkan
 #include "vulkan/vulkan.hpp"
@@ -14,10 +15,10 @@
 #include "optional"
 #include "unordered_map"
 
-namespace wabby::vulkan
+namespace wabby::render::vulkan
 {
 
-class WABBY_API_HIDE hardware : public wabby::util::noncopyable
+class hardware : public boost::noncopyable
 {
 public:
     hardware(const vk::raii::Instance &instance, const vk::raii::SurfaceKHR &surface);    

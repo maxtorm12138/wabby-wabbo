@@ -1,8 +1,8 @@
 #ifndef _WABBY_VULKAN_ALLOCATOR_HPP
 #define _WABBY_VULKAN_ALLOCATOR_HPP
 
-// module
-#include "util/noncopyable.hpp"
+// boost
+#include "boost/noncopyable.hpp"
 
 // vulkan
 #include "vulkan/vulkan.hpp"
@@ -11,14 +11,14 @@
 // vma
 #include "vk_mem_alloc.h"
 
-namespace wabby::vulkan
+namespace wabby::render::vulkan
 {
 
-class device_allocator : public wabby::util::noncopyable
+class vk_device_allocator : public boost::noncopyable
 {
 public:
-    device_allocator(const vk::raii::Instance &instance, const vk::raii::PhysicalDevice &physical_device, const vk::raii::Device &device);
-    ~device_allocator();
+    vk_device_allocator(const vk::raii::Instance &instance, const vk::raii::PhysicalDevice &physical_device, const vk::raii::Device &device);
+    ~vk_device_allocator();
 
 public:
     operator VmaAllocator &() { return allocator_; }

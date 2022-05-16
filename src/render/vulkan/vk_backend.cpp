@@ -1,4 +1,4 @@
-#include "renderer.hpp"
+#include "vk_backend.hpp"
 
 // module
 #include "global_context.hpp"
@@ -25,19 +25,7 @@ vk::ApplicationInfo build_application_info(const renderer::create_info &create_i
     };
 }
 
-global_context_initializer initialize_global_context()
-{
-    {
-        wabby::util::logger logger;
-        logger.add_console_sink(std::cout);
-        logger.add_file_sink("vulkan.log");
-        G_LOGGER = std::move(logger);
-    }
-
-    return global_context_initializer{};
-}
-
-class renderer_impl : public wabby::util::noncopyable
+class vk_backend_impl : public wabby::util::noncopyable
 {
 public:
     renderer_impl(const renderer::create_info &create_info);
@@ -49,10 +37,6 @@ public:
     void end_render_pass();
 
 private:
-    vulkan::environment environment_;
-    vk::raii::SurfaceKHR surface_;
-    vulkan::hardware hardware_;
-    vulkan::device_allocator allocator_;
 
     std::vector<vk::raii::Semaphore> image_available_semaphores_;
     std::vector<vk::raii::Semaphore> render_finishend_semaphores_;

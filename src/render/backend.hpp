@@ -21,6 +21,8 @@ public:
     virtual void begin_render_pass() = 0;
 
     virtual void end_render_pass() = 0;
+
+    virtual void resized() = 0;
 };
 
 }

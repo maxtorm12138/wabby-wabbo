@@ -1,15 +1,14 @@
-#include "environment.hpp"
+#include "vk_environment.hpp"
 
 // module
-#include "global_context.hpp"
-#include "defines.hpp"
+#include "vk_defines.hpp"
 
 
 // std
 #include "unordered_set"
 #include "algorithm"
 
-namespace wabby::vulkan
+namespace wabby::render::vulkan
 {
 
 
@@ -36,7 +35,7 @@ const vk::DebugUtilsMessengerCreateInfoEXT DEBUG_MESSENGER_CREATE_INFO
 
 vk::raii::Instance build_instance(const vk::raii::Context &context, const vk::ApplicationInfo &application_info, const std::vector<std::string> &windowsystem_extensions);
 
-environment::environment(const vk::ApplicationInfo &application_info, const std::vector<std::string> &windowsystem_extensions) :
+vk_environment::vk_environment(const vk::ApplicationInfo &application_info, const std::vector<std::string> &windowsystem_extensions) :
     context_(),
     instance_(build_instance(context_, application_info, windowsystem_extensions)),
 #ifdef NDEBUG
@@ -107,7 +106,6 @@ VKAPI_ATTR VkBool32 VKAPI_CALL debug_callback(
     vk::DebugUtilsMessageTypeFlagsEXT type(message_type);
     vk::DebugUtilsMessageSeverityFlagsEXT severity(message_severity);
 
-    WLOG(G_LOGGER, debug, "DebugCallback|{}|{}|{}", vk::to_string(severity), vk::to_string(type), data->pMessage);
     return VK_FALSE;
 }
 }

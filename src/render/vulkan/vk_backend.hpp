@@ -2,9 +2,8 @@
 #define _WABBY_VULKAN_RENDERER_HPP
 
 // module
-#include "util/noncopyable.hpp"
-#include "util/api.hpp"
-#include "defines.hpp"
+#include "vk_defines.hpp"
+#include "backend.hpp"
 
 // std
 #include "string"
@@ -17,14 +16,12 @@ typedef struct VkSurfaceKHR_T *VkSurfaceKHR;
 typedef struct VkInstance_T *VkInstance;
 }
 
-namespace wabby::vulkan
+namespace wabby::render::vulkan
 {
-class renderer_impl;
 
-class global_context_initializer
-{};
+class vk_backend_impl;
 
-class WABBY_API_EXPORT renderer : public wabby::util::noncopyable
+class vk_backend : public wabby::render::backend
 {
 public:
 
@@ -37,22 +34,23 @@ public:
         std::function<std::pair<uint32_t, uint32_t>()> fn_get_window_size;
     };
 
-    renderer(const create_info &create_info);
-    ~renderer();
+    vk_backend(const create_info &create_info);
 
 public:
-    void begin_frame();
+    void begin_frame() override;
 
-    void end_frame();
+    void end_frame() override;
 
-    void begin_render_pass();
+    void begin_render_pass() override;
 
-    void end_render_pass();
+    void end_render_pass() override;
 
 private:
-    global_context_initializer global_context_initializer_;
-    renderer_impl *impl_;
+    vk_backend_impl *impl_;
 };
+
+std::shared_ptr<wabby::render::backend> BOOST_SYMBOL_EXPORT make_vk_backend(const vk_backend::create_info &create_info);
+
 }
 
 #endif

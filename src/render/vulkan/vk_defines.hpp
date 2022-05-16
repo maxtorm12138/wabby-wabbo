@@ -4,7 +4,7 @@
 // std
 #include "string_view"
 
-namespace wabby::vulkan
+namespace wabby::render::vulkan
 {
 
 constexpr std::string_view EXT_NAME_VK_KHR_portability_subset = "VK_KHR_portability_subset";

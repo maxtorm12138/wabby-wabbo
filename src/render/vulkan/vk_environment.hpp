@@ -1,20 +1,19 @@
 #ifndef _WABBY_VULKAN_INSTANCE_HPP
 #define _WABBY_VULKAN_INSTANCE_HPP
 
-// module
-#include "util/noncopyable.hpp"
-#include "util/api.hpp"
+// boost
+#include "boost/noncopyable.hpp"
 
 // vulkan
 #include "vulkan/vulkan.hpp"
 #include "vulkan/vulkan_raii.hpp"
 
-namespace wabby::vulkan
+namespace wabby::render::vulkan
 {
-class WABBY_API_HIDE environment : public wabby::util::noncopyable
+class vk_environment : public boost::noncopyable
 {
 public:
-    environment(const vk::ApplicationInfo &application_info, const std::vector<std::string> &windowsystem_extensions);
+    vk_environment(const vk::ApplicationInfo &application_info, const std::vector<std::string> &windowsystem_extensions);
 
 public:
     const vk::raii::Context &context() const { return context_; };

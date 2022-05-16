@@ -1,4 +1,4 @@
-#include "device_allocator.hpp"
+#include "vk_device_allocator.hpp"
 
 // module
 #include "defines.hpp"
@@ -13,7 +13,7 @@
 namespace wabby::vulkan
 {
 
-device_allocator::device_allocator(const vk::raii::Instance &instance, const vk::raii::PhysicalDevice &physical_device, const vk::raii::Device &device)
+vk_device_allocator::vk_device_allocator(const vk::raii::Instance &instance, const vk::raii::PhysicalDevice &physical_device, const vk::raii::Device &device)
 {
     VmaAllocatorCreateInfo allocator_create_info
     {
@@ -30,7 +30,7 @@ device_allocator::device_allocator(const vk::raii::Instance &instance, const vk:
     }
 }
 
-device_allocator::~device_allocator()
+vk_device_allocator::~vk_device_allocator()
 {
     if (allocator_ != VK_NULL_HANDLE)
     {
