@@ -1,12 +1,12 @@
 #ifndef _WABBY_SDL2_CONTEXT_HPP
 #define _WABBY_SDL2_CONTEXT_HPP
 
-// module
-#include "util/noncopyable.hpp"
-#include "util/api.hpp"
-
 // SDL
 #include "SDL.h"
+
+// boost
+#include "boost/config.hpp"
+#include "boost/noncopyable.hpp"
 
 // std
 #include "optional"
@@ -14,7 +14,7 @@
 namespace wabby::sdl2
 {
 
-class WABBY_API_EXPORT context : public wabby::util::noncopyable
+class BOOST_SYMBOL_EXPORT context : public boost::noncopyable
 {
 public:
     context(uint32_t flags = SDL_INIT_EVERYTHING);

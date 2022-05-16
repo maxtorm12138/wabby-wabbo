@@ -1,15 +1,14 @@
 #include "engine.hpp"
 
-#define WABBY_API_IMPORT
-#include "vulkan/renderer.hpp"
-#include "sdl2/sdl2.hpp"
-#undef WABBY_API_IMPORT
+#include "sdl/sdl2.hpp"
+
+#include "render/backend.hpp"
 
 namespace wabby::core
 {
 
 
-class engine_impl : public wabby::util::noncopyable
+class engine_impl : public boost::noncopyable
 {
 public:
     engine_impl(std::string_view application_name, uint32_t application_version);
@@ -20,7 +19,6 @@ public:
 private:
     sdl2::context sdl_context_;
     sdl2::window window_;
-    vulkan::renderer renderer_;
 };
 
 
@@ -40,14 +38,7 @@ void engine::run()
 
 
 engine_impl::engine_impl(std::string_view application_name, uint32_t application_version) :
-    window_(application_name, 800, 600),
-    renderer_(vulkan::renderer::create_info {
-        .applicaiton_name = application_name.data(),
-        .application_version = application_version,
-        .windowsystem_extensions = window_.get_vulkan_instance_extensions(),
-        .fn_make_surface = [this](VkInstance instance) { return window_.create_vulkan_surface(instance); },
-        .fn_get_window_size = [this]() { return window_.get_vulakn_drawable_size();},
-    })
+    window_(application_name, 800, 600)
 {}
 
 void engine_impl::run()

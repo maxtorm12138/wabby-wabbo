@@ -1,9 +1,9 @@
 #ifndef _WABBY_SDL2_WINDOW_HPP
 #define _WABBY_SDL2_WINDOW_HPP
 
-// module
-#include "util/noncopyable.hpp"
-#include "util/api.hpp"
+// boost
+#include "boost/config.hpp"
+#include "boost/noncopyable.hpp"
 
 // sdl2
 #include "SDL.h"
@@ -18,7 +18,7 @@
 namespace wabby::sdl2
 {
 
-class WABBY_API_EXPORT window : public wabby::util::noncopyable
+class BOOST_SYMBOL_EXPORT window : public boost::noncopyable
 {
 public:
 

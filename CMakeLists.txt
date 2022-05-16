@@ -36,10 +36,9 @@ add_subdirectory("src/sdl")
 add_subdirectory("src/render")
 
 
-file(GLOB WABBY_ENGINE_SRCS src/core/*)
+file(GLOB WABBY_ENGINE_SRCS src/core/*.cpp src/core/*.hpp)
 add_library(wabbyengine SHARED ${WABBY_ENGINE_SRCS})
-target_compile_definitions(wabbyengine PRIVATE -DWABBY_API_BUILDING_DLL)
-target_link_libraries(wabbyengine PRIVATE wabbyvulkan wabbysdl wabbyutil)
+target_link_libraries(wabbyengine PRIVATE wabbyvulkan wabbysdl Boost::boost)
 target_include_directories(wabbyengine PRIVATE src/)
 set_target_properties(wabbyengine PROPERTIES VERSION "1.0.0" SOVERSION "1")
 

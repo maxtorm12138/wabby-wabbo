@@ -1,15 +1,19 @@
 #ifndef _WABBY_CORE_ENGINE_HPP
 #define _WABBY_CORE_ENGINE_HPP
 
+// std
 #include "string_view"
-#include "boost/noncopyable"
+
+// boost
+#include "boost/noncopyable.hpp"
+#include "boost/config.hpp"
 
 namespace wabby::core
 {
 
 class engine_impl;
 
-class WABBY_API_EXPORT engine : public wabby::util::noncopyable
+class BOOST_SYMBOL_EXPORT engine : public boost::noncopyable
 {
 public:
     engine(std::string_view application_name, uint32_t application_version);
