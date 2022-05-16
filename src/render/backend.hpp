@@ -4,6 +4,7 @@
 // boost
 #include "boost/config.hpp"
 #include "boost/noncopyable.hpp"
+#include "boost/dll/alias.hpp"
 
 // std
 #include "string"
@@ -46,7 +47,7 @@ struct BOOST_SYMBOL_EXPORT vk_backend_create_info
     std::function<std::pair<uint32_t, uint32_t>()> fn_get_window_size;
 };
 
-std::shared_ptr<backend> BOOST_SYMBOL_EXPORT make_vk_backend(const vk_backend_create_info &create_info);
-
+BOOST_SYMBOL_EXPORT std::shared_ptr<backend> make_vk_backend(const vk_backend_create_info &create_info);
 }
+
 #endif

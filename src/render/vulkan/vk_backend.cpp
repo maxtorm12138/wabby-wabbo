@@ -6,6 +6,7 @@ std::shared_ptr<backend> make_vk_backend(const vk_backend_create_info &create_in
 {
     return std::shared_ptr<backend>(new ::wabby::render::vulkan::vk_backend(create_info));
 }
+BOOST_DLL_ALIAS(wabby::render::make_vk_backend, make_vk_backend);
 
 }
 

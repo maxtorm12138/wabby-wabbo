@@ -5,7 +5,7 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake/")
@@ -41,6 +41,7 @@ add_library(wabbyengine SHARED ${WABBY_ENGINE_SRCS})
 target_link_libraries(wabbyengine PRIVATE wabbysdl Boost::filesystem PUBLIC Boost::boost)
 target_include_directories(wabbyengine PRIVATE src/)
 set_target_properties(wabbyengine PROPERTIES VERSION "1.0.0" SOVERSION "1")
+add_dependencies(wabbyengine wabbyvulkan)
 
 option (WABBY_TESTS_BUILD "Build tests" OFF)
 if (WABBY_TESTS_BUILD)
