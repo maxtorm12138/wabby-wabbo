@@ -8,6 +8,10 @@
 
 // bosot
 #include "boost/dll/shared_library.hpp"
+#include "boost/dll/library_info.hpp"
+
+// glog
+#include "glog/logging.h"
 
 namespace wabby::core
 {
@@ -51,6 +55,8 @@ engine_impl::engine_impl(std::string_view application_name, uint32_t application
     render_library_("libwabbyvulkan.so"),
 #elifdef BOOST_OS_WINDOWS
     render_library_("wabbyvulkan.dll"),
+#else
+    #error not supported platform
 #endif
     backend_(render_library_.get_alias<decltype(wabby::render::make_vk_backend)>("make_vk_backend")(render::vk_backend_create_info{
         .applicaiton_name = application_name.data(),
