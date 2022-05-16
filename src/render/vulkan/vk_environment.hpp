@@ -8,6 +8,9 @@
 #include "vulkan/vulkan.hpp"
 #include "vulkan/vulkan_raii.hpp"
 
+// spdlog
+#include "spdlog/spdlog.h"
+
 namespace wabby::render::vulkan
 {
 class vk_environment : public boost::noncopyable
@@ -20,6 +23,7 @@ public:
     const vk::raii::Instance &instance() const { return instance_; }
 
 private:
+    std::vector<std::shared_ptr<spdlog::logger>> loggers_;
     vk::raii::Context context_;
     vk::raii::Instance instance_;
     vk::raii::DebugUtilsMessengerEXT debug_messenger_;

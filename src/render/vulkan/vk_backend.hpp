@@ -17,8 +17,6 @@
 #include "vulkan/vulkan.hpp"
 #include "vulkan/vulkan_raii.hpp"
 
-// spdlog
-#include "spdlog/spdlog.h"
 
 namespace wabby::render::vulkan
 {
@@ -38,7 +36,6 @@ public:
 
     void resized() override;
 private:
-    std::shared_ptr<spdlog::logger> logger_;
     vk_environment environment_;
     vk::raii::SurfaceKHR surface_;
     vk_hardware hardware_;

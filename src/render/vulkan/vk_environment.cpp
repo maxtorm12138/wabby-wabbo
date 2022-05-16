@@ -9,6 +9,7 @@
 
 // spdlog
 #include "spdlog/spdlog.h"
+#include "spdlog/sinks/basic_file_sink.h"
 
 namespace wabby::render::vulkan
 {
@@ -22,7 +23,7 @@ VKAPI_ATTR VkBool32 VKAPI_CALL debug_callback(
 
 const vk::DebugUtilsMessengerCreateInfoEXT DEBUG_MESSENGER_CREATE_INFO
 {
-    .messageSeverity = // vk::DebugUtilsMessageSeverityFlagBitsEXT::eVerbose |
+    .messageSeverity = vk::DebugUtilsMessageSeverityFlagBitsEXT::eVerbose |
                        vk::DebugUtilsMessageSeverityFlagBitsEXT::eInfo |
                        vk::DebugUtilsMessageSeverityFlagBitsEXT::eError |
                        vk::DebugUtilsMessageSeverityFlagBitsEXT::eWarning,
@@ -37,7 +38,10 @@ const vk::DebugUtilsMessengerCreateInfoEXT DEBUG_MESSENGER_CREATE_INFO
 
 vk::raii::Instance build_instance(const vk::raii::Context &context, const vk::ApplicationInfo &application_info, const std::vector<std::string> &windowsystem_extensions);
 
+std::vector<std::shared_ptr<spdlog::logger>> build_loggers();
+
 vk_environment::vk_environment(const vk::ApplicationInfo &application_info, const std::vector<std::string> &windowsystem_extensions) :
+    loggers_(build_loggers()),
     context_(),
     instance_(build_instance(context_, application_info, windowsystem_extensions)),
 #ifdef NDEBUG
@@ -99,6 +103,14 @@ vk::raii::Instance build_instance(const vk::raii::Context &context, const vk::Ap
     return vk::raii::Instance(context, chain.get<vk::InstanceCreateInfo>());
 }
 
+std::vector<std::shared_ptr<spdlog::logger>> build_loggers()
+{
+    std::vector<std::shared_ptr<spdlog::logger>> loggers;
+    loggers.emplace_back(spdlog::basic_logger_mt("vulkan-debugcallback", "vulkan-debugcallback.log", true));
+
+    return loggers;
+}
+
 VKAPI_ATTR VkBool32 VKAPI_CALL debug_callback(
     VkDebugUtilsMessageSeverityFlagBitsEXT message_severity,
     VkDebugUtilsMessageTypeFlagsEXT message_type,
@@ -106,8 +118,25 @@ VKAPI_ATTR VkBool32 VKAPI_CALL debug_callback(
     void* userdata)
 {
     vk::DebugUtilsMessageTypeFlagsEXT type(message_type);
-    vk::DebugUtilsMessageSeverityFlagsEXT severity(message_severity);
-    spdlog::get("vulkan")->debug("debug_callback: {} {} {}", vk::to_string(severity), message_type == 0 ? "" : vk::to_string(type), data->pMessage);
+    switch(message_severity)
+    {
+        case VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT:
+            spdlog::get("vulkan-debugcallback")->debug("{} {}", message_type == 0 ? "" : vk::to_string(type), data->pMessage);
+            break;
+        case VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT:
+            spdlog::get("vulkan-debugcallback")->info("{} {}", message_type == 0 ? "" : vk::to_string(type), data->pMessage);
+            break;
+        case VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT:
+            spdlog::get("vulkan-debugcallback")->warn("{} {}", message_type == 0 ? "" : vk::to_string(type), data->pMessage);
+            break;
+        case VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT:
+            spdlog::get("vulkan-debugcallback")->error("{} {}", message_type == 0 ? "" : vk::to_string(type), data->pMessage);
+            break;
+        default:
+            spdlog::get("vulkan-debugcallback")->error("{} {}", message_type == 0 ? "" : vk::to_string(type), data->pMessage);
+            break;
+    }
+
     return VK_FALSE;
 }
 }
