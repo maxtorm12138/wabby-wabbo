@@ -8,7 +8,7 @@
 
 // bosot
 #include "boost/dll/shared_library.hpp"
-#include "boost/dll/library_info.hpp"
+#include "boost/dll/runtime_symbol_info.hpp"
 
 namespace wabby::core
 {
@@ -44,17 +44,21 @@ void engine::run()
     return impl_->run();
 }
 
+boost::dll::fs::path find_render_library() {
+    auto path = boost::dll::program_location().parent_path();
+#if defined BOOST_OS_LINUX || defined BOOST_OS_MACOS
+    return path / "libwabbyvulkan.so";
+#elifdef BOOST_OS_WINDOWS
+    return path / "wabbyvulkan.dll";
+#else
+    #error not supported platform
+#endif
+}
 
 engine_impl::engine_impl(std::string_view application_name, uint32_t application_version) :
     sdl_context_(),
     window_(application_name, 800, 600),
-#if defined BOOST_OS_LINUX || defined BOOST_OS_MACOS
-    render_library_("libwabbyvulkan.so"),
-#elifdef BOOST_OS_WINDOWS
-    render_library_("wabbyvulkan.dll"),
-#else
-    #error not supported platform
-#endif
+    render_library_(find_render_library()),
     backend_(render_library_.get_alias<decltype(wabby::render::make_vk_backend)>("make_vk_backend")(render::vk_backend_create_info{
         .applicaiton_name = application_name.data(),
         .application_version = application_version,
