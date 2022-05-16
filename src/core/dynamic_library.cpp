@@ -6,7 +6,7 @@ namespace wabby::core
 dynamic_library::dynamic_library(std::filesystem::path library_path)
 {
 #if BOOST_OS_WINDOWS
-    native_handle_ = LoadLibrary(library_path.string().c_str());
+    native_handle_ = LoadLibraryEx(library_path.string().c_str(), nullptr, 0);
 #else
     native_handle_ = dlopen(path, RTLD_NOW | RTLD_LOCAL);
 #endif
