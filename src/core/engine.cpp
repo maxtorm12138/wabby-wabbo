@@ -6,10 +6,6 @@
 // render
 #include "render/backend.hpp"
 
-// bosot
-#include "boost/dll/shared_library.hpp"
-#include "boost/dll/runtime_symbol_info.hpp"
-
 namespace wabby::core
 {
 
@@ -25,8 +21,8 @@ public:
 private:
     sdl2::context sdl_context_;
     sdl2::window window_;
-    boost::dll::shared_library render_library_;
-    std::shared_ptr<render::backend> backend_;
+    //boost::dll::shared_library render_library_;
+    //std::shared_ptr<render::backend> backend_;
 };
 
 
@@ -44,20 +40,23 @@ void engine::run()
     return impl_->run();
 }
 
+/*
 boost::dll::fs::path find_render_library() {
     auto path = boost::dll::program_location().parent_path();
-#if defined BOOST_OS_LINUX || defined BOOST_OS_MACOS
+#if BOOST_OS_LINUX || BOOST_OS_MACOS
     return path / "libwabbyvulkan.so";
-#elifdef BOOST_OS_WINDOWS
+#elif BOOST_OS_WINDOWS
     return path / "wabbyvulkan.dll";
 #else
     #error not supported platform
 #endif
 }
+*/
 
 engine_impl::engine_impl(std::string_view application_name, uint32_t application_version) :
     sdl_context_(),
-    window_(application_name, 800, 600),
+    window_(application_name, 800, 600)
+    /*
     render_library_(find_render_library()),
     backend_(render_library_.get_alias<decltype(wabby::render::make_vk_backend)>("make_vk_backend")(render::vk_backend_create_info{
         .applicaiton_name = application_name.data(),
@@ -66,6 +65,7 @@ engine_impl::engine_impl(std::string_view application_name, uint32_t application
         .fn_make_surface = [this](VkInstance instance) { return window_.create_vulkan_surface(instance); },
         .fn_get_window_size = [this](){ return window_.get_vulakn_drawable_size(); }
     }))
+    */
 {
 }
 

@@ -10,7 +10,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake/")
 
-find_package(Boost REQUIRED COMPONENTS log date_time filesystem)
+find_package(Boost REQUIRED COMPONENTS log date_time filesystem system)
 find_package(Vulkan 1.3.211 EXACT REQUIRED)
 add_library(vma INTERFACE)
 target_include_directories(vma INTERFACE "${PROJECT_SOURCE_DIR}/contrib/VulkanMemoryAllocator/include")
@@ -38,7 +38,7 @@ add_subdirectory("src/render")
 
 file(GLOB WABBY_ENGINE_SRCS src/core/*.cpp src/core/*.hpp)
 add_library(wabbyengine SHARED ${WABBY_ENGINE_SRCS})
-target_link_libraries(wabbyengine PRIVATE wabbysdl Boost::filesystem spdlog::spdlog_header_only PUBLIC Boost::boost)
+target_link_libraries(wabbyengine PRIVATE wabbysdl spdlog::spdlog_header_only PUBLIC Boost::boost)
 target_include_directories(wabbyengine PRIVATE src/)
 set_target_properties(wabbyengine PROPERTIES VERSION "1.0.0" SOVERSION "1")
 add_dependencies(wabbyengine wabbyvulkan)
