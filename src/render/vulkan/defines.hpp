@@ -4,9 +4,6 @@
 // std
 #include "string_view"
 
-// module
-#include "util/api.hpp"
-
 namespace wabby::vulkan
 {
 
@@ -19,7 +16,6 @@ constexpr std::string_view EXT_NAME_VK_KHR_shader_non_semantic_info = "VK_KHR_sh
 constexpr std::string_view EXT_NAME_VK_KHR_portability_enumeration = "VK_KHR_portability_enumeration";
 
 constexpr std::string_view WABBY_ENGINE_NAME = "wabby-wabbo";
-#define WABBY_ENGINE_VERSION WABBY_MAKE_VERSION(1, 0, 0)
 
 enum class QueueType { PRESENT, GRAPHICS, COMPUTE, TRANSFER };
 

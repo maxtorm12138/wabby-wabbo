@@ -14,6 +14,10 @@ find_package(Boost REQUIRED COMPONENTS log date_time)
 find_package(Vulkan 1.3.211 EXACT REQUIRED)
 add_library(vma INTERFACE)
 target_include_directories(vma INTERFACE "${PROJECT_SOURCE_DIR}/contrib/VulkanMemoryAllocator/include")
+if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+    target_compile_options(vma INTERFACE -Wno-nullability-completeness)
+endif ()
+
 add_library(vulkanhpp INTERFACE)
 target_include_directories(vulkanhpp INTERFACE "${PROJECT_SOURCE_DIR}/contrib/Vulkan-Hpp")
 
@@ -28,7 +32,7 @@ endif()
 
 add_subdirectory("contrib/fmt")
 add_subdirectory("src/sdl")
-add_subdirectory("src/renderer")
+add_subdirectory("src/render")
 
 
 file(GLOB WABBY_ENGINE_SRCS src/core/*)

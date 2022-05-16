@@ -1,10 +1,6 @@
 #ifndef _WABBY_VULKAN_GLOBAL_CONTEXT_HPP
 #define _WABBY_VULKAN_GLOBAL_CONTEXT_HPP
 
-// module
-#include "util/log.hpp"
-#include "util/noncopyable.hpp"
-
 namespace wabby::vulkan
 {
 
