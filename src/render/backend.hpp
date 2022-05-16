@@ -21,7 +21,8 @@ namespace wabby::render
 class BOOST_SYMBOL_EXPORT backend : boost::noncopyable
 {
 public:
-    virtual ~backend();
+    backend() = default;
+    virtual ~backend() = default;
 
 public:
     virtual void begin_frame() = 0;

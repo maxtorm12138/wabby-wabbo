@@ -34,6 +34,7 @@ public:
 
     void end_render_pass() override;
 
+    void resized() override;
 private:
     vk_environment environment_;
     vk::raii::SurfaceKHR surface_;

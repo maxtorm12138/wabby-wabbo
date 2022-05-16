@@ -7,7 +7,7 @@
 // fmt
 #include "fmt/format.h"
 
-namespace wabby::vulkan
+namespace wabby::render::vulkan
 {
 
 vk_device_allocator::vk_device_allocator(const vk::raii::Instance &instance, const vk::raii::PhysicalDevice &physical_device, const vk::raii::Device &device)
