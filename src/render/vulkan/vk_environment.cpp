@@ -7,8 +7,8 @@
 #include "unordered_set"
 #include "algorithm"
 
-// glog
-#include "glog/logging.h"
+// spdlog
+#include "spdlog/spdlog.h"
 
 namespace wabby::render::vulkan
 {
@@ -107,8 +107,7 @@ VKAPI_ATTR VkBool32 VKAPI_CALL debug_callback(
 {
     vk::DebugUtilsMessageTypeFlagsEXT type(message_type);
     vk::DebugUtilsMessageSeverityFlagsEXT severity(message_severity);
-
-    LOG(INFO) << vk::to_string(severity) << " " << (message_type == 0 ? "" : vk::to_string(type)) << " " << data->pMessage;
+    spdlog::get("vulkan")->debug("debug_callback: {} {} {}", vk::to_string(severity), message_type == 0 ? "" : vk::to_string(type), data->pMessage);
     return VK_FALSE;
 }
 }

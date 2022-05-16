@@ -10,9 +10,6 @@
 #include "boost/dll/shared_library.hpp"
 #include "boost/dll/library_info.hpp"
 
-// glog
-#include "glog/logging.h"
-
 namespace wabby::core
 {
 

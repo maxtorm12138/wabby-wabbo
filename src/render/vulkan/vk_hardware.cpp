@@ -3,9 +3,6 @@
 // std
 #include "unordered_set"
 
-// glog
-#include "glog/logging.h"
-
 namespace wabby::render::vulkan
 {
 
@@ -146,7 +143,6 @@ vk::raii::PhysicalDevice pick_physical_device(const vk::raii::Instance &instance
             continue;
         }
 
-        DLOG(INFO) << "gpu selected: " << properties.deviceName;
         return std::move(physical_device);
     }
 
