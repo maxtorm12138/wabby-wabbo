@@ -31,14 +31,14 @@ if (WIN32)
 endif()
 
 add_subdirectory("contrib/fmt")
-add_subdirectory("contrib/glog")
+add_subdirectory("contrib/spdlog")
 add_subdirectory("src/sdl")
 add_subdirectory("src/render")
 
 
 file(GLOB WABBY_ENGINE_SRCS src/core/*.cpp src/core/*.hpp)
 add_library(wabbyengine SHARED ${WABBY_ENGINE_SRCS})
-target_link_libraries(wabbyengine PRIVATE wabbysdl Boost::filesystem glog::glog PUBLIC Boost::boost)
+target_link_libraries(wabbyengine PRIVATE wabbysdl Boost::filesystem spdlog::spdlog_header_only PUBLIC Boost::boost)
 target_include_directories(wabbyengine PRIVATE src/)
 set_target_properties(wabbyengine PROPERTIES VERSION "1.0.0" SOVERSION "1")
 add_dependencies(wabbyengine wabbyvulkan)
