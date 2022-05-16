@@ -19,13 +19,13 @@ std::optional<uint32_t> get_present_queue_index(const vk::raii::PhysicalDevice &
 
 std::optional<uint32_t> get_first_queue_index(const vk::raii::PhysicalDevice &physical_device, vk::QueueFlags type);
 
-hardware::hardware(const vk::raii::Instance &instance, const vk::raii::SurfaceKHR &surface) :
+vk_hardware::vk_hardware(const vk::raii::Instance &instance, const vk::raii::SurfaceKHR &surface) :
     physical_device_(pick_physical_device(instance, surface)),
     device_(build_device(physical_device_))
 {}
 
 
-std::optional<vk::raii::Queue> hardware::queue(QueueType type, const std::optional<std::reference_wrapper<vk::raii::SurfaceKHR>> surface)
+std::optional<vk::raii::Queue> vk_hardware::queue(QueueType type, const std::optional<std::reference_wrapper<vk::raii::SurfaceKHR>> surface)
 {
     if (auto cache = queue_index_cache_.find(type); cache != queue_index_cache_.end())
     {
@@ -42,7 +42,7 @@ std::optional<vk::raii::Queue> hardware::queue(QueueType type, const std::option
     return device_.getQueue(*index, 0);
 }
 
-std::optional<uint32_t> hardware::queue_index(QueueType type, const std::optional<std::reference_wrapper<vk::raii::SurfaceKHR>> surface) const
+std::optional<uint32_t> vk_hardware::queue_index(QueueType type, const std::optional<std::reference_wrapper<vk::raii::SurfaceKHR>> surface) const
 {
     switch (type) 
     {

@@ -31,6 +31,7 @@ if (WIN32)
 endif()
 
 add_subdirectory("contrib/fmt")
+add_subdirectory("contrib/glog")
 add_subdirectory("src/sdl")
 add_subdirectory("src/render")
 

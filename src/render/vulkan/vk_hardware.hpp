@@ -17,11 +17,10 @@
 
 namespace wabby::render::vulkan
 {
-
-class hardware : public boost::noncopyable
+class vk_hardware : public boost::noncopyable
 {
 public:
-    hardware(const vk::raii::Instance &instance, const vk::raii::SurfaceKHR &surface);    
+    vk_hardware(const vk::raii::Instance &instance, const vk::raii::SurfaceKHR &surface);    
 
 public:
     const vk::raii::PhysicalDevice &physical_device() const { return physical_device_; }
@@ -37,7 +36,6 @@ private:
     vk::raii::Device device_;
     std::unordered_map<QueueType, uint32_t> queue_index_cache_;
 };
-
 }
 
 #endif

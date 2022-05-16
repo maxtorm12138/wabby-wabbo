@@ -16,3 +16,6 @@
 [submodule "contrib/Vulkan-Headers"]
 	path = contrib/Vulkan-Headers
 	url = https://github.com/KhronosGroup/Vulkan-Headers.git
+[submodule "contrib/glog"]
+	path = contrib/glog
+	url = https://github.com/google/glog.git
