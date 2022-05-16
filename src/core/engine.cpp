@@ -1,8 +1,13 @@
 #include "engine.hpp"
 
+// sdl2
 #include "sdl/sdl2.hpp"
 
+// render
 #include "render/backend.hpp"
+
+// bosot
+#include "boost/dll.hpp"
 
 namespace wabby::core
 {
@@ -19,6 +24,7 @@ public:
 private:
     sdl2::context sdl_context_;
     sdl2::window window_;
+    boost::dll::shared_library render_library_;
 };
 
 
@@ -38,8 +44,12 @@ void engine::run()
 
 
 engine_impl::engine_impl(std::string_view application_name, uint32_t application_version) :
-    window_(application_name, 800, 600)
-{}
+    sdl_context_(),
+    window_(application_name, 800, 600),
+    render_library_("wabbyvulkan", boost::dll::load_mode::append_decorations)
+{
+    
+}
 
 void engine_impl::run()
 {

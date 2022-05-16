@@ -9,7 +9,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 add_executable(test_util test_util.cpp)
 target_include_directories(test_util PUBLIC "${CMAKE_SOURCE_DIR}/src")
-target_link_libraries(test_util PUBLIC gtest_main wabby-util)
+target_link_libraries(test_util PUBLIC gtest_main)
 gtest_discover_tests(test_util)
 
 
