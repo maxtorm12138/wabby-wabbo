@@ -48,5 +48,4 @@ struct BOOST_SYMBOL_EXPORT vk_backend_create_info
 
 BOOST_SYMBOL_EXPORT std::shared_ptr<backend> make_vk_backend(const vk_backend_create_info &create_info);
 }
-
 #endif

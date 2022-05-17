@@ -46,12 +46,10 @@ void engine::run()
 
 boost::dll::fs::path find_render_library() {
     auto path = boost::dll::program_location().parent_path();
-#if BOOST_OS_LINUX || BOOST_OS_MACOS
-    return path / "libwabbyvulkan.so";
-#elif BOOST_OS_WINDOWS
+#if BOOST_OS_WINDOWS
     return path / "wabbyvulkan.dll";
 #else
-    #error not supported platform
+    return path / "libwabbyvulkan.so";
 #endif
 }
 
