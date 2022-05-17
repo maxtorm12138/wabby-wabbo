@@ -28,7 +28,7 @@ vk_hardware::vk_hardware(const vk::raii::Instance &instance, const vk::raii::Sur
 {}
 
 
-std::optional<vk::raii::Queue> vk_hardware::queue(QueueType type, const std::optional<std::reference_wrapper<vk::raii::SurfaceKHR>> surface)
+std::optional<vk::raii::Queue> vk_hardware::queue(QueueType type, const std::optional<std::reference_wrapper<const vk::raii::SurfaceKHR>> surface) const
 {
     if (auto cache = queue_index_cache_.find(type); cache != queue_index_cache_.end())
     {
@@ -41,19 +41,24 @@ std::optional<vk::raii::Queue> vk_hardware::queue(QueueType type, const std::opt
         return {};
     }
 
-    queue_index_cache_[type] = *index;
     return device_.getQueue(*index, 0);
 }
 
-std::optional<uint32_t> vk_hardware::queue_index(QueueType type, const std::optional<std::reference_wrapper<vk::raii::SurfaceKHR>> surface) const
+std::optional<uint32_t> vk_hardware::queue_index(QueueType type, const std::optional<std::reference_wrapper<const vk::raii::SurfaceKHR>> surface) const
 {
+    if (auto cache = queue_index_cache_.find(type); cache != queue_index_cache_.end())
+    {
+        return cache->second;
+    }
+
+    std::optional<uint32_t> index;
     switch (type) 
     {
         case QueueType::PRESENT:
-            return get_present_queue_index(physical_device_, surface->get());
+            index = get_present_queue_index(physical_device_, surface->get());
             break;
         case QueueType::GRAPHICS:
-            return get_first_queue_index(physical_device_, vk::QueueFlagBits::eGraphics);
+            index = get_first_queue_index(physical_device_, vk::QueueFlagBits::eGraphics);
             break;
         case QueueType::COMPUTE:
             throw std::runtime_error("unsupported now");
@@ -62,7 +67,14 @@ std::optional<uint32_t> vk_hardware::queue_index(QueueType type, const std::opti
             throw std::runtime_error("unsupported now");
             break;
     }
-    return {};
+
+    if (index.has_value())
+    {
+        queue_index_cache_[type] = *index;
+    }
+
+    spdlog::get("vulkan")->info("hardware queue_index {} {}", vk::to_string(type), index.has_value() ? *index : UINT32_MAX);
+    return index;
 }
 
 
@@ -146,7 +158,7 @@ vk::raii::PhysicalDevice pick_physical_device(const vk::raii::Instance &instance
             continue;
         }
 
-        spdlog::get("vulkan")->info("hardware physical device selected: {}", properties.deviceName);
+        spdlog::get("vulkan")->info("hardware physical device: {}", properties.deviceName);
         return std::move(physical_device);
     }
 

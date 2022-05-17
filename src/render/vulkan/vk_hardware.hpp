@@ -27,14 +27,14 @@ public:
 
     const vk::raii::Device &device() const { return device_; }
 
-    std::optional<vk::raii::Queue> queue(QueueType type, const std::optional<std::reference_wrapper<vk::raii::SurfaceKHR>> surface = {});
+    std::optional<vk::raii::Queue> queue(QueueType type, const std::optional<std::reference_wrapper<const vk::raii::SurfaceKHR>> surface = {}) const;
 
-    std::optional<uint32_t> queue_index(QueueType type, const std::optional<std::reference_wrapper<vk::raii::SurfaceKHR>> surface = {}) const;
+    std::optional<uint32_t> queue_index(QueueType type, const std::optional<std::reference_wrapper<const vk::raii::SurfaceKHR>> surface = {}) const;
 
 private:
     vk::raii::PhysicalDevice physical_device_;
     vk::raii::Device device_;
-    std::unordered_map<QueueType, uint32_t> queue_index_cache_;
+    mutable std::unordered_map<QueueType, uint32_t> queue_index_cache_;
 };
 }
 

@@ -2,6 +2,7 @@
 #define _WABBY_VULKAN_DEFINES_HPP
 
 // std
+#include "string"
 #include "string_view"
 
 namespace wabby::render::vulkan
@@ -19,6 +20,24 @@ constexpr std::string_view WABBY_ENGINE_NAME = "wabby-wabbo";
 
 enum class QueueType { PRESENT, GRAPHICS, COMPUTE, TRANSFER };
 
+}
+
+namespace vk
+{
+inline std::string to_string(wabby::render::vulkan::QueueType type)
+{
+    switch (type)
+    {
+        case wabby::render::vulkan::QueueType::PRESENT:
+            return "Present";
+        case wabby::render::vulkan::QueueType::GRAPHICS:
+            return "Graphics";
+        case wabby::render::vulkan::QueueType::COMPUTE:
+            return "Compute";
+        case wabby::render::vulkan::QueueType::TRANSFER:
+            return "Transfer";
+    }
+};
 }
 
 #endif

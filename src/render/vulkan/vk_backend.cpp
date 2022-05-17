@@ -33,7 +33,7 @@ vk_backend::vk_backend(const vk_backend_create_info &create_info) :
     surface_(environment_.instance(), create_info.fn_make_surface(*environment_.instance())),
     hardware_(environment_.instance(), surface_),
     device_allocator_(environment_.instance(), hardware_.physical_device(), hardware_.device()),
-    swapchain_(hardware_.physical_device(), surface_, create_info.fn_get_window_size())
+    swapchain_(hardware_, surface_, create_info.fn_get_window_size())
 {}
 
 
