@@ -4,14 +4,11 @@
 // module
 #include "vk_device_allocator.hpp"
 
-// boost
-#include "boost/noncopyable.hpp"
-
 // vma
 #include "vk_mem_alloc.h"
 
-// vulkan
-#include "vulkan/vulkan.hpp"
+// comm headers
+#include "vk_comm_include.hpp"
 
 namespace wabby::render::vulkan
 {

@@ -1,5 +1,7 @@
 #include "vk_render_pass.hpp"
 
+// spdlog
+
 namespace wabby::render::vulkan
 {
 
@@ -75,7 +77,7 @@ void vk_render_pass::begin(const vk::raii::CommandBuffer &buffer, const vk::raii
         .clearValueCount = clear_values.size(),
         .pClearValues = clear_values.data()
     };
-    buffer.beginRenderPass(render_pass_begin_info);
+    buffer.beginRenderPass(render_pass_begin_info, vk::SubpassContents::eInline);
 }
 
 void vk_render_pass::end(const vk::raii::CommandBuffer &buffer)

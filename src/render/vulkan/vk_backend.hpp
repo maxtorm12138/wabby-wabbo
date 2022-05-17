@@ -8,16 +8,10 @@
 #include "vk_hardware.hpp"
 #include "vk_device_allocator.hpp"
 #include "vk_swapchian.hpp"
+#include "vk_render_pass.hpp"
 
-// std
-#include "string"
-#include "vector"
-#include "functional"
-
-// vulkan
-#include "vulkan/vulkan.hpp"
-#include "vulkan/vulkan_raii.hpp"
-
+// common include
+#include "vk_comm_include.hpp"
 
 namespace wabby::render::vulkan
 {
@@ -42,6 +36,7 @@ private:
     vk_hardware hardware_;
     vk_device_allocator device_allocator_;
     vk_swapchain swapchain_;
+    vk_render_pass render_pass_;
 };
 }
 

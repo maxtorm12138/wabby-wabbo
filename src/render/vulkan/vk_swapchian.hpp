@@ -4,13 +4,8 @@
 // moduel
 #include "vk_hardware.hpp"
 
-// boost
-#include "boost/noncopyable.hpp"
-
-// vulkan
-#include "vulkan/vulkan.hpp"
-#include "vulkan/vulkan_raii.hpp"
-
+// comm headers
+#include "vk_comm_include.hpp"
 
 namespace wabby::render::vulkan
 {

@@ -4,16 +4,9 @@
 // module
 #include "vk_defines.hpp"
 
-// boost
-#include "boost/noncopyable.hpp"
+// comm headers
+#include "vk_comm_include.hpp"
 
-// vulkan
-#include "vulkan/vulkan.hpp"
-#include "vulkan/vulkan_raii.hpp"
-
-// std
-#include "optional"
-#include "unordered_map"
 
 namespace wabby::render::vulkan
 {
@@ -32,6 +25,7 @@ public:
     std::optional<uint32_t> queue_index(QueueType type, const std::optional<std::reference_wrapper<const vk::raii::SurfaceKHR>> surface = {}) const;
 
 private:
+    std::shared_ptr<spdlog::logger> vulkan_logger_;
     vk::raii::PhysicalDevice physical_device_;
     vk::raii::Device device_;
     mutable std::unordered_map<QueueType, uint32_t> queue_index_cache_;

@@ -4,9 +4,6 @@
 #define VMA_IMPLEMENTATION
 #include "vk_mem_alloc.h"
 
-// fmt
-#include "fmt/format.h"
-
 namespace wabby::render::vulkan
 {
 
@@ -23,7 +20,8 @@ vk_device_allocator::vk_device_allocator(const vk::raii::Instance &instance, con
     auto result = vmaCreateAllocator(&allocator_create_info, &allocator_);
     if (result != VK_SUCCESS)
     {
-        throw std::runtime_error(fmt::format("vmaCreateAllocator fail result: {}", result));
+        spdlog::get("vulkan")->error("device_allocator call vmaCreateAllocator {}", result);
+        throw vk::SystemError(vk::make_error_code(vk::Result(result)), "vmaCreateAllocator");
     }
 }
 

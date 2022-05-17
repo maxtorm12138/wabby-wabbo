@@ -1,15 +1,8 @@
 #ifndef _WABBY_VULKAN_INSTANCE_HPP
 #define _WABBY_VULKAN_INSTANCE_HPP
 
-// boost
-#include "boost/noncopyable.hpp"
-
-// vulkan
-#include "vulkan/vulkan.hpp"
-#include "vulkan/vulkan_raii.hpp"
-
-// spdlog
-#include "spdlog/spdlog.h"
+// comm headers
+#include "vk_comm_include.hpp"
 
 namespace wabby::render::vulkan
 {

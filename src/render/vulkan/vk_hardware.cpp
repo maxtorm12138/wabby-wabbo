@@ -23,6 +23,7 @@ std::optional<uint32_t> get_present_queue_index(const vk::raii::PhysicalDevice &
 std::optional<uint32_t> get_first_queue_index(const vk::raii::PhysicalDevice &physical_device, vk::QueueFlags type);
 
 vk_hardware::vk_hardware(const vk::raii::Instance &instance, const vk::raii::SurfaceKHR &surface) :
+    vulkan_logger_(spdlog::get("vulkan")),
     physical_device_(pick_physical_device(instance, surface)),
     device_(build_device(physical_device_))
 {}
@@ -73,7 +74,7 @@ std::optional<uint32_t> vk_hardware::queue_index(QueueType type, const std::opti
         queue_index_cache_[type] = *index;
     }
 
-    spdlog::get("vulkan")->info("hardware queue_index {} {}", vk::to_string(type), index.has_value() ? *index : UINT32_MAX);
+    vulkan_logger_->info("hardware queue_index {} {}", vk::to_string(type), index.has_value() ? *index : UINT32_MAX);
     return index;
 }
 

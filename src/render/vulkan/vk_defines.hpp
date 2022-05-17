@@ -37,6 +37,8 @@ inline std::string to_string(wabby::render::vulkan::QueueType type)
         case wabby::render::vulkan::QueueType::TRANSFER:
             return "Transfer";
     }
+
+    return "";
 };
 }
 
