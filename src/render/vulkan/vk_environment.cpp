@@ -107,7 +107,9 @@ vk::raii::Instance build_instance(const vk::raii::Context &context, const vk::Ap
 std::vector<std::shared_ptr<spdlog::logger>> build_loggers()
 {
     std::vector<std::shared_ptr<spdlog::logger>> loggers;
+#ifndef NDEBUG
     loggers.emplace_back(spdlog::basic_logger_mt("vulkan-debugcallback", "vulkan-debugcallback.log", true));
+#endif
     loggers.emplace_back(spdlog::stdout_color_mt("vulkan"));
 
     return loggers;
