@@ -5,8 +5,12 @@ namespace wabby::render::vulkan
 
 vk::raii::RenderPass build_render_pass(const vk::raii::Device &device, const vk::SurfaceFormatKHR &surface_format)
 {
-    vk::AttachmentDescription color_attachment_description
-    {
+    // TODO make configurable
+    std::vector<vk::AttachmentDescription> attachment_descriptions;
+    attachment_descriptions.reserve(2);
+
+    // color attachment
+    attachment_descriptions.emplace_back(vk::AttachmentDescription {
         .format = surface_format.format,
         .samples = vk::SampleCountFlagBits::e1,
         .loadOp = vk::AttachmentLoadOp::eClear,
@@ -15,9 +19,7 @@ vk::raii::RenderPass build_render_pass(const vk::raii::Device &device, const vk:
         .stencilStoreOp = vk::AttachmentStoreOp::eDontCare,
         .initialLayout = vk::ImageLayout::eUndefined,
         .finalLayout = vk::ImageLayout::ePresentSrcKHR
-    };
-
-    vk::ArrayProxy<vk::AttachmentDescription> color_attachment_descriptions(color_attachment_description);
+    });
 
     vk::AttachmentReference color_attachment_reference
     {
@@ -48,8 +50,9 @@ vk::raii::RenderPass build_render_pass(const vk::raii::Device &device, const vk:
 
     vk::RenderPassCreateInfo render_pass_create_info
     {
-        .attachmentCount = color_attachment_descriptions.size(),
-        .pAttachments = color_attachment_descriptions.data(),
+        .attachmentCount = static_cast<uint32_t>(attachment_descriptions.size()),
+        .pAttachments = attachment_descriptions.data(),
+
         .subpassCount = subpass_descriptions.size(),
         .pSubpasses = subpass_descriptions.data(),
         .dependencyCount = 1,
