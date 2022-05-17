@@ -21,42 +21,39 @@ vk::raii::RenderPass build_render_pass(const vk::raii::Device &device, const vk:
         .finalLayout = vk::ImageLayout::ePresentSrcKHR
     });
 
-    vk::AttachmentReference color_attachment_reference
-    {
+    std::vector<vk::AttachmentReference> attachment_references;
+    attachment_references.emplace_back(vk::AttachmentReference {
         .attachment = 0,
         .layout = vk::ImageLayout::eAttachmentOptimal
-    };
+    });
 
-    vk::ArrayProxy<vk::AttachmentReference> color_attachment_references(color_attachment_reference);
-
-    vk::SubpassDescription subpass_description
-    {
+    std::vector<vk::SubpassDescription> subpass_descriptions;
+    subpass_descriptions.emplace_back(vk::SubpassDescription {
         .pipelineBindPoint = vk::PipelineBindPoint::eGraphics,
-        .colorAttachmentCount = color_attachment_references.size(),
-        .pColorAttachments = color_attachment_references.data()
-    };
+        .colorAttachmentCount = static_cast<uint32_t>(attachment_references.size()),
+        .pColorAttachments = attachment_references.data()
+    });
 
-    vk::ArrayProxy<vk::SubpassDescription> subpass_descriptions(subpass_description);
-
-    vk::SubpassDependency subpass_dependency
-    {
+    std::vector<vk::SubpassDependency> subpass_dependencies;
+    subpass_dependencies.emplace_back(vk::SubpassDependency{
         .srcSubpass = VK_SUBPASS_EXTERNAL,
         .dstSubpass = 0,
         .srcStageMask = vk::PipelineStageFlagBits::eColorAttachmentOutput,
         .dstStageMask = vk::PipelineStageFlagBits::eColorAttachmentOutput,
         .srcAccessMask = {},
         .dstAccessMask = vk::AccessFlagBits::eColorAttachmentWrite,
-    };
+    });
 
     vk::RenderPassCreateInfo render_pass_create_info
     {
         .attachmentCount = static_cast<uint32_t>(attachment_descriptions.size()),
         .pAttachments = attachment_descriptions.data(),
 
-        .subpassCount = subpass_descriptions.size(),
+        .subpassCount = static_cast<uint32_t>(subpass_descriptions.size()),
         .pSubpasses = subpass_descriptions.data(),
-        .dependencyCount = 1,
-        .pDependencies = &subpass_dependency
+
+        .dependencyCount = static_cast<uint32_t>(subpass_dependencies.size()),
+        .pDependencies = subpass_dependencies.data()
     };
 
     return vk::raii::RenderPass(device, render_pass_create_info);
