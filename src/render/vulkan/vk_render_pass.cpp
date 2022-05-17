@@ -77,4 +77,10 @@ void vk_render_pass::begin(const vk::raii::CommandBuffer &buffer, const vk::raii
     };
     buffer.beginRenderPass(render_pass_begin_info);
 }
+
+void vk_render_pass::end(const vk::raii::CommandBuffer &buffer)
+{
+    buffer.endRenderPass();
+}
+
 }
