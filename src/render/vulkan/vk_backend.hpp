@@ -15,6 +15,7 @@
 
 namespace wabby::render::vulkan
 {
+
 class vk_backend : public wabby::render::backend
 {
 public:

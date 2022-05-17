@@ -78,4 +78,9 @@ std::pair<uint32_t, uint32_t> window::get_vulakn_drawable_size() const
     return std::make_pair(static_cast<uint32_t>(w), static_cast<uint32_t>(h));
 }
 
+void window::set_resizeable(bool resizable) const
+{
+    SDL_SetWindowResizable(window_, resizable ? SDL_TRUE : SDL_FALSE);
+}
+
 }

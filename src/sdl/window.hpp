@@ -45,6 +45,8 @@ public:
 
     std::pair<uint32_t, uint32_t> get_vulakn_drawable_size() const;
 
+    void set_resizeable(bool resizeable) const;
+
 private:
     SDL_Window *window_{nullptr};
 }; 
