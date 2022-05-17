@@ -17,11 +17,11 @@ vk_device_allocator::vk_device_allocator(const vk::raii::Instance &instance, con
         .vulkanApiVersion = VK_API_VERSION_1_1
     };
 
-    auto result = vmaCreateAllocator(&allocator_create_info, &allocator_);
-    if (result != VK_SUCCESS)
+    auto result = static_cast<vk::Result>(vmaCreateAllocator(&allocator_create_info, &allocator_));
+    if (result != vk::Result::eSuccess)
     {
-        spdlog::get("vulkan")->error("device_allocator call vmaCreateAllocator {}", result);
-        throw vk::SystemError(vk::make_error_code(vk::Result(result)), "vmaCreateAllocator");
+        spdlog::get("vulkan")->error("device_allocator call vmaCreateAllocator {}", vk::to_string(result));
+        throw vk::SystemError(vk::make_error_code(result), "vmaCreateAllocator");
     }
 }
 

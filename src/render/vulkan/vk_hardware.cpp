@@ -74,7 +74,7 @@ std::optional<uint32_t> vk_hardware::queue_index(QueueType type, const std::opti
         queue_index_cache_[type] = *index;
     }
 
-    vulkan_logger_->info("hardware queue_index {} {}", vk::to_string(type), index.has_value() ? *index : UINT32_MAX);
+    vulkan_logger_->info("hardware non cached queue_index {} {}", vk::to_string(type), index.has_value() ? *index : UINT32_MAX);
     return index;
 }
 

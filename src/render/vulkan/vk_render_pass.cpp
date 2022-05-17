@@ -36,6 +36,7 @@ vk::raii::RenderPass build_render_pass(const vk::raii::Device &device, const vk:
         .pColorAttachments = attachment_references.data()
     });
 
+    // TODO this should be configurable
     std::vector<vk::SubpassDependency> subpass_dependencies;
     subpass_dependencies.emplace_back(vk::SubpassDependency{
         .srcSubpass = VK_SUBPASS_EXTERNAL,
@@ -43,7 +44,8 @@ vk::raii::RenderPass build_render_pass(const vk::raii::Device &device, const vk:
         .srcStageMask = vk::PipelineStageFlagBits::eColorAttachmentOutput,
         .dstStageMask = vk::PipelineStageFlagBits::eColorAttachmentOutput,
         .srcAccessMask = {},
-        .dstAccessMask = vk::AccessFlagBits::eColorAttachmentWrite,
+        .dstAccessMask = vk::AccessFlagBits::eColorAttachmentRead | vk::AccessFlagBits::eColorAttachmentWrite,
+        .dependencyFlags = {}
     });
 
     vk::RenderPassCreateInfo render_pass_create_info
@@ -68,7 +70,6 @@ vk_render_pass::vk_render_pass(const vk::raii::Device &device, const vk::Surface
 
 void vk_render_pass::begin(const vk::raii::CommandBuffer &buffer, const vk::raii::Framebuffer &framebuffer, vk::Rect2D render_area, vk::ArrayProxy<vk::ClearValue> clear_values)
 {
-    // begin renderpass
     vk::RenderPassBeginInfo render_pass_begin_info
     {
         .renderPass = *render_pass_,
