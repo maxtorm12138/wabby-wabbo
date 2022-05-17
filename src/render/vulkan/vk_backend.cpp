@@ -1,5 +1,7 @@
 #include "vk_backend.hpp"
 
+// boost
+#include "boost/dll/alias.hpp"
 
 namespace wabby::render
 {
@@ -7,10 +9,9 @@ std::shared_ptr<backend> make_vk_backend(const vk_backend_create_info &create_in
 {
     return std::shared_ptr<backend>(new ::wabby::render::vulkan::vk_backend(create_info));
 }
-
 }
 
-extern "C" void *make_vk_backend = reinterpret_cast<void *>(reinterpret_cast<intptr_t>(&wabby::render::make_vk_backend));
+BOOST_DLL_ALIAS(wabby::render::make_vk_backend, make_vk_backend);
 
 namespace wabby::render::vulkan
 {

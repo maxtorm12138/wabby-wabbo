@@ -21,7 +21,7 @@ public:
     ~context();
 
 public:
-    std::optional<SDL_Event> poll_event();
+    std::optional<SDL_Event> poll_event() noexcept;
 
     SDL_Event wait_event();
 

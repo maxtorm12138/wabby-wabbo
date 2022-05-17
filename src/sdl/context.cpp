@@ -17,7 +17,7 @@ context::~context()
     SDL_Quit();
 }
 
-std::optional<SDL_Event> context::poll_event()
+std::optional<SDL_Event> context::poll_event() noexcept
 {
     SDL_Event event;
     int ret = SDL_PollEvent(&event);

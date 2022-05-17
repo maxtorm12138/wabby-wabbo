@@ -41,7 +41,7 @@ window::~window()
     }
 }
 
-void window::show()
+void window::show() noexcept
 {
     SDL_ShowWindow(window_);
 }

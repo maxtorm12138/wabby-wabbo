@@ -37,7 +37,7 @@ public:
     ~window();
 
 public:
-    void show();
+    void show() noexcept;
 
     std::vector<std::string> get_vulkan_instance_extensions() const;
 
