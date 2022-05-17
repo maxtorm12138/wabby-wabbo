@@ -32,7 +32,8 @@ vk_backend::vk_backend(const vk_backend_create_info &create_info) :
     environment_(build_application_info(create_info), create_info.windowsystem_extensions),
     surface_(environment_.instance(), create_info.fn_make_surface(*environment_.instance())),
     hardware_(environment_.instance(), surface_),
-    device_allocator_(environment_.instance(), hardware_.physical_device(), hardware_.device())
+    device_allocator_(environment_.instance(), hardware_.physical_device(), hardware_.device()),
+    swapchain_(hardware_.physical_device(), surface_, create_info.fn_get_window_size())
 {}
 
 

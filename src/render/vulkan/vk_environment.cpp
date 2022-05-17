@@ -10,6 +10,7 @@
 // spdlog
 #include "spdlog/spdlog.h"
 #include "spdlog/sinks/basic_file_sink.h"
+#include "spdlog/sinks/stdout_color_sinks.h"
 
 namespace wabby::render::vulkan
 {
@@ -107,6 +108,7 @@ std::vector<std::shared_ptr<spdlog::logger>> build_loggers()
 {
     std::vector<std::shared_ptr<spdlog::logger>> loggers;
     loggers.emplace_back(spdlog::basic_logger_mt("vulkan-debugcallback", "vulkan-debugcallback.log", true));
+    loggers.emplace_back(spdlog::stdout_color_mt("vulkan"));
 
     return loggers;
 }

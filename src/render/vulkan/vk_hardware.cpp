@@ -3,6 +3,9 @@
 // std
 #include "unordered_set"
 
+// spdlog
+#include "spdlog/spdlog.h"
+
 namespace wabby::render::vulkan
 {
 
@@ -143,6 +146,7 @@ vk::raii::PhysicalDevice pick_physical_device(const vk::raii::Instance &instance
             continue;
         }
 
+        spdlog::get("vulkan")->info("hardware physical device selected: {}", properties.deviceName);
         return std::move(physical_device);
     }
 

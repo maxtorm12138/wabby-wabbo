@@ -7,6 +7,7 @@
 #include "vk_environment.hpp"
 #include "vk_hardware.hpp"
 #include "vk_device_allocator.hpp"
+#include "vk_swapchian.hpp"
 
 // std
 #include "string"
@@ -40,6 +41,7 @@ private:
     vk::raii::SurfaceKHR surface_;
     vk_hardware hardware_;
     vk_device_allocator device_allocator_;
+    vk_swapchain swapchain_;
 };
 }
 
