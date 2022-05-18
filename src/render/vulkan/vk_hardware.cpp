@@ -22,10 +22,21 @@ std::optional<uint32_t> get_present_queue_index(const vk::raii::PhysicalDevice &
 
 std::optional<uint32_t> get_first_queue_index(const vk::raii::PhysicalDevice &physical_device, vk::QueueFlags type);
 
+vk::raii::CommandPool build_graphics_command_pool(const vk::raii::Device &device, const vk::raii::PhysicalDevice &physical_device)
+{
+    vk::CommandPoolCreateInfo command_pool_create_info
+    {
+        .flags = vk::CommandPoolCreateFlagBits::eResetCommandBuffer,
+        .queueFamilyIndex = *get_first_queue_index(physical_device, vk::QueueFlagBits::eGraphics),
+    };
+    return vk::raii::CommandPool(device, command_pool_create_info);
+}
+
 vk_hardware::vk_hardware(const vk::raii::Instance &instance, const vk::raii::SurfaceKHR &surface) :
     vulkan_logger_(spdlog::get("vulkan")),
     physical_device_(pick_physical_device(instance, surface)),
-    device_(build_device(physical_device_))
+    device_(build_device(physical_device_)),
+    graphics_command_pool_(build_graphics_command_pool(device_, physical_device_))
 {}
 
 
@@ -78,6 +89,18 @@ std::optional<uint32_t> vk_hardware::queue_index(QueueType type, const std::opti
     return index;
 }
 
+
+std::vector<vk::raii::CommandBuffer> vk_hardware::allocate_graphics_command_buffers(uint32_t size)
+{
+    vk::CommandBufferAllocateInfo command_buffer_allocate_info
+    {
+        .commandPool = *graphics_command_pool_,
+        .level = vk::CommandBufferLevel::ePrimary,
+        .commandBufferCount = size,
+    };
+
+    return device_.allocateCommandBuffers(command_buffer_allocate_info);
+}
 
 std::optional<uint32_t> get_present_queue_index(const vk::raii::PhysicalDevice &physical_device, const vk::raii::SurfaceKHR &surface)
 {
