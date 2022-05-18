@@ -59,18 +59,25 @@ namespace wabby::render::vulkan
     return extent;
   }
 
-  vk::raii::SwapchainKHR build_swapchian( const vk_hardware &          hardware,
-                                          const vk::raii::SurfaceKHR & surface,
-                                          vk::PresentModeKHR           present_mode,
-                                          const vk::SurfaceFormatKHR & surface_format,
-                                          vk::Extent2D                 extent )
+  size_t get_image_count( const vk_hardware & hardware, const vk::raii::SurfaceKHR & surface )
   {
     auto surface_capabilities = hardware.physical_device().getSurfaceCapabilitiesKHR( *surface );
     auto image_count          = surface_capabilities.minImageCount + 1;
     if ( surface_capabilities.maxImageCount > 0 )
     {
-      image_count = std::max( surface_capabilities.maxImageCount, image_count );
+      image_count = std::min( surface_capabilities.maxImageCount, image_count );
     }
+    return image_count;
+  }
+
+  vk::raii::SwapchainKHR build_swapchian( const vk_hardware &          hardware,
+                                          const vk::raii::SurfaceKHR & surface,
+                                          size_t                       image_count,
+                                          vk::PresentModeKHR           present_mode,
+                                          const vk::SurfaceFormatKHR & surface_format,
+                                          vk::Extent2D                 extent )
+  {
+    auto surface_capabilities = hardware.physical_device().getSurfaceCapabilitiesKHR( *surface );
 
     spdlog::get( "vulkan" )->info( "swapchain image count: {}", image_count );
 
@@ -80,7 +87,7 @@ namespace wabby::render::vulkan
                                                               *hardware.queue_index( QueueType::PRESENT, std::cref( surface ) ) };
 
     vk::SwapchainCreateInfoKHR swapchain_create_info{ .surface          = *surface,
-                                                      .minImageCount    = image_count,
+                                                      .minImageCount    = static_cast<uint32_t>( image_count ),
                                                       .imageFormat      = surface_format.format,
                                                       .imageColorSpace  = surface_format.colorSpace,
                                                       .imageExtent      = extent,
@@ -121,7 +128,8 @@ namespace wabby::render::vulkan
     : present_mode_( pick_present_mode( hardware.physical_device(), surface ) )
     , surface_format_( pick_surface_format( hardware.physical_device(), surface ) )
     , extent_( pick_extent( hardware.physical_device(), surface, window_size ) )
-    , swapchain_( build_swapchian( hardware, surface, present_mode_, surface_format_, extent_ ) )
+    , image_count_( get_image_count( hardware, surface ) )
+    , swapchain_( build_swapchian( hardware, surface, image_count_, present_mode_, surface_format_, extent_ ) )
     , image_views_( build_image_views( hardware, surface_format_, swapchain_ ) )
   {
   }

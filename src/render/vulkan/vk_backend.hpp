@@ -6,6 +6,7 @@
 #include "vk_defines.hpp"
 #include "vk_device_allocator.hpp"
 #include "vk_environment.hpp"
+#include "vk_framebuffers.hpp"
 #include "vk_hardware.hpp"
 #include "vk_render_pass.hpp"
 #include "vk_swapchian.hpp"
@@ -39,6 +40,7 @@ namespace wabby::render::vulkan
     vk_device_allocator  device_allocator_;
     vk_swapchain         swapchain_;
     vk_render_pass       render_pass_;
+    vk_framebuffers      framebuffers_;
   };
 }  // namespace wabby::render::vulkan
 

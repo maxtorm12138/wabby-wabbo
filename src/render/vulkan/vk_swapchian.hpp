@@ -31,6 +31,11 @@ namespace wabby::render::vulkan
       return extent_;
     }
 
+    size_t image_count() const
+    {
+      return image_count_;
+    }
+
     const vk::raii::SwapchainKHR & swaichain() const
     {
       return swapchain_;
@@ -45,6 +50,7 @@ namespace wabby::render::vulkan
     vk::PresentModeKHR               present_mode_;
     vk::SurfaceFormatKHR             surface_format_;
     vk::Extent2D                     extent_;
+    size_t                           image_count_;
     vk::raii::SwapchainKHR           swapchain_;
     std::vector<vk::raii::ImageView> image_views_;
   };

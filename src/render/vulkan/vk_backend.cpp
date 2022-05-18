@@ -22,6 +22,20 @@ namespace wabby::render::vulkan
                                 .apiVersion         = VK_API_VERSION_1_1 };
   }
 
+  std::vector<vk::ArrayProxy<const vk::ImageView>> build_framebuffer_attachments( const vk_swapchain & swapchain )
+  {
+    std::vector<vk::ArrayProxy<const vk::ImageView>> attachments;
+    attachments.reserve( swapchain.image_count() );
+
+    for ( auto & image_view : swapchain.image_views() )
+    {
+      vk::ArrayProxy<const vk::ImageView> attachment( *image_view );
+      attachments.emplace_back( std::move( attachment ) );
+    }
+
+    return attachments;
+  }
+
   vk_backend::vk_backend( const vk_backend_create_info & create_info )
     : environment_( build_application_info( create_info ), create_info.windowsystem_extensions )
     , surface_( environment_.instance(), create_info.fn_make_surface( *environment_.instance() ) )
@@ -29,6 +43,8 @@ namespace wabby::render::vulkan
     , device_allocator_( environment_.instance(), hardware_.physical_device(), hardware_.device() )
     , swapchain_( hardware_, surface_, create_info.fn_get_window_size() )
     , render_pass_( hardware_.device(), swapchain_.surface_format() )
+    , framebuffers_(
+        hardware_.device(), render_pass_.render_pass(), swapchain_.image_count(), build_framebuffer_attachments( swapchain_ ), swapchain_.extent() )
   {
   }
 
