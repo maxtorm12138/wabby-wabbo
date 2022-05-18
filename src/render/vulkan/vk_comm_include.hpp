@@ -2,12 +2,12 @@
 #define _WABBY_VULKAN_COMM_INCLUDE_HPP
 
 // std
-#include "string"
-#include "vector"
 #include "functional"
 #include "optional"
-#include "unordered_set"
+#include "string"
 #include "unordered_map"
+#include "unordered_set"
+#include "vector"
 
 // vulkan
 #include "vulkan/vulkan.hpp"
@@ -15,8 +15,8 @@
 
 // boost
 #include "boost/dll/alias.hpp"
-#include "boost/predef.h"
 #include "boost/noncopyable.hpp"
+#include "boost/predef.h"
 
 // spdlog
 #include "spdlog/spdlog.h"

@@ -13,28 +13,28 @@
 namespace wabby::render::vulkan
 {
 
-class buffer : public boost::noncopyable
-{
-public:
-    buffer(const vk_device_allocator &allocator, vk::BufferCreateInfo buffer_create_info, VmaAllocationCreateInfo allocation_create_info);
+  class buffer : public boost::noncopyable
+  {
+  public:
+    buffer( const vk_device_allocator & allocator, vk::BufferCreateInfo buffer_create_info, VmaAllocationCreateInfo allocation_create_info );
 
-    buffer(buffer &&other) noexcept;
+    buffer( buffer && other ) noexcept;
 
-    buffer &operator=(buffer &&other) noexcept;
+    buffer & operator=( buffer && other ) noexcept;
 
     ~buffer() noexcept;
 
-public:
-    void *map() const;
+  public:
+    void * map() const;
 
     void unmap() const;
 
-private:
+  private:
     std::reference_wrapper<const vk_device_allocator> allocator_;
-    VmaAllocation allocation_{VK_NULL_HANDLE};
-    VmaAllocationInfo allocation_info_;
-    vk::Buffer buffer_;
-};
-}
+    VmaAllocation                                     allocation_{ VK_NULL_HANDLE };
+    VmaAllocationInfo                                 allocation_info_;
+    vk::Buffer                                        buffer_;
+  };
+}  // namespace wabby::render::vulkan
 
 #endif

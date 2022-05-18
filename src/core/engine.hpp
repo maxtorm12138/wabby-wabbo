@@ -5,26 +5,26 @@
 #include "string_view"
 
 // boost
-#include "boost/noncopyable.hpp"
 #include "boost/config.hpp"
+#include "boost/noncopyable.hpp"
 
 namespace wabby::core
 {
 
-class engine_impl;
+  class engine_impl;
 
-class BOOST_SYMBOL_EXPORT engine : public boost::noncopyable
-{
-public:
-    engine(std::string_view application_name, uint32_t application_version);
+  class BOOST_SYMBOL_EXPORT engine : public boost::noncopyable
+  {
+  public:
+    engine( std::string_view application_name, uint32_t application_version );
     ~engine();
 
-public:
+  public:
     void run();
 
-private:
-    engine_impl *impl_;
-};
-}
+  private:
+    engine_impl * impl_;
+  };
+}  // namespace wabby::core
 
 #endif
