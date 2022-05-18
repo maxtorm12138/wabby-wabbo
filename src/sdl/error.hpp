@@ -11,14 +11,15 @@
 namespace wabby::sdl2
 {
 
-class BOOST_SYMBOL_EXPORT sdl2_error : public std::runtime_error
-{
-public:
-    sdl2_error(std::string_view sdl2_function_name);
-};
-}
+  class BOOST_SYMBOL_EXPORT sdl2_error : public std::runtime_error
+  {
+  public:
+    sdl2_error( std::string_view sdl2_function_name );
+  };
+}  // namespace wabby::sdl2
 
-#define SDL2_ASSERT(LOGIC, FUNCTION)\
-    if (!(LOGIC)) throw sdl2_error(#FUNCTION)
+#define SDL2_ASSERT( LOGIC, FUNCTION ) \
+  if ( !( LOGIC ) )                    \
+  throw sdl2_error( #FUNCTION )
 
 #endif

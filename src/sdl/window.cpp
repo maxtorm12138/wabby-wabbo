@@ -9,78 +9,68 @@
 namespace wabby::sdl2
 {
 
-window::window(
-    std::string_view title,
-    int w,
-    int h,
-    int x,
-    int y,
-    uint32_t flags) :
-    window_()
-{
-    window_ = SDL_CreateWindow(title.data(), x, y, w, h, flags);
-    SDL2_ASSERT(window_ != nullptr, SDL_CreateWindow);
-}
+  window::window( std::string_view title, int w, int h, int x, int y, uint32_t flags ) : window_()
+  {
+    window_ = SDL_CreateWindow( title.data(), x, y, w, h, flags );
+    SDL2_ASSERT( window_ != nullptr, SDL_CreateWindow );
+  }
 
+  window::window( window && other ) noexcept : window_( std::exchange( other.window_, window_ ) ) {}
 
-window::window(window &&other) noexcept :
-    window_(std::exchange(other.window_, window_))
-{}
-
-window &window::operator=(window &&other) noexcept
-{
-    std::swap(window_, other.window_);
+  window & window::operator=( window && other ) noexcept
+  {
+    std::swap( window_, other.window_ );
     return *this;
-}
+  }
 
-window::~window()
-{
-    if (window_ != nullptr)
+  window::~window()
+  {
+    if ( window_ != nullptr )
     {
-        SDL_DestroyWindow(window_);
+      SDL_DestroyWindow( window_ );
     }
-}
+  }
 
-void window::show() noexcept
-{
-    SDL_ShowWindow(window_);
-}
+  void window::show() noexcept
+  {
+    SDL_ShowWindow( window_ );
+  }
 
-std::vector<std::string> window::get_vulkan_instance_extensions() const
-{
+  std::vector<std::string> window::get_vulkan_instance_extensions() const
+  {
     std::vector<std::string> result;
 
-    unsigned count{0};
-    auto ret = SDL_Vulkan_GetInstanceExtensions(window_, &count, nullptr);
-    SDL2_ASSERT(ret == SDL_TRUE, SDL_Vulkan_GetInstanceExtensions);
-    std::vector<const char *> instance_extensions(count);
-    result.reserve(count);
+    unsigned count{ 0 };
+    auto     ret = SDL_Vulkan_GetInstanceExtensions( window_, &count, nullptr );
+    SDL2_ASSERT( ret == SDL_TRUE, SDL_Vulkan_GetInstanceExtensions );
+    std::vector<const char *> instance_extensions( count );
+    result.reserve( count );
 
-    ret = SDL_Vulkan_GetInstanceExtensions(window_, &count, instance_extensions.data());
-    SDL2_ASSERT(ret == SDL_TRUE, SDL_Vulkan_GetInstanceExtensions);
-    std::copy(instance_extensions.begin(), instance_extensions.end(), std::back_inserter(result));
+    ret = SDL_Vulkan_GetInstanceExtensions( window_, &count, instance_extensions.data() );
+    SDL2_ASSERT( ret == SDL_TRUE, SDL_Vulkan_GetInstanceExtensions );
+    std::copy( instance_extensions.begin(), instance_extensions.end(), std::back_inserter( result ) );
     return result;
-}
+  }
 
-VkSurfaceKHR window::create_vulkan_surface(VkInstance instance) const
-{
+  VkSurfaceKHR window::create_vulkan_surface( VkInstance instance ) const
+  {
     VkSurfaceKHR surface;
-    auto ret = SDL_Vulkan_CreateSurface(window_, instance, &surface);
-    SDL2_ASSERT(ret == SDL_TRUE, SDL_Vulkan_CreateSurface);
-	return surface;
-}
+    auto         ret = SDL_Vulkan_CreateSurface( window_, instance, &surface );
+    SDL2_ASSERT( ret == SDL_TRUE, SDL_Vulkan_CreateSurface );
+    return surface;
+  }
 
-std::pair<uint32_t, uint32_t> window::get_vulakn_drawable_size() const
-{
-    int w{0};
-    int h{0};
-    SDL_Vulkan_GetDrawableSize(window_, &w, &h);
-    return std::make_pair(static_cast<uint32_t>(w), static_cast<uint32_t>(h));
-}
+  std::pair<uint32_t, uint32_t> window::get_vulakn_drawable_size() const
+  {
+    int w{ 0 };
+    int h{ 0 };
+    SDL_Vulkan_GetDrawableSize( window_, &w, &h );
+    return std::make_pair( static_cast<uint32_t>( w ), static_cast<uint32_t>( h ) );
+  }
 
-void window::set_resizeable(bool resizable) const
-{
-    SDL_SetWindowResizable(window_, resizable ? SDL_TRUE : SDL_FALSE);
-}
+  void window::set_resizeable( bool resizable ) const
+  {
+    SDL_SetWindowResizable( window_, resizable ? SDL_TRUE : SDL_FALSE );
+  }
 
-}
+}  // namespace wabby::sdl2

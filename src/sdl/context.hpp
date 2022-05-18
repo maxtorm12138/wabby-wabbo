@@ -14,20 +14,20 @@
 namespace wabby::sdl2
 {
 
-class BOOST_SYMBOL_EXPORT context : public boost::noncopyable
-{
-public:
-    context(uint32_t flags = SDL_INIT_EVERYTHING);
+  class BOOST_SYMBOL_EXPORT context : public boost::noncopyable
+  {
+  public:
+    context( uint32_t flags = SDL_INIT_EVERYTHING );
     ~context();
 
-public:
+  public:
     std::optional<SDL_Event> poll_event() noexcept;
 
     SDL_Event wait_event();
 
-    void set_relative_mouse_mode(bool enabled);
-};
+    void set_relative_mouse_mode( bool enabled );
+  };
 
-}
+}  // namespace wabby::sdl2
 
 #endif
