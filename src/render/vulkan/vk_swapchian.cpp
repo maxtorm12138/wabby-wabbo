@@ -86,15 +86,16 @@ namespace wabby::render::vulkan
     std::unordered_set<uint32_t> unique_queue_family_indices{ *hardware.queue_index( QueueType::GRAPHICS ),
                                                               *hardware.queue_index( QueueType::PRESENT, std::cref( surface ) ) };
 
-    vk::SwapchainCreateInfoKHR swapchain_create_info{ .surface          = *surface,
-                                                      .minImageCount    = static_cast<uint32_t>( image_count ),
-                                                      .imageFormat      = surface_format.format,
-                                                      .imageColorSpace  = surface_format.colorSpace,
-                                                      .imageExtent      = extent,
-                                                      .imageArrayLayers = 1,
-                                                      .imageUsage       = vk::ImageUsageFlagBits::eColorAttachment,
-                                                      .imageSharingMode =
-                                                        unique_queue_family_indices.size() == 1 ? vk::SharingMode::eExclusive : vk::SharingMode::eConcurrent,
+    auto sharing_mode = unique_queue_family_indices.size() == 1 ? vk::SharingMode::eExclusive : vk::SharingMode::eConcurrent;
+
+    vk::SwapchainCreateInfoKHR swapchain_create_info{ .surface               = *surface,
+                                                      .minImageCount         = static_cast<uint32_t>( image_count ),
+                                                      .imageFormat           = surface_format.format,
+                                                      .imageColorSpace       = surface_format.colorSpace,
+                                                      .imageExtent           = extent,
+                                                      .imageArrayLayers      = 1,
+                                                      .imageUsage            = vk::ImageUsageFlagBits::eColorAttachment,
+                                                      .imageSharingMode      = sharing_mode,
                                                       .queueFamilyIndexCount = static_cast<uint32_t>( unique_queue_family_indices.size() ),
                                                       .pQueueFamilyIndices   = queue_family_indices.data(),
                                                       .preTransform          = surface_capabilities.currentTransform,
