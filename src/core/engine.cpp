@@ -29,18 +29,6 @@ namespace wabby::core
     boost::dll::shared_library render_library_;
   };
 
-  engine::engine( std::string application_name, uint32_t application_version ) : impl_( new engine_impl( application_name, application_version ) ) {}
-
-  engine::~engine()
-  {
-    delete impl_;
-  }
-
-  void engine::run()
-  {
-    return impl_->run();
-  }
-
   boost::dll::fs::path find_render_library()
   {
     auto path = boost::dll::program_location().parent_path();
@@ -97,4 +85,17 @@ namespace wabby::core
 
     backend->teardown();
   }
+
+  engine::engine( std::string application_name, uint32_t application_version ) : impl_( new engine_impl( application_name, application_version ) ) {}
+
+  engine::~engine()
+  {
+    delete impl_;
+  }
+
+  void engine::run()
+  {
+    return impl_->run();
+  }
+
 }  // namespace wabby::core
