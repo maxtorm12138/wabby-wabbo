@@ -6,17 +6,21 @@
 
 // boost
 #include "boost/config.hpp"
-#include "boost/noncopyable.hpp"
 
 namespace wabby::core
 {
 
   class engine_impl;
 
-  class BOOST_SYMBOL_EXPORT engine : public boost::noncopyable
+  class BOOST_SYMBOL_EXPORT engine
   {
   public:
     engine( std::string application_name, uint32_t application_version );
+
+    engine( const engine & other ) = delete;
+
+    engine & operator=( const engine & other ) = delete;
+
     ~engine();
 
   public:
