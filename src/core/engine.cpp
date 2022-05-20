@@ -88,6 +88,11 @@ namespace wabby::core
           running = false;
         }
       }
+
+      backend->begin_frame();
+      backend->begin_render_pass();
+      backend->end_render_pass();
+      backend->end_frame();
     }
 
     backend->teardown();

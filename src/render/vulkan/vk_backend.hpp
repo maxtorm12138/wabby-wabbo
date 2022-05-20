@@ -28,7 +28,7 @@ namespace wabby::render::vulkan
     vk_swapchain                         swapchain_;
     vk_render_pass                       render_pass_;
     vk_framebuffers                      framebuffers_;
-    int64_t                              image_index_;
+    uint32_t                             image_index_;
     uint64_t                             frame_index_;
     std::vector<vk::raii::CommandBuffer> command_buffers_;
     std::vector<vk::raii::Semaphore>     image_available_semaphores_;
