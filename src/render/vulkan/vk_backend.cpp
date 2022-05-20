@@ -132,7 +132,7 @@ namespace wabby::render::vulkan
 
   void vk_backend::end_frame()
   {
-    ctx_->command_buffers_.end();
+    ctx_->command_buffers_[ctx_->frame_index_].end();
     vk::ArrayProxy<const vk::Semaphore>     submit_wait_semaphores( *ctx_->image_available_semaphores_[ctx_->frame_index_] );
     vk::ArrayProxy<const vk::Semaphore>     submit_signal_semaphores( *ctx_->render_finished_semaphores_[ctx_->frame_index_] );
     vk::ArrayProxy<const vk::CommandBuffer> submit_command_buffers( *ctx_->command_buffers_[ctx_->frame_index_] );
@@ -168,7 +168,7 @@ namespace wabby::render::vulkan
   {
     vk::Rect2D     render_area{ .offset = { 0, 0 }, .extent = ctx_->swapchain_.extent() };
     vk::ClearValue clear_value{};
-    clear_value.color.float32 = std::array<float, 4>{ 0.1f, 0.1f, 0.1f, 0.1f };
+    clear_value.color.float32 = std::array<float, 4>{ 0.1f, 0.6f, 0.1f, 0.1f };
 
     ctx_->render_pass_.begin( ctx_->command_buffers_[ctx_->frame_index_], ctx_->framebuffers_.framebuffer( ctx_->image_index_ ), render_area, clear_value );
   }
