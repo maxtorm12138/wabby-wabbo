@@ -25,8 +25,7 @@ namespace wabby::render
     virtual ~backend() = default;
 
   public:
-
-    virtual void setup() {};
+    virtual void setup(){};
 
     virtual void begin_frame() = 0;
 
@@ -38,7 +37,7 @@ namespace wabby::render
 
     virtual void resized() = 0;
 
-    virtual void teardown() {};
+    virtual void teardown(){};
   };
 
   struct BOOST_SYMBOL_EXPORT vk_backend_create_info
