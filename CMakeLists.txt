@@ -33,6 +33,7 @@ endif()
 add_subdirectory("contrib/fmt")
 add_subdirectory("contrib/spdlog")
 add_subdirectory("contrib/glm")
+add_subdirectory("src/container")
 add_subdirectory("src/sdl")
 add_subdirectory("src/render")
 
