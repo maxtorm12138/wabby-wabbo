@@ -102,7 +102,10 @@ namespace wabby::render::vulkan
     , device_allocator_( environment_.instance(), hardware_.physical_device(), hardware_.device() )
     , swapchain_( hardware_, surface_, create_info.fn_get_window_size() )
     , render_pass_( hardware_.device(), swapchain_.surface_format() )
+    , image_index_( -1 )
+    , frame_index_( 0 )
     , framebuffers_( hardware_.device(), render_pass_.render_pass(), swapchain_.image_count(), build_fb_attachments( swapchain_ ), swapchain_.extent() )
+    , command_buffers_( hardware_.allocate_graphics_command_buffers( swapchain_.image_count() ) )
     , image_available_semaphores_( build_semaphores( hardware_.device(), swapchain_.max_frames_in_flight() ) )
     , render_finished_semaphores_( build_semaphores( hardware_.device(), swapchain_.max_frames_in_flight() ) )
     , in_flight_fences_( build_fences( hardware_.device(), swapchain_.max_frames_in_flight() ) )
@@ -117,7 +120,12 @@ namespace wabby::render::vulkan
     ctx_.emplace( vk_create_info );
   }
 
-  void vk_backend::begin_frame() {}
+  void vk_backend::begin_frame()
+  {
+    ctx_->hardware_.device().waitForFences( *ctx_->in_flight_fences_[ctx_->frame_index_], VK_TRUE, UINT64_MAX );
+    ctx_->image_index_ = ctx_->swapchain_.acquire_next_image( ctx_->image_available_semaphores_[ctx_->frame_index_] );
+    ctx_->hardware_.device().resetFences( *ctx_->in_flight_fences_[ctx_->frame_index_] );
+  }
 
   void vk_backend::end_frame() {}
 

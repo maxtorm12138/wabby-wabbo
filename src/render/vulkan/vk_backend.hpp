@@ -21,16 +21,19 @@ namespace wabby::render::vulkan
   {
     vk_backend_context( const vk_backend_create_info & create_info );
 
-    vk_environment                   environment_;
-    vk::raii::SurfaceKHR             surface_;
-    vk_hardware                      hardware_;
-    vk_device_allocator              device_allocator_;
-    vk_swapchain                     swapchain_;
-    vk_render_pass                   render_pass_;
-    vk_framebuffers                  framebuffers_;
-    std::vector<vk::raii::Semaphore> image_available_semaphores_;
-    std::vector<vk::raii::Semaphore> render_finished_semaphores_;
-    std::vector<vk::raii::Fence>     in_flight_fences_;
+    vk_environment                       environment_;
+    vk::raii::SurfaceKHR                 surface_;
+    vk_hardware                          hardware_;
+    vk_device_allocator                  device_allocator_;
+    vk_swapchain                         swapchain_;
+    vk_render_pass                       render_pass_;
+    vk_framebuffers                      framebuffers_;
+    int64_t                              image_index_;
+    uint64_t                             frame_index_;
+    std::vector<vk::raii::CommandBuffer> command_buffers_;
+    std::vector<vk::raii::Semaphore>     image_available_semaphores_;
+    std::vector<vk::raii::Semaphore>     render_finished_semaphores_;
+    std::vector<vk::raii::Fence>         in_flight_fences_;
   };
 
   class vk_backend : public wabby::render::backend

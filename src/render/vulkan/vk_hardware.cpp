@@ -81,11 +81,11 @@ namespace wabby::render::vulkan
     return index;
   }
 
-  std::vector<vk::raii::CommandBuffer> vk_hardware::allocate_graphics_command_buffers( uint32_t size )
+  std::vector<vk::raii::CommandBuffer> vk_hardware::allocate_graphics_command_buffers( uint32_t size, bool primary )
   {
     vk::CommandBufferAllocateInfo command_buffer_allocate_info{
       .commandPool        = *graphics_command_pool_,
-      .level              = vk::CommandBufferLevel::ePrimary,
+      .level              = ( primary ? vk::CommandBufferLevel::ePrimary : vk::CommandBufferLevel::eSecondary ),
       .commandBufferCount = size,
     };
 

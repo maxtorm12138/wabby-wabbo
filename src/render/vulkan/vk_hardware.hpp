@@ -29,7 +29,7 @@ namespace wabby::render::vulkan
 
     std::optional<uint32_t> queue_index( QueueType type, const std::optional<std::reference_wrapper<const vk::raii::SurfaceKHR>> surface = {} ) const;
 
-    std::vector<vk::raii::CommandBuffer> allocate_graphics_command_buffers( uint32_t size );
+    std::vector<vk::raii::CommandBuffer> allocate_graphics_command_buffers( uint32_t size, bool primary = true );
 
   private:
     std::shared_ptr<spdlog::logger>                 vulkan_logger_;
