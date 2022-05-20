@@ -17,12 +17,27 @@
 namespace wabby::render::vulkan
 {
 
+  struct vk_backend_context
+  {
+    vk_backend_context( const vk_backend_create_info & create_info );
+
+    vk_environment                   environment_;
+    vk::raii::SurfaceKHR             surface_;
+    vk_hardware                      hardware_;
+    vk_device_allocator              device_allocator_;
+    vk_swapchain                     swapchain_;
+    vk_render_pass                   render_pass_;
+    vk_framebuffers                  framebuffers_;
+    std::vector<vk::raii::Semaphore> image_available_semaphores_;
+    std::vector<vk::raii::Semaphore> render_finished_semaphores_;
+    std::vector<vk::raii::Fence>     in_flight_fences_;
+  };
+
   class vk_backend : public wabby::render::backend
   {
   public:
-    vk_backend( const vk_backend_create_info & create_info );
+    void setup( const backend_create_info & create_info ) override;
 
-  public:
     void begin_frame() override;
 
     void end_frame() override;
@@ -33,14 +48,11 @@ namespace wabby::render::vulkan
 
     void resized() override;
 
+    void teardown() override;
+
   private:
-    vk_environment       environment_;
-    vk::raii::SurfaceKHR surface_;
-    vk_hardware          hardware_;
-    vk_device_allocator  device_allocator_;
-    vk_swapchain         swapchain_;
-    vk_render_pass       render_pass_;
-    vk_framebuffers      framebuffers_;
+    std::vector<std::shared_ptr<spdlog::logger>> loggers_;
+    std::optional<vk_backend_context>            ctx_;
   };
 }  // namespace wabby::render::vulkan
 

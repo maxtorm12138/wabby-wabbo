@@ -130,9 +130,22 @@ namespace wabby::render::vulkan
     , surface_format_( pick_surface_format( hardware.physical_device(), surface ) )
     , extent_( pick_extent( hardware.physical_device(), surface, window_size ) )
     , image_count_( get_image_count( hardware, surface ) )
+    , max_frames_in_flight_( std::min( image_count_, size_t( 2 ) ) )
     , swapchain_( build_swapchian( hardware, surface, image_count_, present_mode_, surface_format_, extent_ ) )
     , image_views_( build_image_views( hardware, surface_format_, swapchain_ ) )
   {
+  }
+
+  uint32_t vk_swapchain::acquire_next_image( const vk::raii::Semaphore & image_available_semaphore )
+  {
+    auto [result, index] = swapchain_.acquireNextImage( UINT64_MAX, *image_available_semaphore );
+    switch ( result )
+    {
+      case vk::Result::eSuccess: break;
+      case vk::Result::eSuboptimalKHR: break;
+      default: throw vk::SystemError( vk::make_error_code( result ), "swapchain::acquireNextImage" );
+    }
+    return index;
   }
 
 }  // namespace wabby::render::vulkan

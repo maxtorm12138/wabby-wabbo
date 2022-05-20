@@ -36,6 +36,11 @@ namespace wabby::render::vulkan
       return image_count_;
     }
 
+    size_t max_frames_in_flight() const
+    {
+      return max_frames_in_flight_;
+    }
+
     const vk::raii::SwapchainKHR & swaichain() const
     {
       return swapchain_;
@@ -46,11 +51,15 @@ namespace wabby::render::vulkan
       return image_views_;
     }
 
+  public:
+    uint32_t acquire_next_image( const vk::raii::Semaphore & image_available_semaphore );
+
   private:
     vk::PresentModeKHR               present_mode_;
     vk::SurfaceFormatKHR             surface_format_;
     vk::Extent2D                     extent_;
     size_t                           image_count_;
+    size_t                           max_frames_in_flight_;
     vk::raii::SwapchainKHR           swapchain_;
     std::vector<vk::raii::ImageView> image_views_;
   };

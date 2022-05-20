@@ -2,7 +2,7 @@
 #define _WABBY_CORE_ENGINE_HPP
 
 // std
-#include "string_view"
+#include "string"
 
 // boost
 #include "boost/config.hpp"
@@ -16,7 +16,7 @@ namespace wabby::core
   class BOOST_SYMBOL_EXPORT engine : public boost::noncopyable
   {
   public:
-    engine( std::string_view application_name, uint32_t application_version );
+    engine( std::string application_name, uint32_t application_version );
     ~engine();
 
   public:

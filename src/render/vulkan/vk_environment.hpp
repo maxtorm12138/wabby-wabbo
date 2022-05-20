@@ -22,10 +22,9 @@ namespace wabby::render::vulkan
     }
 
   private:
-    std::vector<std::shared_ptr<spdlog::logger>> loggers_;
-    vk::raii::Context                            context_;
-    vk::raii::Instance                           instance_;
-    vk::raii::DebugUtilsMessengerEXT             debug_messenger_;
+    vk::raii::Context                context_;
+    vk::raii::Instance               instance_;
+    vk::raii::DebugUtilsMessengerEXT debug_messenger_;
   };
 }  // namespace wabby::render::vulkan
 #endif

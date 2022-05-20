@@ -18,6 +18,21 @@ extern "C"
 
 namespace wabby::render
 {
+  struct BOOST_SYMBOL_EXPORT backend_create_info
+  {
+    virtual ~backend_create_info() = default;
+
+    std::string applicaiton_name;
+    uint32_t    application_version;
+  };
+
+  struct BOOST_SYMBOL_EXPORT vk_backend_create_info : public backend_create_info
+  {
+    std::vector<std::string>                       windowsystem_extensions;
+    std::function<VkSurfaceKHR( VkInstance )>      fn_make_surface;
+    std::function<std::pair<uint32_t, uint32_t>()> fn_get_window_size;
+  };
+
   class BOOST_SYMBOL_EXPORT backend : boost::noncopyable
   {
   public:
@@ -25,7 +40,7 @@ namespace wabby::render
     virtual ~backend() = default;
 
   public:
-    virtual void setup(){};
+    virtual void setup( const backend_create_info & create_info ) = 0;
 
     virtual void begin_frame() = 0;
 
@@ -37,18 +52,9 @@ namespace wabby::render
 
     virtual void resized() = 0;
 
-    virtual void teardown(){};
+    virtual void teardown() = 0;
   };
 
-  struct BOOST_SYMBOL_EXPORT vk_backend_create_info
-  {
-    std::string                                    applicaiton_name;
-    uint32_t                                       application_version;
-    std::vector<std::string>                       windowsystem_extensions;
-    std::function<VkSurfaceKHR( VkInstance )>      fn_make_surface;
-    std::function<std::pair<uint32_t, uint32_t>()> fn_get_window_size;
-  };
-
-  BOOST_SYMBOL_EXPORT std::shared_ptr<backend> make_vk_backend( const vk_backend_create_info & create_info );
+  BOOST_SYMBOL_EXPORT std::shared_ptr<backend> make_vk_backend();
 }  // namespace wabby::render
 #endif

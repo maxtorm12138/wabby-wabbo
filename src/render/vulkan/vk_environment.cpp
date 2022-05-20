@@ -7,11 +7,6 @@
 #include "algorithm"
 #include "unordered_set"
 
-// spdlog
-#include "spdlog/sinks/basic_file_sink.h"
-#include "spdlog/sinks/stdout_color_sinks.h"
-#include "spdlog/spdlog.h"
-
 namespace wabby::render::vulkan
 {
 
@@ -33,11 +28,8 @@ namespace wabby::render::vulkan
   vk::raii::Instance
     build_instance( const vk::raii::Context & context, const vk::ApplicationInfo & application_info, const std::vector<std::string> & windowsystem_extensions );
 
-  std::vector<std::shared_ptr<spdlog::logger>> build_loggers();
-
   vk_environment::vk_environment( const vk::ApplicationInfo & application_info, const std::vector<std::string> & windowsystem_extensions )
-    : loggers_( build_loggers() )
-    , context_()
+    : context_()
     , instance_( build_instance( context_, application_info, windowsystem_extensions ) )
     ,
 #ifdef NDEBUG
@@ -98,17 +90,6 @@ namespace wabby::render::vulkan
 #endif
 
     return vk::raii::Instance( context, chain.get<vk::InstanceCreateInfo>() );
-  }
-
-  std::vector<std::shared_ptr<spdlog::logger>> build_loggers()
-  {
-    std::vector<std::shared_ptr<spdlog::logger>> loggers;
-#ifndef NDEBUG
-    loggers.emplace_back( spdlog::basic_logger_mt( "vulkan-debugcallback", "vulkan-debugcallback.log", true ) );
-#endif
-    loggers.emplace_back( spdlog::stdout_color_mt( "vulkan" ) );
-
-    return loggers;
   }
 
   VKAPI_ATTR VkBool32 VKAPI_CALL debug_callback( VkDebugUtilsMessageSeverityFlagBitsEXT       message_severity,
