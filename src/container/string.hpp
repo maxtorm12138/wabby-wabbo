@@ -25,10 +25,14 @@ namespace wabby::container
 
     string( const char * str, size_t n );
 
+    string( const string & other );
+
     ~string();
 
   public:
-    const char * c_str() const;
+    const char * c_str() const noexcept;
+
+    size_t size() const noexcept;
 
   private:
     size_t size_;

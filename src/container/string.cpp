@@ -20,6 +20,20 @@ namespace wabby::container
     }
   }
 
+  string::string( const string & other ) : size_( other.size_ )
+  {
+    if ( size_ < detail::small_string_length )
+    {
+      memcpy( data_.small, other.data_.small, size_ + 1 );
+    }
+    else
+    {
+      data_.large.data     = new char[size_ + 1];
+      data_.large.capacity = size_ + 1;
+      memcpy( data_.large.data, other.data_.large.data, size_ + 1 );
+    }
+  }
+
   string::~string()
   {
     if ( size_ < detail::small_string_length )
@@ -32,7 +46,7 @@ namespace wabby::container
     }
   }
 
-  const char * string::c_str() const
+  const char * string::c_str() const noexcept
   {
     if ( size_ < detail::small_string_length )
     {
@@ -42,6 +56,11 @@ namespace wabby::container
     {
       return data_.large.data;
     }
+  }
+
+  size_t string::size() const noexcept
+  {
+    return size_;
   }
 
   std::strong_ordering operator<=>( const string & lsh, const string & rsh )
