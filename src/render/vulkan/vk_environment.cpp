@@ -101,18 +101,18 @@ namespace wabby::render::vulkan
     switch ( message_severity )
     {
       case VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT:
-        spdlog::get( "vulkan-debugcallback" )->debug( "{} {}", message_type == 0 ? "" : vk::to_string( type ), data->pMessage );
+        logger( "vulkan-debugcallback" )->debug( "{} {}", message_type == 0 ? "" : vk::to_string( type ), data->pMessage );
         break;
       case VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT:
-        spdlog::get( "vulkan-debugcallback" )->info( "{} {}", message_type == 0 ? "" : vk::to_string( type ), data->pMessage );
+        logger( "vulkan-debugcallback" )->info( "{} {}", message_type == 0 ? "" : vk::to_string( type ), data->pMessage );
         break;
       case VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT:
-        spdlog::get( "vulkan-debugcallback" )->warn( "{} {}", message_type == 0 ? "" : vk::to_string( type ), data->pMessage );
+        logger( "vulkan-debugcallback" )->warn( "{} {}", message_type == 0 ? "" : vk::to_string( type ), data->pMessage );
         break;
       case VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT:
-        spdlog::get( "vulkan-debugcallback" )->error( "{} {}", message_type == 0 ? "" : vk::to_string( type ), data->pMessage );
+        logger( "vulkan-debugcallback" )->error( "{} {}", message_type == 0 ? "" : vk::to_string( type ), data->pMessage );
         break;
-      default: spdlog::get( "vulkan-debugcallback" )->error( "{} {}", message_type == 0 ? "" : vk::to_string( type ), data->pMessage ); break;
+      default: logger( "vulkan-debugcallback" )->error( "{} {}", message_type == 0 ? "" : vk::to_string( type ), data->pMessage ); break;
     }
 
     return VK_FALSE;

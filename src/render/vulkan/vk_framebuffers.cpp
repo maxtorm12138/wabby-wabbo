@@ -24,7 +24,7 @@ namespace wabby::render::vulkan
       framebuffers.emplace_back( device, frame_buffer_create_info );
     }
 
-    spdlog::get( "vulkan" )->info( "framebuffers create {}", size );
+    logger( "vulkan" )->info( "framebuffers create {}", size );
     return framebuffers;
   }
 

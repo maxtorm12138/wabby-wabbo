@@ -33,7 +33,7 @@ namespace wabby::render::vulkan
   }
 
   vk_hardware::vk_hardware( const vk::raii::Instance & instance, const vk::raii::SurfaceKHR & surface )
-    : vulkan_logger_( spdlog::get( "vulkan" ) )
+    : vulkan_logger_( logger( "vulkan" ) )
     , physical_device_( pick_physical_device( instance, surface ) )
     , device_( build_device( physical_device_ ) )
     , graphics_command_pool_( build_graphics_command_pool( device_, physical_device_ ) )
@@ -172,7 +172,7 @@ namespace wabby::render::vulkan
         continue;
       }
 
-      spdlog::get( "vulkan" )->info( "hardware physical device: {}", properties.deviceName );
+      logger( "vulkan" )->info( "hardware physical device: {}", properties.deviceName );
       return std::move( physical_device );
     }
 

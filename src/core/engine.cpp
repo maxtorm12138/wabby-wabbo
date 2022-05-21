@@ -1,5 +1,8 @@
 #include "engine.hpp"
 
+// container
+#include "container/registry.hpp"
+
 // sdl2
 #include "sdl/sdl2.hpp"
 
@@ -9,6 +12,11 @@
 // boost
 #include "boost/dll/runtime_symbol_info.hpp"
 #include "boost/dll/shared_library.hpp"
+
+// spdlog
+#include "spdlog/sinks/basic_file_sink.h"
+#include "spdlog/sinks/stdout_color_sinks.h"
+#include "spdlog/spdlog.h"
 
 namespace wabby::core
 {
@@ -71,6 +79,12 @@ namespace wabby::core
     {
       while ( auto event = sdl_context_.poll_event() )
       {
+        switch ( event->type )
+        {
+          case SDL_QUIT: break;
+          default: break;
+        }
+
         if ( event->type == SDL_QUIT )
         {
           running = false;
@@ -86,16 +100,29 @@ namespace wabby::core
     backend->teardown();
   }
 
-  engine::engine( std::string application_name, uint32_t application_version ) : impl_( new engine_impl( application_name, application_version ) ) {}
-
-  engine::~engine()
+  engine::engine( std::string application_name, uint32_t application_version )
+    : application_name_( application_name ), application_version_( application_version )
   {
-    delete impl_;
+  }
+
+  engine::~engine() {}
+
+  void engine::setup()
+  {
+    container::registry::instance().sign_in( "engine", spdlog::stderr_color_mt( "engine" ) );
+    container::registry::instance().sign_in( "vulkan", spdlog::stderr_color_mt( "vulkan" ) );
+    container::registry::instance().sign_in( "vulkan-debugcallback", spdlog::stderr_color_mt( "vulkan-debugcallback" ) );
+    impl_ = new engine_impl( application_name_, application_version_ );
   }
 
   void engine::run()
   {
     return impl_->run();
+  }
+
+  void engine::teardown()
+  {
+    delete impl_;
   }
 
 }  // namespace wabby::core

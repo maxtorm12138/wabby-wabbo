@@ -1,10 +1,5 @@
 #include "vk_backend.hpp"
 
-// spdlog
-#include "spdlog/sinks/basic_file_sink.h"
-#include "spdlog/sinks/stdout_color_sinks.h"
-#include "spdlog/spdlog.h"
-
 namespace wabby::render
 {
   std::shared_ptr<backend> make_vk_backend()
@@ -18,15 +13,6 @@ BOOST_DLL_ALIAS( wabby::render::make_vk_backend, make_vk_backend );
 namespace wabby::render::vulkan
 {
 
-  std::vector<std::shared_ptr<spdlog::logger>> build_loggers()
-  {
-    std::vector<std::shared_ptr<spdlog::logger>> loggers;
-    loggers.emplace_back( spdlog::basic_logger_mt( "vulkan-debugcallback", "vulkan-debugcallback.log", true ) );
-    loggers.emplace_back( spdlog::stdout_color_mt( "vulkan" ) );
-
-    return loggers;
-  }
-
   vk::ApplicationInfo build_application_info( const vk_backend_create_info & create_info )
   {
     vk::ApplicationInfo app_info{ .pApplicationName   = create_info.applicaiton_name.c_str(),
@@ -35,7 +21,7 @@ namespace wabby::render::vulkan
                                   .engineVersion      = VK_MAKE_VERSION( 1, 0, 0 ),
                                   .apiVersion         = VK_API_VERSION_1_1 };
 
-    spdlog::get( "vulkan" )
+    logger( "vulkan" )
       ->info( "application {}:{}-{}:{}-{}",
               app_info.pApplicationName,
               app_info.applicationVersion,
@@ -70,7 +56,7 @@ namespace wabby::render::vulkan
     {
       semaphores.emplace_back( device, semaphore_create_info );
     }
-    spdlog::get( "vulkan" )->info( "semaphores created {}", size );
+    logger( "vulkan" )->info( "semaphores created {}", size );
     return semaphores;
   }
 
@@ -91,7 +77,7 @@ namespace wabby::render::vulkan
       fences.emplace_back( device, fence_create_info );
     }
 
-    spdlog::get( "vulkan" )->info( "fences created {}", size );
+    logger( "vulkan" )->info( "fences created {}", size );
     return fences;
   }
 
@@ -114,8 +100,6 @@ namespace wabby::render::vulkan
 
   void vk_backend::setup( const backend_create_info & create_info )
   {
-    loggers_ = build_loggers();
-
     auto & vk_create_info = dynamic_cast<const vk_backend_create_info &>( create_info );
     ctx_.emplace( vk_create_info );
   }

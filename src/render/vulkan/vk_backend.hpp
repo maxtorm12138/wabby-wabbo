@@ -54,8 +54,7 @@ namespace wabby::render::vulkan
     void teardown() override;
 
   private:
-    std::vector<std::shared_ptr<spdlog::logger>> loggers_;
-    std::optional<vk_backend_context>            ctx_;
+    std::optional<vk_backend_context> ctx_;
   };
 }  // namespace wabby::render::vulkan
 

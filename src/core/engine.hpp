@@ -24,9 +24,15 @@ namespace wabby::core
     ~engine();
 
   public:
+    void setup();
+
     void run();
 
+    void teardown();
+
   private:
+    std::string   application_name_;
+    uint32_t      application_version_;
     engine_impl * impl_;
   };
 }  // namespace wabby::core
