@@ -25,7 +25,7 @@ namespace wabby::render
   {
     virtual ~backend_create_info() = default;
 
-    const char *                         applicaiton_name;
+    container::string                    applicaiton_name;
     uint32_t                             application_version;
     std::shared_ptr<container::registry> registry;
   };

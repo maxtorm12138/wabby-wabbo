@@ -21,14 +21,15 @@
 // spdlog
 #include "spdlog/spdlog.h"
 
-// containers
+// container
 #include "container/registry.hpp"
+
+extern std::shared_ptr<wabby::container::registry> g_registry;
 namespace wabby::render::vulkan
 {
-
   inline std::shared_ptr<spdlog::logger> logger( const std::string & name )
   {
-    return ::wabby::container::registry::get<spdlog::logger>( name );
+    return g_registry->get<spdlog::logger>( name );
   }
 
 }  // namespace wabby::render::vulkan

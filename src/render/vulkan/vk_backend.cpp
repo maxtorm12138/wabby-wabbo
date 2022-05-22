@@ -1,5 +1,7 @@
 #include "vk_backend.hpp"
 
+std::shared_ptr<wabby::container::registry> g_registry;
+
 namespace wabby::render
 {
   std::unique_ptr<backend> make_vk_backend()
@@ -101,6 +103,8 @@ namespace wabby::render::vulkan
   void vk_backend::setup( const backend_create_info & create_info )
   {
     auto & vk_create_info = dynamic_cast<const vk_backend_create_info &>( create_info );
+
+    g_registry = vk_create_info.registry;
     ctx_.emplace( vk_create_info );
   }
 

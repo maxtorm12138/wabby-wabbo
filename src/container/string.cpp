@@ -4,11 +4,13 @@
 
 namespace wabby::container
 {
+  string::string() : size_( 0 ){};
+
   string::string( const char * str ) : string( str, strlen( str ) ) {}
 
   string::string( const char * str, size_t n ) : size_( n )
   {
-    if ( size_ < detail::small_string_length )
+    if ( size_ <= detail::small_string_length )
     {
       memcpy( data_.small, str, size_ + 1 );
     }
@@ -22,7 +24,7 @@ namespace wabby::container
 
   string::string( const string & other ) : size_( other.size_ )
   {
-    if ( size_ < detail::small_string_length )
+    if ( size_ <= detail::small_string_length )
     {
       memcpy( data_.small, other.data_.small, size_ + 1 );
     }
@@ -34,9 +36,31 @@ namespace wabby::container
     }
   }
 
+  string & string::operator=( const string & other )
+  {
+    if ( size_ > detail::small_string_length )
+    {
+      delete[] data_.large.data;
+    }
+
+    size_ = other.size_;
+    if ( size_ <= detail::small_string_length )
+    {
+      memcpy( data_.small, other.data_.small, size_ + 1 );
+    }
+    else
+    {
+      data_.large.data     = new char[size_ + 1];
+      data_.large.capacity = size_ + 1;
+      memcpy( data_.large.data, other.data_.large.data, size_ + 1 );
+    }
+
+    return *this;
+  }
+
   string::~string()
   {
-    if ( size_ < detail::small_string_length )
+    if ( size_ <= detail::small_string_length )
     {
       // DO NOTHING
     }
@@ -48,7 +72,7 @@ namespace wabby::container
 
   const char * string::c_str() const noexcept
   {
-    if ( size_ < detail::small_string_length )
+    if ( size_ <= detail::small_string_length )
     {
       return data_.small;
     }

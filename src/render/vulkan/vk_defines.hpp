@@ -16,7 +16,7 @@ namespace wabby::render::vulkan
   constexpr std::string_view EXT_NAME_VK_KHR_shader_non_semantic_info        = "VK_KHR_shader_non_semantic_info";
   constexpr std::string_view EXT_NAME_VK_KHR_portability_enumeration         = "VK_KHR_portability_enumeration";
 
-  constexpr std::string_view WABBY_ENGINE_NAME = "wabby-wabbo";
+  constexpr std::string_view WABBY_ENGINE_NAME = "wabby";
 
   enum class QueueType
   {

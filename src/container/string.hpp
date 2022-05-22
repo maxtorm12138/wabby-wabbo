@@ -21,11 +21,15 @@ namespace wabby::container
   class string
   {
   public:
+    string();
+
     string( const char * str );
 
     string( const char * str, size_t n );
 
     string( const string & other );
+
+    string & operator=( const string & other );
 
     ~string();
 
