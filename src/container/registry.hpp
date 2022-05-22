@@ -2,6 +2,7 @@
 #define _WABBY_VULKAN_REGISTRY_HPP
 
 // std
+#include "any"
 #include "memory"
 #include "shared_mutex"
 #include "unordered_map"
@@ -20,18 +21,18 @@ namespace wabby::container
       ~registry_impl() = default;
 
     public:
-      void sign_in( const std::string & name, std::shared_ptr<void> data );
+      void sign_in( const std::string & name, std::any data );
 
-      std::shared_ptr<void> sign_out( const std::string & name );
+      void sign_out( const std::string & name );
 
-      std::shared_ptr<void> get( const std::string & name );
+      std::any & get( const std::string & name );
 
     protected:
       registry_impl() = default;
 
     private:
-      std::shared_mutex                                      registry_mutex_;
-      std::unordered_map<std::string, std::shared_ptr<void>> registry_data_;
+      std::shared_mutex                         registry_mutex_;
+      std::unordered_map<std::string, std::any> registry_data_;
     };
   }  // namespace detail
 
@@ -42,21 +43,21 @@ namespace wabby::container
 
   public:
     template <typename T>
-    void sign_in( const std::string & name, std::shared_ptr<T> data )
+    void sign_in( const std::string & name, T && data )
     {
-      registry_impl::sign_in( name, std::reinterpret_pointer_cast<void>( data ) );
+      registry_impl::sign_in( name, std::forward<T>( data ) );
     }
 
     template <typename T>
-    std::shared_ptr<T> sign_out( const std::string & name )
+    void sign_out( const std::string & name )
     {
-      return std::reinterpret_pointer_cast<T>( registry_impl::sign_out( name ) );
+      registry_impl::sign_out( name );
     }
 
     template <typename T>
-    std::shared_ptr<T> get( const std::string & name )
+    T & get( const std::string & name )
     {
-      return std::reinterpret_pointer_cast<T>( registry_impl::get( name ) );
+      return std::any_cast<T &>( registry_impl::get( name ) );
     }
   };
 

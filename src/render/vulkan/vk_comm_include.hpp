@@ -25,6 +25,6 @@
 #include "container/registry.hpp"
 
 extern std::shared_ptr<wabby::container::registry> g_registry;
-#define LOGGER( NAME ) ( g_registry->get<spdlog::logger>( NAME ) )
+#define LOGGER( NAME ) ( g_registry->get<std::shared_ptr<spdlog::logger>>( NAME ) )
 
 #endif
