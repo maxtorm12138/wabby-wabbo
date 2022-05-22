@@ -8,32 +8,34 @@
 
 namespace wabby::container
 {
-
-  class registry_impl
+  namespace detail
   {
-  public:
-    registry_impl( const registry_impl & ) = delete;
+    class registry_impl
+    {
+    public:
+      registry_impl( const registry_impl & ) = delete;
 
-    registry_impl & operator=( const registry_impl & ) = delete;
+      registry_impl & operator=( const registry_impl & ) = delete;
 
-    ~registry_impl() = default;
+      ~registry_impl() = default;
 
-  public:
-    void sign_in( const std::string & name, std::shared_ptr<void> data );
+    public:
+      void sign_in( const std::string & name, std::shared_ptr<void> data );
 
-    std::shared_ptr<void> sign_out( const std::string & name );
+      std::shared_ptr<void> sign_out( const std::string & name );
 
-    std::shared_ptr<void> get( const std::string & name );
+      std::shared_ptr<void> get( const std::string & name );
 
-  protected:
-    registry_impl() = default;
+    protected:
+      registry_impl() = default;
 
-  private:
-    std::shared_mutex                                      registry_mutex_;
-    std::unordered_map<std::string, std::shared_ptr<void>> registry_data_;
-  };
+    private:
+      std::shared_mutex                                      registry_mutex_;
+      std::unordered_map<std::string, std::shared_ptr<void>> registry_data_;
+    };
+  }  // namespace detail
 
-  class registry : private registry_impl
+  class registry : private detail::registry_impl
   {
   public:
     registry() = default;

@@ -8,7 +8,7 @@ target_compile_definitions(wabbyvulkan PRIVATE
     -DBOOST_DLL_USE_STD_FS
     -DGLM_FORCE_RADIANS -DGLM_FORCE_DEPTH_ZERO_TO_ONE)
 
-target_link_libraries(wabbyvulkan PRIVATE Vulkan::Vulkan Boost::boost fmt::fmt-header-only vma vulkanhpp spdlog::spdlog_header_only glm::glm wabbycontainer)
+target_link_libraries(wabbyvulkan PRIVATE Vulkan::Vulkan Boost::boost fmt::fmt-header-only vma vulkanhpp spdlog::spdlog_header_only glm::glm PUBLIC wabbycontainer)
 target_include_directories(wabbyvulkan PRIVATE ./ ../)
 if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
     target_compile_options(wabbyvulkan PRIVATE -fvisibility=hidden)

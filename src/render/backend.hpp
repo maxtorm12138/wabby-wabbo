@@ -1,13 +1,16 @@
 #ifndef _WABBY_RENDERER_RENDERER_HPP
 #define _WABBY_RENDERER_RENDERER_HPP
 
+// container
+#include "container/registry.hpp"
+#include "container/string.hpp"
+
 // boost
 #include "boost/config.hpp"
 #include "boost/noncopyable.hpp"
 
 // std
 #include "functional"
-#include "string"
 #include "vector"
 
 extern "C"
@@ -22,8 +25,9 @@ namespace wabby::render
   {
     virtual ~backend_create_info() = default;
 
-    std::string applicaiton_name;
-    uint32_t    application_version;
+    const char *                         applicaiton_name;
+    uint32_t                             application_version;
+    std::shared_ptr<container::registry> registry;
   };
 
   struct BOOST_SYMBOL_EXPORT vk_backend_create_info : public backend_create_info
@@ -55,6 +59,6 @@ namespace wabby::render
     virtual void teardown() = 0;
   };
 
-  BOOST_SYMBOL_EXPORT std::shared_ptr<backend> make_vk_backend();
+  BOOST_SYMBOL_EXPORT std::unique_ptr<backend> make_vk_backend();
 }  // namespace wabby::render
 #endif

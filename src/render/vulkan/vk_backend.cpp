@@ -2,9 +2,9 @@
 
 namespace wabby::render
 {
-  std::shared_ptr<backend> make_vk_backend()
+  std::unique_ptr<backend> make_vk_backend()
   {
-    return std::shared_ptr<backend>( new ::wabby::render::vulkan::vk_backend() );
+    return std::unique_ptr<backend>( new ::wabby::render::vulkan::vk_backend() );
   }
 }  // namespace wabby::render
 

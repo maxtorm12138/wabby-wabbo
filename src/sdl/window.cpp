@@ -9,9 +9,9 @@
 namespace wabby::sdl2
 {
 
-  window::window( std::string_view title, int w, int h, int x, int y, uint32_t flags ) : window_()
+  window::window( const container::string & title, int w, int h, int x, int y, uint32_t flags ) : window_()
   {
-    window_ = SDL_CreateWindow( title.data(), x, y, w, h, flags );
+    window_ = SDL_CreateWindow( title.c_str(), x, y, w, h, flags );
     SDL2_ASSERT( window_ != nullptr, SDL_CreateWindow );
   }
 

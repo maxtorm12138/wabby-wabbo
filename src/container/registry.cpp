@@ -1,5 +1,5 @@
 #include "registry.hpp"
-namespace wabby::container
+namespace wabby::container::detail
 {
 
   void registry_impl::sign_in( const std::string & name, std::shared_ptr<void> data )
@@ -36,4 +36,4 @@ namespace wabby::container
     return nullptr;
   }
 
-}  // namespace wabby::container
+}  // namespace wabby::container::detail
