@@ -24,7 +24,7 @@ namespace wabby::render::vulkan
       framebuffers.emplace_back( device, frame_buffer_create_info );
     }
 
-    logger( "vulkan" )->info( "framebuffers create {}", size );
+    LOGGER( "vulkan" )->info( "framebuffers create {}", size );
     return framebuffers;
   }
 

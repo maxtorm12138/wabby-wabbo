@@ -23,8 +23,8 @@ namespace wabby::render::vulkan
                                   .engineVersion      = VK_MAKE_VERSION( 1, 0, 0 ),
                                   .apiVersion         = VK_API_VERSION_1_1 };
 
-    logger( "vulkan" )
-      ->info( "application {}:{}-{}:{}-{}",
+    LOGGER( "vulkan" )
+      ->info( "<app name: \"{}\"> <app ver: {}> <engine name \"{}\"> <engine ver: {}> <vulkan api ver: {}>",
               app_info.pApplicationName,
               app_info.applicationVersion,
               app_info.pEngineName,
@@ -58,7 +58,7 @@ namespace wabby::render::vulkan
     {
       semaphores.emplace_back( device, semaphore_create_info );
     }
-    logger( "vulkan" )->info( "semaphores created {}", size );
+    LOGGER( "vulkan" )->info( "semaphores created {}", size );
     return semaphores;
   }
 
@@ -79,7 +79,7 @@ namespace wabby::render::vulkan
       fences.emplace_back( device, fence_create_info );
     }
 
-    logger( "vulkan" )->info( "fences created {}", size );
+    LOGGER( "vulkan" )->info( "fences created {}", size );
     return fences;
   }
 

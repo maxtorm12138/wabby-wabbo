@@ -32,7 +32,6 @@ namespace wabby::render::vulkan
     std::vector<vk::raii::CommandBuffer> allocate_graphics_command_buffers( uint32_t size, bool primary = true );
 
   private:
-    std::shared_ptr<spdlog::logger>                 vulkan_logger_;
     vk::raii::PhysicalDevice                        physical_device_;
     vk::raii::Device                                device_;
     mutable std::unordered_map<QueueType, uint32_t> queue_index_cache_;
