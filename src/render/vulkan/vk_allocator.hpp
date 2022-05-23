@@ -1,6 +1,9 @@
 #ifndef WABBY_RENDER_VULKAN_ALLOCATOR_HPP
 #define WABBY_RENDER_VULKAN_ALLOCATOR_HPP
 
+// std
+#include "bit"
+
 namespace wabby::render::vulkan
 {
   namespace detail
@@ -39,7 +42,7 @@ namespace wabby::render::vulkan
   public:
     [[nodiscard]] constexpr T * allocate( size_t n )
     {
-      return static_cast<T *>( fn_allocation_( user_args_, sizeof( T ) * n, 4 ) );
+      return static_cast<T *>( fn_allocation_( user_args_, sizeof( T ) * n, std::bit_ceil( sizeof( T ) ) ) );
     }
 
     constexpr void deallocate( T * p, size_t n )
