@@ -189,9 +189,14 @@ namespace wabby::render::vulkan::detail
   {
     int create_backend( backend * backend )
     {
-      auto vk_backend = new struct backend_t;
+      vk_allocator<backend_t>  allocator;
+      vk_allocator<vk_backend> vk_backend_allocator;
 
-      vk_backend->internal_handle   = new wabby::render::vulkan::vk_backend;
+      auto vk_backend      = allocator.allocate( 1 );
+      auto vk_backend_impl = vk_backend_allocator.allocate( 1 );
+      std::construct_at( vk_backend_impl );
+
+      vk_backend->internal_handle   = vk_backend_impl;
       vk_backend->setup             = setup;
       vk_backend->teardown          = teardown;
       vk_backend->begin_frame       = begin_frame;
@@ -206,7 +211,19 @@ namespace wabby::render::vulkan::detail
 
     void destroy_backend( backend backend )
     {
-      delete backend;
+      vk_allocator<backend_t>  allocator;
+      vk_allocator<vk_backend> vk_backend_allocator;
+
+      std::destroy_at( static_cast<vk_backend *>( backend->internal_handle ) );
+
+      vk_backend_allocator.deallocate( static_cast<vk_backend *>( backend->internal_handle ), 1 );
+      allocator.deallocate( backend, 1 );
+    }
+
+    void set_allocation_callbacks( const allocation_callbacks * allocation_callbacks )
+    {
+      detail::vk_allocator_impl::setup(
+        allocation_callbacks->user_args, allocation_callbacks->allocation, allocation_callbacks->reallocation, allocation_callbacks->free );
     }
   }
 }  // namespace wabby::render::vulkan::detail

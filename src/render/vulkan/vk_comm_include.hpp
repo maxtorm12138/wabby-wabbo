@@ -3,6 +3,7 @@
 
 // std
 #include "functional"
+#include "memory"
 #include "optional"
 #include "string"
 #include "unordered_map"
@@ -29,4 +30,7 @@
 // spdlog
 #include "spdlog/spdlog.h"
 
+namespace wabby::render::vulkan
+{
+}
 #endif

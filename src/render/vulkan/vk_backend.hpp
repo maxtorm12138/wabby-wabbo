@@ -5,6 +5,7 @@
 #include "wabby/render/backend.hpp"
 
 // module
+#include "vk_allocator.hpp"
 #include "vk_defines.hpp"
 #include "vk_device_allocator.hpp"
 #include "vk_environment.hpp"
@@ -12,6 +13,7 @@
 #include "vk_hardware.hpp"
 #include "vk_render_pass.hpp"
 #include "vk_swapchian.hpp"
+
 
 // common include
 #include "vk_comm_include.hpp"
