@@ -1,5 +1,5 @@
-#ifndef _WABBY_VULKAN_COMM_INCLUDE_HPP
-#define _WABBY_VULKAN_COMM_INCLUDE_HPP
+#ifndef WABBY_RENDER_VULKAN_COMM_INCLUDE_HPP
+#define WABBY_RENDER_VULKAN_COMM_INCLUDE_HPP
 
 // std
 #include "functional"
@@ -28,11 +28,5 @@
 
 // spdlog
 #include "spdlog/spdlog.h"
-
-// container
-#include "container/registry.hpp"
-
-extern std::shared_ptr<wabby::container::registry> g_registry;
-#define LOGGER( NAME ) ( g_registry->get<spdlog::logger>( NAME ) )
 
 #endif

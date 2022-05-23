@@ -1,8 +1,10 @@
-#ifndef _WABBY_VULKAN_RENDERER_HPP
-#define _WABBY_VULKAN_RENDERER_HPP
+#ifndef WABBY_RENDER_VULKAN_RENDERER_HPP
+#define WABBY_RENDER_VULKAN_RENDERER_HPP
+
+// backend interface
+#include "wabby/render/backend.hpp"
 
 // module
-#include "backend.hpp"
 #include "vk_defines.hpp"
 #include "vk_device_allocator.hpp"
 #include "vk_environment.hpp"
@@ -16,10 +18,9 @@
 
 namespace wabby::render::vulkan
 {
-
   struct vk_backend_context
   {
-    vk_backend_context( const vk_backend_create_info & create_info );
+    vk_backend_context( const vk_backend_setup_info * create_info );
 
     vk_environment                       environment_;
     vk::raii::SurfaceKHR                 surface_;
@@ -36,25 +37,25 @@ namespace wabby::render::vulkan
     std::vector<vk::raii::Fence>         in_flight_fences_;
   };
 
-  class vk_backend : public wabby::render::backend
+  class vk_backend : public boost::noncopyable
   {
   public:
-    void setup( const backend_create_info & create_info ) override;
+    void setup( const vk_backend_setup_info * setup_info );
 
-    void begin_frame() override;
+    void begin_frame();
 
-    void end_frame() override;
+    void end_frame();
 
-    void begin_render_pass() override;
+    void begin_render_pass();
 
-    void end_render_pass() override;
+    void end_render_pass();
 
-    void resized() override;
+    void resized();
 
-    void teardown() override;
+    void teardown();
 
   private:
-    std::optional<vk_backend_context> ctx_;
+    vk_backend_context * ctx_{ nullptr };
   };
 }  // namespace wabby::render::vulkan
 

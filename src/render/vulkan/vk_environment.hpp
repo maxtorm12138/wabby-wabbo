@@ -9,7 +9,7 @@ namespace wabby::render::vulkan
   class vk_environment : public boost::noncopyable
   {
   public:
-    vk_environment( const vk::ApplicationInfo & application_info, const std::vector<std::string> & windowsystem_extensions );
+    vk_environment( const vk::ApplicationInfo & application_info, const char ** windowsystem_extensions, uint32_t count );
 
   public:
     const vk::raii::Context & context() const

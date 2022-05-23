@@ -1,35 +1,16 @@
 #include "vk_backend.hpp"
 
-std::shared_ptr<wabby::container::registry> g_registry;
-
-namespace wabby::render
-{
-  std::unique_ptr<backend> make_vk_backend()
-  {
-    return std::unique_ptr<backend>( new ::wabby::render::vulkan::vk_backend() );
-  }
-}  // namespace wabby::render
-
-BOOST_DLL_ALIAS( wabby::render::make_vk_backend, make_vk_backend );
-
 namespace wabby::render::vulkan
 {
 
-  vk::ApplicationInfo build_application_info( const vk_backend_create_info & create_info )
+  vk::ApplicationInfo build_application_info( const vk_backend_setup_info * setup_info )
   {
-    vk::ApplicationInfo app_info{ .pApplicationName   = create_info.applicaiton_name.c_str(),
-                                  .applicationVersion = create_info.application_version,
+    vk::ApplicationInfo app_info{ .pApplicationName   = setup_info->application_name,
+                                  .applicationVersion = setup_info->application_version,
                                   .pEngineName        = WABBY_ENGINE_NAME.data(),
                                   .engineVersion      = VK_MAKE_VERSION( 1, 0, 0 ),
                                   .apiVersion         = VK_API_VERSION_1_1 };
 
-    LOGGER( "vulkan" )
-      ->info( "<app name: \"{}\"> <app ver: {}> <engine name \"{}\"> <engine ver: {}> <vulkan api ver: {}>",
-              app_info.pApplicationName,
-              app_info.applicationVersion,
-              app_info.pEngineName,
-              app_info.engineVersion,
-              app_info.apiVersion );
     return app_info;
   }
 
@@ -57,7 +38,6 @@ namespace wabby::render::vulkan
     {
       semaphores.emplace_back( device, semaphore_create_info );
     }
-    LOGGER( "vulkan" )->info( "semaphores created {}", size );
     return semaphores;
   }
 
@@ -78,16 +58,15 @@ namespace wabby::render::vulkan
       fences.emplace_back( device, fence_create_info );
     }
 
-    LOGGER( "vulkan" )->info( "fences created {}", size );
     return fences;
   }
 
-  vk_backend_context::vk_backend_context( const vk_backend_create_info & create_info )
-    : environment_( build_application_info( create_info ), create_info.windowsystem_extensions )
-    , surface_( environment_.instance(), create_info.fn_make_surface( *environment_.instance() ) )
+  vk_backend_context::vk_backend_context( const vk_backend_setup_info * setup_info )
+    : environment_( build_application_info( setup_info ), setup_info->windowsystem_extensions, setup_info->windowsystem_extensions_count )
+    , surface_( environment_.instance(), setup_info->fn_make_surface( *environment_.instance(), setup_info->fn_make_surface_user_args ) )
     , hardware_( environment_.instance(), surface_ )
     , device_allocator_( environment_.instance(), hardware_.physical_device(), hardware_.device() )
-    , swapchain_( hardware_, surface_, create_info.fn_get_window_size() )
+    , swapchain_( hardware_, surface_, setup_info->fn_get_window_size( setup_info->fn_get_window_size_user_args ) )
     , render_pass_( hardware_.device(), swapchain_.surface_format() )
     , image_index_( -1 )
     , frame_index_( 0 )
@@ -99,13 +78,7 @@ namespace wabby::render::vulkan
   {
   }
 
-  void vk_backend::setup( const backend_create_info & create_info )
-  {
-    auto & vk_create_info = static_cast<const vk_backend_create_info &>( create_info );
-
-    g_registry = vk_create_info.registry;
-    ctx_.emplace( vk_create_info );
-  }
+  void vk_backend::setup( const vk_backend_setup_info * setup_info ) {}
 
   void vk_backend::begin_frame()
   {
@@ -173,3 +146,67 @@ namespace wabby::render::vulkan
   }
 
 }  // namespace wabby::render::vulkan
+
+namespace wabby::render::vulkan::detail
+{
+
+  void setup( backend_t * handle, const backend_setup_info * setup_info )
+  {
+    static_cast<wabby::render::vulkan::vk_backend *>( handle->internal_handle )->setup( reinterpret_cast<const vk_backend_setup_info *>( setup_info ) );
+  }
+
+  void begin_frame( backend_t * handle )
+  {
+    static_cast<wabby::render::vulkan::vk_backend *>( handle->internal_handle )->begin_frame();
+  }
+
+  void end_frame( backend_t * handle )
+  {
+    static_cast<wabby::render::vulkan::vk_backend *>( handle->internal_handle )->end_frame();
+  }
+
+  void begin_render_pass( backend_t * handle )
+  {
+    static_cast<wabby::render::vulkan::vk_backend *>( handle->internal_handle )->begin_render_pass();
+  }
+
+  void end_render_pass( backend_t * handle )
+  {
+    static_cast<wabby::render::vulkan::vk_backend *>( handle->internal_handle )->end_render_pass();
+  }
+
+  void resized( backend_t * handle )
+  {
+    static_cast<wabby::render::vulkan::vk_backend *>( handle->internal_handle )->resized();
+  }
+
+  void teardown( backend_t * handle )
+  {
+    static_cast<wabby::render::vulkan::vk_backend *>( handle->internal_handle )->teardown();
+  }
+
+  extern "C"
+  {
+    int create_backend( backend * backend )
+    {
+      auto vk_backend = new struct backend_t;
+
+      vk_backend->internal_handle   = new wabby::render::vulkan::vk_backend;
+      vk_backend->setup             = setup;
+      vk_backend->teardown          = teardown;
+      vk_backend->begin_frame       = begin_frame;
+      vk_backend->end_frame         = end_frame;
+      vk_backend->begin_render_pass = begin_render_pass;
+      vk_backend->end_render_pass   = end_render_pass;
+      vk_backend->resized           = resized;
+
+      *backend = vk_backend;
+      return 0;
+    }
+
+    void destroy_backend( backend backend )
+    {
+      delete backend;
+    }
+  }
+}  // namespace wabby::render::vulkan::detail
