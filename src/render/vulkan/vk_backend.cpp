@@ -30,7 +30,6 @@ namespace wabby::render::vulkan
               app_info.pEngineName,
               app_info.engineVersion,
               app_info.apiVersion );
-
     return app_info;
   }
 

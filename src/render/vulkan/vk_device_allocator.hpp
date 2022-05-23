@@ -2,7 +2,16 @@
 #define _WABBY_VULKAN_ALLOCATOR_HPP
 
 // vma
+#ifdef __GNUC__
+#  pragma GCC diagnostic push
+#  pragma GCC diagnostic ignored "-Wdeprecated-copy"
+#  pragma GCC diagnostic ignored "-Wmissing-field-initializers"
+#  pragma GCC diagnostic ignored "-Wunused-parameter"
+#endif
 #include "vk_mem_alloc.h"
+#ifdef __GNUC__
+#  pragma GCC diagnostic pop
+#endif
 
 // comm headers
 #include "vk_comm_include.hpp"

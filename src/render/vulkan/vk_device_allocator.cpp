@@ -1,8 +1,17 @@
 #include "vk_device_allocator.hpp"
 
 // vma
+#ifdef __GNUC__
+#  pragma GCC diagnostic push
+#  pragma GCC diagnostic ignored "-Wdeprecated-copy"
+#  pragma GCC diagnostic ignored "-Wmissing-field-initializers"
+#  pragma GCC diagnostic ignored "-Wunused-parameter"
+#endif
 #define VMA_IMPLEMENTATION
 #include "vk_mem_alloc.h"
+#ifdef __GNUC__
+#  pragma GCC diagnostic pop
+#endif
 
 namespace wabby::render::vulkan
 {

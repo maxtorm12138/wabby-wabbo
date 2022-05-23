@@ -21,7 +21,6 @@ endif ()
 add_library(vulkanhpp INTERFACE)
 target_include_directories(vulkanhpp INTERFACE "${PROJECT_SOURCE_DIR}/contrib/Vulkan-Hpp")
 
-
 set(SDL2_BUILDING_LIBRARY ON)
 find_package(SDL2 REQUIRED)
 if (WIN32)
