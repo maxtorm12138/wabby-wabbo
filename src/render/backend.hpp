@@ -29,6 +29,7 @@ extern "C"
     void * fn_get_window_size_user_args;
     void ( *fn_get_window_size )( uint32_t *, uint32_t *, void * );
 
+    const char * configuration_path;
   } vk_backend_setup_info;
 
   typedef struct BOOST_SYMBOL_EXPORT
