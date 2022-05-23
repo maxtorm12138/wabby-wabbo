@@ -51,8 +51,19 @@ namespace wabby::core
   void engine_impl::setup( const engine_setup_info & setup_info )
   {
     registry_ = std::make_shared<container::registry>();
-    registry_->sign_in( "vulkan", spdlog::stderr_color_mt( "vulkan" ) );
-    registry_->sign_in( "vulkan-debugcallback", spdlog::basic_logger_mt( "vulkan-debugcallback", "vulkan-debugcallback.log", true ) );
+
+    {
+      spdlog::logger vulkan( "vulkan", std::make_shared<spdlog::sinks::stdout_color_sink_mt>() );
+      vulkan.set_level( spdlog::level::debug );
+
+      spdlog::logger vulkan_debugcallback( "vulkan-debugcallback", std::make_shared<spdlog::sinks::stdout_color_sink_mt>() );
+      vulkan_debugcallback.set_level( spdlog::level::debug );
+
+      registry_->sign_in( vulkan.name(), vulkan );
+      registry_->sign_in( vulkan_debugcallback.name(), vulkan_debugcallback );
+
+      registry_->get<spdlog::logger>( "vulkan" )->info( "" );
+    }
 
     window_         = std::make_unique<sdl2::window>( setup_info.application_name, setup_info.width, setup_info.height );
     render_library_ = std::make_unique<boost::dll::shared_library>( find_render_library_path() );

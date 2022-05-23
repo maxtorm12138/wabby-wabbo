@@ -10,7 +10,7 @@ namespace wabby::container::detail
       throw std::runtime_error( "" );
     }
 
-    registry_data_.emplace( name.data(), data );
+    registry_data_.emplace( name.data(), std::move( data ) );
   }
 
   void registry_impl::sign_out( const std::string & name )
@@ -21,21 +21,19 @@ namespace wabby::container::detail
       throw std::runtime_error( "" );
     }
 
-    registry_data_.extract( name ).mapped();
+    registry_data_.erase( name );
   }
 
-  std::any & registry_impl::get( const std::string & name )
+  std::any * const registry_impl::get( const std::string & name )
   {
-    static std::any CACHED_NULL_ANY( nullptr );
-
     std::shared_lock<std::shared_mutex> guard( registry_mutex_ );
 
     if ( auto index = registry_data_.find( name ); index != registry_data_.end() )
     {
-      return index->second;
+      return &index->second;
     }
 
-    return CACHED_NULL_ANY;
+    return nullptr;
   }
 
 }  // namespace wabby::container::detail

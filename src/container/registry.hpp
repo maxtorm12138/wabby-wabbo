@@ -25,7 +25,7 @@ namespace wabby::container
 
       void sign_out( const std::string & name );
 
-      std::any & get( const std::string & name );
+      std::any * const get( const std::string & name );
 
     protected:
       registry_impl() = default;
@@ -45,7 +45,7 @@ namespace wabby::container
     template <typename T>
     void sign_in( const std::string & name, T && data )
     {
-      registry_impl::sign_in( name, std::forward<T>( data ) );
+      registry_impl::sign_in( name, std::make_any<T>( std::forward<T>( data ) ) );
     }
 
     template <typename T>
@@ -55,9 +55,15 @@ namespace wabby::container
     }
 
     template <typename T>
-    T & get( const std::string & name )
+    T * const get( const std::string & name )
     {
-      return std::any_cast<T &>( registry_impl::get( name ) );
+      auto item = registry_impl::get( name );
+      if ( item == nullptr )
+      {
+        return nullptr;
+      }
+      auto ret = std::any_cast<T>( item );
+      return ret;
     }
   };
 

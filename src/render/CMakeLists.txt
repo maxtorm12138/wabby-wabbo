@@ -11,5 +11,7 @@ target_compile_definitions(wabbyvulkan PRIVATE
 target_link_libraries(wabbyvulkan PRIVATE Vulkan::Vulkan Boost::boost fmt::fmt-header-only vma vulkanhpp spdlog::spdlog_header_only glm::glm PUBLIC wabbycontainer)
 target_include_directories(wabbyvulkan PRIVATE ./ ../)
 if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-    target_compile_options(wabbyvulkan PRIVATE -fvisibility=hidden)
+    target_compile_options(wabbyvulkan PRIVATE -fvisibility=hidden -fno-rtti)
+elseif(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+    target_compile_options(wabbyvulkan PRIVATE /GR-)
 endif ()
