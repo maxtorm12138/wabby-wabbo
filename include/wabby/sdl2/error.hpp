@@ -5,13 +5,9 @@
 #include "stdexcept"
 #include "string_view"
 
-// boost
-#include "boost/config.hpp"
-
 namespace wabby::sdl2
 {
-
-  class BOOST_SYMBOL_EXPORT sdl2_error : public std::runtime_error
+  class sdl2_error : public std::runtime_error
   {
   public:
     sdl2_error( std::string_view sdl2_function_name );

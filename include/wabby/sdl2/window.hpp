@@ -1,9 +1,6 @@
 #ifndef _WABBY_SDL2_WINDOW_HPP
 #define _WABBY_SDL2_WINDOW_HPP
 
-// container
-#include "container/string.hpp"
-
 // boost
 #include "boost/config.hpp"
 #include "boost/noncopyable.hpp"
@@ -20,15 +17,15 @@
 namespace wabby::sdl2
 {
 
-  class BOOST_SYMBOL_EXPORT window : public boost::noncopyable
+  class window : public boost::noncopyable
   {
   public:
-    window( const container::string & title,
-            int                       w,
-            int                       h,
-            int                       x     = SDL_WINDOWPOS_UNDEFINED,
-            int                       y     = SDL_WINDOWPOS_UNDEFINED,
-            uint32_t                  flags = SDL_WINDOW_VULKAN | SDL_WINDOW_ALLOW_HIGHDPI );
+    window( std::string_view title,
+            int              w,
+            int              h,
+            int              x     = SDL_WINDOWPOS_UNDEFINED,
+            int              y     = SDL_WINDOWPOS_UNDEFINED,
+            uint32_t         flags = SDL_WINDOW_VULKAN | SDL_WINDOW_ALLOW_HIGHDPI );
 
     window( window && other ) noexcept;
 
