@@ -2,6 +2,7 @@
 #define WABBY_CONTAINER_DELAYED_HPP
 
 // std
+#include "array"
 #include "cassert"
 #include "cstddef"
 #include "memory"
@@ -18,7 +19,7 @@ namespace wabby::container
     ~delayed()
     {
       assert( constructed_ && "object shold be constructed" );
-      std::destroy_at( reinterpret_cast<T *>( memory_ ) );
+      std::destroy_at( reinterpret_cast<T *>( memory_.data() ) );
     }
 
   public:
@@ -26,7 +27,7 @@ namespace wabby::container
     void construct( Args &&... args )
     {
       assert( !constructed_ && "construct shold be called once" );
-      std::construct_at( reinterpret_cast<T *>( memory_ ), std::forward<Args>( args )... );
+      std::construct_at( reinterpret_cast<T *>( memory_.data() ), std::forward<Args>( args )... );
 #ifndef NDEBUG
       constructed_ = true;
 #endif
@@ -35,13 +36,13 @@ namespace wabby::container
     T * operator->()
     {
       assert( constructed_ && "object shold be constructed" );
-      return reinterpret_cast<T *>( memory_ );
+      return reinterpret_cast<T *>( memory_.data() );
     }
 
     T & operator*()
     {
       assert( constructed_ && "object shold be constructed" );
-      return *( reinterpret_cast<T *>( memory_ ) );
+      return *( reinterpret_cast<T *>( memory_.data() ) );
     }
 
     operator T &()
@@ -51,7 +52,7 @@ namespace wabby::container
     }
 
   private:
-    std::byte memory_[sizeof( T )]{};
+    std::array<uint8_t, sizeof( T )> memory_{};
 #ifndef NDEBUG
     bool constructed_{ false };
 #endif
