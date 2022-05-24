@@ -14,7 +14,7 @@ target_compile_definitions(wabbyvulkan PRIVATE -DBOOST_DLL_USE_STD_FS)
 # glm defs
 target_compile_definitions(wabbyvulkan PRIVATE -DGLM_FORCE_RADIANS -DGLM_FORCE_DEPTH_ZERO_TO_ONE)
 
-target_link_libraries(wabbyvulkan PRIVATE Vulkan::Vulkan Boost::boost fmt::fmt-header-only vma vulkanhpp spdlog::spdlog_header_only inipp::inipp glm::glm PUBLIC wabbycontainer)
+target_link_libraries(wabbyvulkan PRIVATE Vulkan::Vulkan Boost::boost fmt::fmt-header-only vma vulkanhpp spdlog::spdlog_header_only inipp::inipp glm::glm wabbycontainer)
 
 target_include_directories(wabbyvulkan PRIVATE ${CMAKE_SOURCE_DIR}/include ${CMAKE_CURRENT_SOURCE_DIR}/vulkan)
 

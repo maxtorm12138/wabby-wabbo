@@ -7,8 +7,13 @@
 // container
 #include "wabby/container/delayed.hpp"
 
-namespace wabby::render::vulkan::global
+namespace wabby::render::vulkan
 {
-  extern container::delayed<spdlog::logger> logger;
-}
+  class global
+  {
+  public:
+    static container::delayed<spdlog::logger> logger;
+  };
+}  // namespace wabby::render::vulkan
+
 #endif

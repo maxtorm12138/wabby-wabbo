@@ -48,7 +48,7 @@ namespace wabby::container
     operator T &()
     {
       assert( constructed_ && "object shold be constructed" );
-      return *( reinterpret_cast<T *>( memory_ ) );
+      return *( reinterpret_cast<T *>( memory_.data() ) );
     }
 
   private:

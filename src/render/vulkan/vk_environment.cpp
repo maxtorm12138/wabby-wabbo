@@ -94,27 +94,19 @@ namespace wabby::render::vulkan
   VKAPI_ATTR VkBool32 VKAPI_CALL debug_callback( VkDebugUtilsMessageSeverityFlagBitsEXT       message_severity,
                                                  VkDebugUtilsMessageTypeFlagsEXT              message_type,
                                                  const VkDebugUtilsMessengerCallbackDataEXT * data,
-                                                 void *                                       userdata )
+                                                 void * )
   {
     vk::DebugUtilsMessageTypeFlagsEXT type( message_type );
-    /*
+
+    auto str_message_type = message_type == 0 ? "" : vk::to_string( type );
     switch ( message_severity )
     {
-      case VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT:
-        LOGGER( "vulkan-debugcallback" )->debug( "{} {}", message_type == 0 ? "" : vk::to_string( type ), data->pMessage );
-        break;
-      case VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT:
-        LOGGER( "vulkan-debugcallback" )->info( "{} {}", message_type == 0 ? "" : vk::to_string( type ), data->pMessage );
-        break;
-      case VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT:
-        LOGGER( "vulkan-debugcallback" )->warn( "{} {}", message_type == 0 ? "" : vk::to_string( type ), data->pMessage );
-        break;
-      case VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT:
-        LOGGER( "vulkan-debugcallback" )->error( "{} {}", message_type == 0 ? "" : vk::to_string( type ), data->pMessage );
-        break;
-      default: LOGGER( "vulkan-debugcallback" )->error( "{} {}", message_type == 0 ? "" : vk::to_string( type ), data->pMessage ); break;
+      case VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT: SPDLOG_LOGGER_DEBUG( global::logger, "{} {}", str_message_type, data->pMessage ); break;
+      case VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT: SPDLOG_LOGGER_INFO( global::logger, "{} {}", str_message_type, data->pMessage ); break;
+      case VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT: SPDLOG_LOGGER_WARN( global::logger, "{} {}", str_message_type, data->pMessage ); break;
+      case VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT: SPDLOG_LOGGER_ERROR( global::logger, "{} {}", str_message_type, data->pMessage ); break;
+      default: SPDLOG_LOGGER_ERROR( global::logger, "{} {}", str_message_type, data->pMessage ); break;
     }
-    */
     return VK_FALSE;
   }
 }  // namespace wabby::render::vulkan

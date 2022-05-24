@@ -1,6 +1,6 @@
 #include "vk_globals.hpp"
 
-namespace wabby::render::vulkan::global
+namespace wabby::render::vulkan
 {
-  container::delayed<spdlog::logger> g_logger;
+  container::delayed<spdlog::logger> global::logger;
 }

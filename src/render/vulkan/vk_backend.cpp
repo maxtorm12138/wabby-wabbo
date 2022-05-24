@@ -91,17 +91,17 @@ namespace wabby::render::vulkan
       boost::split( attributes, log_sink_attribute, boost::is_any_of( ":" ) );
       if ( attributes[0] == "file" )
       {
-        sinks.emplace_back( spdlog::sinks::basic_file_sink_mt( attributes[1], true ) );
+        sinks.emplace_back( std::make_shared<spdlog::sinks::basic_file_sink_mt>( attributes[1], true ) );
       }
       else if ( attributes[0] == "console" )
       {
         if ( attributes[1] == "stderr" )
         {
-          sinks.emplace_back( spdlog::sinks::stderr_color_sink_mt() );
+          sinks.emplace_back( std::make_shared<spdlog::sinks::stderr_color_sink_mt>() );
         }
         else if ( attributes[1] == "stdout" )
         {
-          sinks.emplace_back( spdlog::sinks::stdout_color_sink_mt() );
+          sinks.emplace_back( std::make_shared<spdlog::sinks::stdout_color_sink_mt>() );
         }
       }
     }
