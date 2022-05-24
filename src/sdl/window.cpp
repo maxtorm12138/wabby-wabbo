@@ -1,7 +1,7 @@
 #include "wabby/sdl2/window.hpp"
 
 // module
-#include "error.hpp"
+#include "wabby/sdl2/error.hpp"
 
 // std
 #include "iterator"
@@ -9,9 +9,9 @@
 namespace wabby::sdl2
 {
 
-  window::window( const container::string & title, int w, int h, int x, int y, uint32_t flags ) : window_()
+  window::window( const char * title, int w, int h, int x, int y, uint32_t flags ) : window_()
   {
-    window_ = SDL_CreateWindow( title.c_str(), x, y, w, h, flags );
+    window_ = SDL_CreateWindow( title, x, y, w, h, flags );
     SDL2_ASSERT( window_ != nullptr, SDL_CreateWindow );
   }
 
@@ -36,20 +36,17 @@ namespace wabby::sdl2
     SDL_ShowWindow( window_ );
   }
 
-  std::vector<std::string> window::get_vulkan_instance_extensions() const
+  std::vector<const char *> window::get_vulkan_instance_extensions() const
   {
-    std::vector<std::string> result;
-
     unsigned count{ 0 };
     auto     ret = SDL_Vulkan_GetInstanceExtensions( window_, &count, nullptr );
     SDL2_ASSERT( ret == SDL_TRUE, SDL_Vulkan_GetInstanceExtensions );
     std::vector<const char *> instance_extensions( count );
-    result.reserve( count );
 
     ret = SDL_Vulkan_GetInstanceExtensions( window_, &count, instance_extensions.data() );
     SDL2_ASSERT( ret == SDL_TRUE, SDL_Vulkan_GetInstanceExtensions );
-    std::copy( instance_extensions.begin(), instance_extensions.end(), std::back_inserter( result ) );
-    return result;
+
+    return instance_extensions;
   }
 
   VkSurfaceKHR window::create_vulkan_surface( VkInstance instance ) const

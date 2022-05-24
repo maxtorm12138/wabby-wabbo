@@ -20,12 +20,12 @@ namespace wabby::sdl2
   class window : public boost::noncopyable
   {
   public:
-    window( std::string_view title,
-            int              w,
-            int              h,
-            int              x     = SDL_WINDOWPOS_UNDEFINED,
-            int              y     = SDL_WINDOWPOS_UNDEFINED,
-            uint32_t         flags = SDL_WINDOW_VULKAN | SDL_WINDOW_ALLOW_HIGHDPI );
+    window( const char * title,
+            int          w,
+            int          h,
+            int          x     = SDL_WINDOWPOS_UNDEFINED,
+            int          y     = SDL_WINDOWPOS_UNDEFINED,
+            uint32_t     flags = SDL_WINDOW_VULKAN | SDL_WINDOW_ALLOW_HIGHDPI );
 
     window( window && other ) noexcept;
 
@@ -36,7 +36,7 @@ namespace wabby::sdl2
   public:
     void show() noexcept;
 
-    std::vector<std::string> get_vulkan_instance_extensions() const;
+    std::vector<const char *> get_vulkan_instance_extensions() const;
 
     VkSurfaceKHR create_vulkan_surface( VkInstance instance ) const;
 
