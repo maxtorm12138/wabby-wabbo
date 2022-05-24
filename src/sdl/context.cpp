@@ -1,7 +1,7 @@
-#include "context.hpp"
+#include "wabby/sdl2/context.hpp"
 
 // module
-#include "error.hpp"
+#include "wabby/sdl2/error.hpp"
 
 namespace wabby::sdl2
 {
