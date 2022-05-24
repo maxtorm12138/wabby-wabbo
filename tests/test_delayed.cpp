@@ -25,7 +25,6 @@ public:
 TEST_F( delayed_test, test_construct )
 {
   wabby::container::delayed<Foo> foo;
-  ASSERT_NE( foo->a_, 1 );
-  foo.emplace( UINT32_MAX );
+  foo.construct( UINT32_MAX );
   ASSERT_EQ( foo->a_, UINT32_MAX );
 }

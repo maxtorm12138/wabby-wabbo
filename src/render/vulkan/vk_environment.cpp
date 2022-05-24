@@ -26,11 +26,11 @@ namespace wabby::render::vulkan
   };
 
   vk::raii::Instance
-    build_instance( const vk::raii::Context & context, const vk::ApplicationInfo & application_info, const std::vector<std::string> & windowsystem_extensions );
+    build_instance( const vk::raii::Context & context, const vk::ApplicationInfo & application_info, const char ** windowsystem_extensions, uint32_t count );
 
-  vk_environment::vk_environment( const vk::ApplicationInfo & application_info, const std::vector<std::string> & windowsystem_extensions )
+  vk_environment::vk_environment( const vk::ApplicationInfo & application_info, const char ** windowsystem_extensions, uint32_t count )
     : context_()
-    , instance_( build_instance( context_, application_info, windowsystem_extensions ) )
+    , instance_( build_instance( context_, application_info, windowsystem_extensions, count ) )
     ,
 #ifdef NDEBUG
     debug_messenger_( nullptr )
@@ -41,7 +41,7 @@ namespace wabby::render::vulkan
   }
 
   vk::raii::Instance
-    build_instance( const vk::raii::Context & context, const vk::ApplicationInfo & application_info, const std::vector<std::string> & windowsystem_extensions )
+    build_instance( const vk::raii::Context & context, const vk::ApplicationInfo & application_info, const char ** windowsystem_extensions, uint32_t count )
   {
 #ifndef NDEBUG
     std::vector<const char *> REQUIRED_LAYERS{ LAYER_NAME_VK_LAYER_KHRONOS_validation.data() };
@@ -54,8 +54,7 @@ namespace wabby::render::vulkan
     std::unordered_set<std::string_view> OPTIONAL_LAYERS{};
     std::unordered_set<std::string_view> OPTIONAL_EXTENSIONS{ EXT_NAME_VK_KHR_get_physical_device_properties2.data(),
                                                               EXT_NAME_VK_KHR_portability_enumeration.data() };
-    std::transform(
-      windowsystem_extensions.begin(), windowsystem_extensions.end(), std::back_inserter( REQUIRED_EXTENSIONS ), std::mem_fn( &std::string::c_str ) );
+    std::copy( windowsystem_extensions, windowsystem_extensions + count, std::back_inserter( REQUIRED_EXTENSIONS ) );
 
     auto enable_layers = REQUIRED_LAYERS;
     // check optional layers

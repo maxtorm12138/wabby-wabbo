@@ -61,41 +61,53 @@ namespace wabby::render::vulkan
     return fences;
   }
 
-  vk_backend_context::vk_backend_context( const vk_backend_setup_info * setup_info )
-    : environment_( build_application_info( setup_info ), setup_info->windowsystem_extensions, setup_info->windowsystem_extensions_count )
-    , surface_( environment_.instance(), setup_info->fn_make_surface( *environment_.instance(), setup_info->fn_make_surface_user_args ) )
-    , hardware_( environment_.instance(), surface_ )
-    , device_allocator_( environment_.instance(), hardware_.physical_device(), hardware_.device() )
-    , swapchain_( hardware_, surface_, setup_info->fn_get_window_size( setup_info->fn_get_window_size_user_args ) )
-    , render_pass_( hardware_.device(), swapchain_.surface_format() )
-    , image_index_( -1 )
-    , frame_index_( 0 )
-    , framebuffers_( hardware_.device(), render_pass_.render_pass(), swapchain_.image_count(), build_fb_attachments( swapchain_ ), swapchain_.extent() )
-    , command_buffers_( hardware_.allocate_graphics_command_buffers( swapchain_.max_frames_in_flight() ) )
-    , image_available_semaphores_( build_semaphores( hardware_.device(), swapchain_.max_frames_in_flight() ) )
-    , render_finished_semaphores_( build_semaphores( hardware_.device(), swapchain_.max_frames_in_flight() ) )
-    , in_flight_fences_( build_fences( hardware_.device(), swapchain_.max_frames_in_flight() ) )
+  void vk_backend::setup( const vk_backend_setup_info * setup_info )
   {
-  }
+    environment_.construct( build_application_info( setup_info ), setup_info->windowsystem_extensions, setup_info->windowsystem_extensions_count );
+    surface_.construct( environment_->instance(), setup_info->fn_make_surface( setup_info->fn_make_surface_user_args, *environment_->instance() ) );
+    hardware_.construct( environment_->instance(), *surface_ );
+    device_allocator_.construct( environment_->instance(), hardware_->physical_device(), hardware_->device() );
 
-  void vk_backend::setup( const vk_backend_setup_info * setup_info ) {}
+    auto fn_get_window_size           = setup_info->fn_get_window_size;
+    auto fn_get_window_size_user_args = setup_info->fn_make_surface_user_args;
+
+    auto fn_get_window_size_wrapper = [fn_get_window_size_user_args, fn_get_window_size]()
+    {
+      std::pair<uint32_t, uint32_t> result;
+      fn_get_window_size( fn_get_window_size_user_args, &result.first, &result.second );
+      return result;
+    };
+
+    swapchain_.construct( hardware_, *surface_, fn_get_window_size_wrapper );
+    render_pass_.construct( hardware_->device(), swapchain_->surface_format() );
+    framebuffers_.construct(
+      hardware_->device(), render_pass_->render_pass(), swapchain_->image_count(), build_fb_attachments( *swapchain_ ), swapchain_->extent() );
+
+    image_index_ = 0;
+    frame_index_ = 0;
+
+    command_buffers_            = hardware_->allocate_graphics_command_buffers( swapchain_->max_frames_in_flight() );
+    image_available_semaphores_ = build_semaphores( hardware_->device(), swapchain_->max_frames_in_flight() );
+    render_finished_semaphores_ = build_semaphores( hardware_->device(), swapchain_->max_frames_in_flight() );
+    in_flight_fences_           = build_fences( hardware_->device(), swapchain_->max_frames_in_flight() );
+  }
 
   void vk_backend::begin_frame()
   {
-    ctx_->hardware_.device().waitForFences( *ctx_->in_flight_fences_[ctx_->frame_index_], VK_TRUE, UINT64_MAX );
-    ctx_->image_index_ = ctx_->swapchain_.acquire_next_image( ctx_->image_available_semaphores_[ctx_->frame_index_] );
-    ctx_->hardware_.device().resetFences( *ctx_->in_flight_fences_[ctx_->frame_index_] );
+    hardware_->device().waitForFences( *in_flight_fences_[frame_index_], VK_TRUE, UINT64_MAX );
+    image_index_ = swapchain_->acquire_next_image( image_available_semaphores_[frame_index_] );
+    hardware_->device().resetFences( *in_flight_fences_[frame_index_] );
 
     vk::CommandBufferBeginInfo command_buffer_begin_info{};
-    ctx_->command_buffers_[ctx_->frame_index_].begin( command_buffer_begin_info );
+    command_buffers_[frame_index_].begin( command_buffer_begin_info );
   }
 
   void vk_backend::end_frame()
   {
-    ctx_->command_buffers_[ctx_->frame_index_].end();
-    vk::ArrayProxy<const vk::Semaphore>     submit_wait_semaphores( *ctx_->image_available_semaphores_[ctx_->frame_index_] );
-    vk::ArrayProxy<const vk::Semaphore>     submit_signal_semaphores( *ctx_->render_finished_semaphores_[ctx_->frame_index_] );
-    vk::ArrayProxy<const vk::CommandBuffer> submit_command_buffers( *ctx_->command_buffers_[ctx_->frame_index_] );
+    command_buffers_[frame_index_].end();
+    vk::ArrayProxy<const vk::Semaphore>     submit_wait_semaphores( *image_available_semaphores_[frame_index_] );
+    vk::ArrayProxy<const vk::Semaphore>     submit_signal_semaphores( *render_finished_semaphores_[frame_index_] );
+    vk::ArrayProxy<const vk::CommandBuffer> submit_command_buffers( *command_buffers_[frame_index_] );
     std::array<vk::PipelineStageFlags, 1>   wait_dst_stages{ vk::PipelineStageFlagBits::eColorAttachmentOutput };
 
     vk::SubmitInfo submit_info{
@@ -108,41 +120,41 @@ namespace wabby::render::vulkan
       .pSignalSemaphores    = submit_signal_semaphores.data(),
     };
 
-    ctx_->hardware_.queue( QueueType::GRAPHICS )->submit( submit_info, *ctx_->in_flight_fences_[ctx_->frame_index_] );
+    hardware_->queue( QueueType::GRAPHICS )->submit( submit_info, *in_flight_fences_[frame_index_] );
 
-    vk::ArrayProxy<const vk::Semaphore>    presnet_wait_semaphores( *ctx_->render_finished_semaphores_[ctx_->frame_index_] );
-    vk::ArrayProxy<const vk::SwapchainKHR> present_swapchains( *ctx_->swapchain_.swaichain() );
+    vk::ArrayProxy<const vk::Semaphore>    presnet_wait_semaphores( *render_finished_semaphores_[frame_index_] );
+    vk::ArrayProxy<const vk::SwapchainKHR> present_swapchains( *swapchain_->swaichain() );
 
     vk::PresentInfoKHR present_info{ .waitSemaphoreCount = presnet_wait_semaphores.size(),
                                      .pWaitSemaphores    = presnet_wait_semaphores.data(),
                                      .swapchainCount     = present_swapchains.size(),
                                      .pSwapchains        = present_swapchains.data(),
-                                     .pImageIndices      = &ctx_->image_index_ };
+                                     .pImageIndices      = &image_index_ };
 
-    ctx_->hardware_.queue( QueueType::PRESENT, std::cref( ctx_->surface_ ) )->presentKHR( present_info );
+    hardware_->queue( QueueType::PRESENT, std::cref( *surface_ ) )->presentKHR( present_info );
 
-    ctx_->frame_index_ = ( ctx_->frame_index_ + 1 ) % ctx_->swapchain_.max_frames_in_flight();
+    frame_index_ = ( frame_index_ + 1 ) % swapchain_->max_frames_in_flight();
   }
 
   void vk_backend::begin_render_pass()
   {
-    vk::Rect2D     render_area{ .offset = { 0, 0 }, .extent = ctx_->swapchain_.extent() };
+    vk::Rect2D     render_area{ .offset = { 0, 0 }, .extent = swapchain_->extent() };
     vk::ClearValue clear_value{};
     clear_value.color.float32 = std::array<float, 4>{ 0.1f, 0.6f, 0.1f, 0.1f };
 
-    ctx_->render_pass_.begin( ctx_->command_buffers_[ctx_->frame_index_], ctx_->framebuffers_.framebuffer( ctx_->image_index_ ), render_area, clear_value );
+    render_pass_->begin( command_buffers_[frame_index_], framebuffers_->framebuffer( image_index_ ), render_area, clear_value );
   }
 
   void vk_backend::end_render_pass()
   {
-    ctx_->render_pass_.end( ctx_->command_buffers_[ctx_->frame_index_] );
+    render_pass_->end( command_buffers_[frame_index_] );
   }
 
   void vk_backend::resized() {}
 
   void vk_backend::teardown()
   {
-    ctx_->hardware_.device().waitIdle();
+    hardware_->device().waitIdle();
   }
 
 }  // namespace wabby::render::vulkan

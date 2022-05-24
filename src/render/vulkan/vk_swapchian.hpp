@@ -13,7 +13,9 @@ namespace wabby::render::vulkan
   class vk_swapchain : public boost::noncopyable
   {
   public:
-    vk_swapchain( const vk_hardware & hardware, const vk::raii::SurfaceKHR & surface, std::pair<uint32_t, uint32_t> window_size );
+    using fn_get_window_size = std::function<std::pair<uint32_t, uint32_t>()>;
+
+    vk_swapchain( const vk_hardware & hardware, const vk::raii::SurfaceKHR & surface, fn_get_window_size get_window_size );
 
   public:
     vk::PresentModeKHR present_mode() const
@@ -55,6 +57,7 @@ namespace wabby::render::vulkan
     uint32_t acquire_next_image( const vk::raii::Semaphore & image_available_semaphore );
 
   private:
+    fn_get_window_size               fn_get_window_size_;
     vk::PresentModeKHR               present_mode_;
     vk::SurfaceFormatKHR             surface_format_;
     vk::Extent2D                     extent_;

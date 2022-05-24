@@ -30,6 +30,9 @@
 // spdlog
 #include "spdlog/spdlog.h"
 
+// container
+#include "wabby/container/delayed.hpp"
+
 namespace wabby::render::vulkan
 {
 }

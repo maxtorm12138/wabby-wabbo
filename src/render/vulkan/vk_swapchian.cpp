@@ -120,10 +120,11 @@ namespace wabby::render::vulkan
     return image_views;
   }
 
-  vk_swapchain::vk_swapchain( const vk_hardware & hardware, const vk::raii::SurfaceKHR & surface, std::pair<uint32_t, uint32_t> window_size )
-    : present_mode_( pick_present_mode( hardware.physical_device(), surface ) )
+  vk_swapchain::vk_swapchain( const vk_hardware & hardware, const vk::raii::SurfaceKHR & surface, fn_get_window_size fn_get_window_size )
+    : fn_get_window_size_( fn_get_window_size )
+    , present_mode_( pick_present_mode( hardware.physical_device(), surface ) )
     , surface_format_( pick_surface_format( hardware.physical_device(), surface ) )
-    , extent_( pick_extent( hardware.physical_device(), surface, window_size ) )
+    , extent_( pick_extent( hardware.physical_device(), surface, fn_get_window_size() ) )
     , image_count_( get_image_count( hardware, surface ) )
     , max_frames_in_flight_( std::min( image_count_, size_t( 2 ) ) )
     , swapchain_( build_swapchian( hardware, surface, image_count_, present_mode_, surface_format_, extent_ ) )
