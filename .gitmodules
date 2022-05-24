@@ -16,3 +16,6 @@
 [submodule "contrib/spdlog"]
 	path = contrib/spdlog
 	url = https://github.com/gabime/spdlog.git
+[submodule "contrib/inipp"]
+	path = contrib/inipp
+	url = https://github.com/mcmtroffaes/inipp.git
