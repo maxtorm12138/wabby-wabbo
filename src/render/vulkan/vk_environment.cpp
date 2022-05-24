@@ -105,7 +105,7 @@ namespace wabby::render::vulkan
       case VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT: SPDLOG_LOGGER_INFO( global::logger, "{} {}", str_message_type, data->pMessage ); break;
       case VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT: SPDLOG_LOGGER_WARN( global::logger, "{} {}", str_message_type, data->pMessage ); break;
       case VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT: SPDLOG_LOGGER_ERROR( global::logger, "{} {}", str_message_type, data->pMessage ); break;
-      default: SPDLOG_LOGGER_ERROR( global::logger, "{} {}", str_message_type, data->pMessage ); break;
+      default: SPDLOG_LOGGER_CRITICAL( global::logger, "{} {}", str_message_type, data->pMessage ); break;
     }
     return VK_FALSE;
   }
