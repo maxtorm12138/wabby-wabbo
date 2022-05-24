@@ -62,7 +62,7 @@ extern "C"
 
   typedef void * ( *fn_allocation )( void * user_args, size_t size, size_t alignment );
   typedef void * ( *fn_reallocation )( void * user_args, void * original, size_t size, size_t alignment );
-  typedef void * ( *fn_free )( void * user_args, void * memory );
+  typedef void ( *fn_free )( void * user_args, void * memory );
 
   typedef struct allocation_callbacks_t
   {

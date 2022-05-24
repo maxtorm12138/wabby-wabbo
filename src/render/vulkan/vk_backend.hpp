@@ -17,6 +17,12 @@
 // common include
 #include "vk_comm_include.hpp"
 
+extern "C"
+{
+  BOOST_SYMBOL_EXPORT void set_allocation_callbacks( const allocation_callbacks * allocation_callbacks );
+  BOOST_SYMBOL_EXPORT int  create_backend( backend * backend );
+  BOOST_SYMBOL_EXPORT void destroy_backend( backend backend );
+}
 namespace wabby::render::vulkan
 {
 

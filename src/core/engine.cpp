@@ -1,15 +1,11 @@
-#include "engine.hpp"
+#include "wabby/core/engine.hpp"
 
-// container
 #include "wabby/container/delayed.hpp"
-
-// sdl2
-#include "sdl/sdl2.hpp"
-
-// render
-#include "render/backend.hpp"
+#include "wabby/render/backend_raii.hpp"
+#include "wabby/sdl2/sdl2.hpp"
 
 // boost
+#include "boost/align/aligned_alloc.hpp"
 #include "boost/dll/runtime_symbol_info.hpp"
 #include "boost/dll/shared_library.hpp"
 
@@ -20,6 +16,22 @@
 
 namespace wabby::core
 {
+
+  void * fn_allocation( void * user_args, size_t size, size_t alignment )
+  {
+    return boost::alignment::aligned_alloc( alignment, size );
+  }
+
+  void * fn_reallocation( void * user_args, void * original, size_t size, size_t alignment )
+  {
+    std::abort();
+    return nullptr;
+  }
+
+  void fn_free( void * user_args, void * memory )
+  {
+    boost::alignment::aligned_free( memory );
+  }
 
   boost::dll::fs::path find_render_library_path()
   {
@@ -41,30 +53,51 @@ namespace wabby::core
     void teardown();
 
   private:
-    sdl2::context                    sdl_context_;
-    container::delayed<sdl2::window> window_;
+    container::delayed<sdl2::context>         sdl_context_;
+    container::delayed<sdl2::window>          window_;
+    container::delayed<render::raii::backend> backend_;
   };
 
   void engine_impl::setup( const engine_setup_info & setup_info )
   {
-    window_         = std::make_unique<sdl2::window>( setup_info.application_name, setup_info.width, setup_info.height );
-    render_library_ = std::make_unique<boost::dll::shared_library>( find_render_library_path() );
+    sdl_context_.construct();
+    window_.construct( setup_info.application_name, setup_info.width, setup_info.height );
 
-    auto make_vk_backend = render_library_->get_alias<decltype( wabby::render::make_vk_backend )>( "make_vk_backend" );
-    backend_             = make_vk_backend();
+    auto library_path = find_render_library_path();
 
-    auto fn_make_surface    = [this]( VkInstance instance ) { return window_->create_vulkan_surface( instance ); };
-    auto fn_get_window_size = [this]() { return window_->get_vulakn_drawable_size(); };
+    allocation_callbacks allocation_callbacks{ .user_args = nullptr, .allocation = &fn_allocation, .reallocation = &fn_reallocation, .free = &fn_free };
 
-    render::vk_backend_create_info vk_backend_create_info;
-    vk_backend_create_info.applicaiton_name        = setup_info.application_name;
-    vk_backend_create_info.application_version     = setup_info.application_version;
-    vk_backend_create_info.registry                = registry_;
-    vk_backend_create_info.windowsystem_extensions = window_->get_vulkan_instance_extensions();
-    vk_backend_create_info.fn_make_surface         = fn_make_surface;
-    vk_backend_create_info.fn_get_window_size      = fn_get_window_size;
+    backend_.construct( library_path, &allocation_callbacks );
 
-    backend_->setup( vk_backend_create_info );
+    auto backend_configuration_path = ( boost::dll::program_location().parent_path() / "vulkan.ini" ).string();
+    auto windowsystem_extensions    = window_->get_vulkan_instance_extensions();
+
+    auto fn_make_surface = []( void * that, VkInstance instance ) { return static_cast<engine_impl *>( that )->window_->create_vulkan_surface( instance ); };
+
+    auto fn_get_window_size = []( void * that, uint32_t * w, uint32_t * h )
+    {
+      auto size = static_cast<engine_impl *>( that )->window_->get_vulakn_drawable_size();
+      *w        = size.first;
+      *h        = size.second;
+    };
+
+    vk_backend_setup_info vk_backend_setup_info{
+      .application_name    = setup_info.application_name,
+      .application_version = setup_info.application_version,
+
+      .windowsystem_extensions       = windowsystem_extensions.data(),
+      .windowsystem_extensions_count = static_cast<uint32_t>( windowsystem_extensions.size() ),
+
+      .fn_make_surface_user_args = this,
+      .fn_make_surface           = fn_make_surface,
+
+      .fn_get_window_size_user_args = this,
+      .fn_get_window_size           = fn_get_window_size,
+
+      .configuration_path = backend_configuration_path.c_str(),
+    };
+
+    backend_->setup( reinterpret_cast<const backend_setup_info *>( &vk_backend_setup_info ) );
   }
 
   void engine_impl::run()
@@ -73,7 +106,7 @@ namespace wabby::core
     bool running = true;
     while ( running )
     {
-      while ( auto event = sdl_context_.poll_event() )
+      while ( auto event = sdl_context_->poll_event() )
       {
         if ( event->type == SDL_QUIT )
         {

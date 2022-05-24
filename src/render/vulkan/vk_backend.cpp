@@ -80,12 +80,12 @@ namespace wabby::render::vulkan
     uint32_t                                          sinks_count;
     std::vector<std::shared_ptr<spdlog::sinks::sink>> sinks;
     inipp::get_value( config.sections["log"], "level", level );
-    inipp::get_value( config.sections["log"], "sinks_count", sinks_count );
+    inipp::get_value( config.sections["log"], "sink_count", sinks_count );
 
     for ( uint32_t i = 0; i < sinks_count; i++ )
     {
       std::string log_sink_attribute;
-      inipp::get_value( config.sections["log"], fmt::format( "sinks_{}", i ), log_sink_attribute );
+      inipp::get_value( config.sections["log"], fmt::format( "sink_{}", i ), log_sink_attribute );
 
       std::vector<std::string> attributes;
       boost::split( attributes, log_sink_attribute, boost::is_any_of( ":" ) );
@@ -254,45 +254,46 @@ namespace wabby::render::vulkan::detail
     static_cast<wabby::render::vulkan::vk_backend *>( handle->internal_handle )->teardown();
   }
 
-  extern "C"
-  {
-    int create_backend( backend * backend )
-    {
-      vk_allocator<backend_t>  allocator;
-      vk_allocator<vk_backend> vk_backend_allocator;
-
-      auto vk_backend      = allocator.allocate( 1 );
-      auto vk_backend_impl = vk_backend_allocator.allocate( 1 );
-      std::construct_at( vk_backend_impl );
-
-      vk_backend->internal_handle   = vk_backend_impl;
-      vk_backend->setup             = setup;
-      vk_backend->teardown          = teardown;
-      vk_backend->begin_frame       = begin_frame;
-      vk_backend->end_frame         = end_frame;
-      vk_backend->begin_render_pass = begin_render_pass;
-      vk_backend->end_render_pass   = end_render_pass;
-      vk_backend->resized           = resized;
-
-      *backend = vk_backend;
-      return 0;
-    }
-
-    void destroy_backend( backend backend )
-    {
-      vk_allocator<backend_t>  allocator;
-      vk_allocator<vk_backend> vk_backend_allocator;
-
-      std::destroy_at( static_cast<vk_backend *>( backend->internal_handle ) );
-
-      vk_backend_allocator.deallocate( static_cast<vk_backend *>( backend->internal_handle ), 1 );
-      allocator.deallocate( backend, 1 );
-    }
-
-    void set_allocation_callbacks( const allocation_callbacks * allocation_callbacks )
-    {
-      detail::vk_allocator_impl::setup(
-        allocation_callbacks->user_args, allocation_callbacks->allocation, allocation_callbacks->reallocation, allocation_callbacks->free );
-    }
-  }
 }  // namespace wabby::render::vulkan::detail
+
+extern "C"
+{
+  int create_backend( backend * backend )
+  {
+    wabby::render::vulkan::vk_allocator<backend_t>                         allocator;
+    wabby::render::vulkan::vk_allocator<wabby::render::vulkan::vk_backend> vk_backend_allocator;
+
+    auto vk_backend      = allocator.allocate( 1 );
+    auto vk_backend_impl = vk_backend_allocator.allocate( 1 );
+    std::construct_at( vk_backend_impl );
+
+    vk_backend->internal_handle   = vk_backend_impl;
+    vk_backend->setup             = wabby::render::vulkan::detail::setup;
+    vk_backend->teardown          = wabby::render::vulkan::detail::teardown;
+    vk_backend->begin_frame       = wabby::render::vulkan::detail::begin_frame;
+    vk_backend->end_frame         = wabby::render::vulkan::detail::end_frame;
+    vk_backend->begin_render_pass = wabby::render::vulkan::detail::begin_render_pass;
+    vk_backend->end_render_pass   = wabby::render::vulkan::detail::end_render_pass;
+    vk_backend->resized           = wabby::render::vulkan::detail::resized;
+
+    *backend = vk_backend;
+    return 0;
+  }
+
+  void destroy_backend( backend backend )
+  {
+    wabby::render::vulkan::vk_allocator<backend_t>                         allocator;
+    wabby::render::vulkan::vk_allocator<wabby::render::vulkan::vk_backend> vk_backend_allocator;
+
+    std::destroy_at( static_cast<wabby::render::vulkan::vk_backend *>( backend->internal_handle ) );
+
+    vk_backend_allocator.deallocate( static_cast<wabby::render::vulkan::vk_backend *>( backend->internal_handle ), 1 );
+    allocator.deallocate( backend, 1 );
+  }
+
+  void set_allocation_callbacks( const allocation_callbacks * allocation_callbacks )
+  {
+    wabby::render::vulkan::detail::vk_allocator_impl::setup(
+      allocation_callbacks->user_args, allocation_callbacks->allocation, allocation_callbacks->reallocation, allocation_callbacks->free );
+  }
+}

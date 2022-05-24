@@ -29,6 +29,7 @@ namespace wabby::render::raii
     {
       if ( backend_handle_ != nullptr )
       {
+        auto destroy_backend = library_.get<decltype( ::destroy_backend )>( "destroy_backend" );
         destroy_backend( backend_handle_ );
       }
     }

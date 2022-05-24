@@ -4,6 +4,9 @@
 // boost
 #include "boost/config.hpp"
 
+// std
+#include "cstdint"
+
 namespace wabby::core
 {
 

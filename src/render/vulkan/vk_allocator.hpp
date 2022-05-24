@@ -13,7 +13,7 @@ namespace wabby::render::vulkan
     public:
       using fn_allocation   = void * (*)( void * user_args, size_t size, size_t alignment );
       using fn_reallocation = void * (*)( void * user_args, void * original, size_t size, size_t alignment );
-      using fn_free         = void * (*)( void * user_args, void * memory );
+      using fn_free         = void ( * )( void * user_args, void * memory );
 
     public:
       static void setup( void * user_args, fn_allocation fn_alloc, fn_reallocation fn_realloc, fn_free fn_fr ) noexcept;
