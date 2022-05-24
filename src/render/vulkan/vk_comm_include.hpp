@@ -33,4 +33,7 @@
 // container
 #include "wabby/container/delayed.hpp"
 
+// globals
+#include "vk_globals.hpp"
+
 #endif

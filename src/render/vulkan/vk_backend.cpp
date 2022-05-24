@@ -16,8 +16,6 @@
 
 namespace wabby::render::vulkan
 {
-  wabby::container::delayed<spdlog::logger> g_logger;
-
   vk::ApplicationInfo build_application_info( const vk_backend_setup_info * setup_info )
   {
     vk::ApplicationInfo app_info{ .pApplicationName   = setup_info->application_name,
@@ -76,13 +74,8 @@ namespace wabby::render::vulkan
     return fences;
   }
 
-  void vk_backend::setup( const vk_backend_setup_info * setup_info )
+  spdlog::logger build_logger( inipp::Ini<char> & config )
   {
-    std::ifstream    config_file( setup_info->configuration_path );
-    inipp::Ini<char> config;
-    config.parse( config_file );
-    config.strip_trailing_comments();
-
     std::string                                       level;
     uint32_t                                          sinks_count;
     std::vector<std::shared_ptr<spdlog::sinks::sink>> sinks;
@@ -115,8 +108,17 @@ namespace wabby::render::vulkan
 
     spdlog::logger logger( "vulkan", sinks.begin(), sinks.end() );
     logger.set_level( spdlog::level::from_str( level ) );
+    return logger;
+  }
 
-    g_logger.construct( std::move( logger ) );
+  void vk_backend::setup( const vk_backend_setup_info * setup_info )
+  {
+    std::ifstream    config_file( setup_info->configuration_path );
+    inipp::Ini<char> config;
+    config.parse( config_file );
+    config.strip_trailing_comments();
+
+    global::logger.construct( build_logger( config ) );
 
     environment_.construct( build_application_info( setup_info ), setup_info->windowsystem_extensions, setup_info->windowsystem_extensions_count );
     surface_.construct( environment_->instance(), setup_info->fn_make_surface( setup_info->fn_make_surface_user_args, *environment_->instance() ) );
