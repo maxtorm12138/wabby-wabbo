@@ -32,10 +32,10 @@ namespace wabby::render::vulkan
   public:
     constexpr vk_allocator() noexcept {}
 
-    constexpr vk_allocator( const vk_allocator & other ) noexcept {}
+    constexpr vk_allocator( const vk_allocator & ) noexcept {}
 
     template <class U>
-    constexpr vk_allocator( const vk_allocator<U> & other ) noexcept
+    constexpr vk_allocator( const vk_allocator<U> & ) noexcept
     {
     }
 
@@ -45,7 +45,7 @@ namespace wabby::render::vulkan
       return static_cast<T *>( fn_allocation_( user_args_, sizeof( T ) * n, std::bit_ceil( sizeof( T ) ) ) );
     }
 
-    constexpr void deallocate( T * p, size_t n )
+    constexpr void deallocate( T * p, size_t )
     {
       fn_free_( user_args_, p );
     }

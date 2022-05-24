@@ -1,4 +1,5 @@
-#include "registry.hpp"
+#include "wabby/container/registry.hpp"
+
 namespace wabby::container::detail
 {
 

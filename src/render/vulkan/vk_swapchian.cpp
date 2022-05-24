@@ -20,7 +20,6 @@ namespace wabby::render::vulkan
         mode = m;
       }
     }
-    LOGGER( "vulkan" )->info( "swapchain present mode: {}", vk::to_string( mode ) );
     return mode;
   }
 
@@ -36,7 +35,6 @@ namespace wabby::render::vulkan
         surface_format = fmt;
       }
     }
-    LOGGER( "vulkan" )->info( "swapchain surface format: {} {}", vk::to_string( surface_format.format ), vk::to_string( surface_format.colorSpace ) );
     return surface_format;
   }
 
@@ -55,7 +53,6 @@ namespace wabby::render::vulkan
       extent.height = std::clamp( static_cast<uint32_t>( h ), surface_capabilities.minImageExtent.height, surface_capabilities.maxImageExtent.height );
     }
 
-    LOGGER( "vulkan" )->info( "swapchain extent: {} {}", extent.width, extent.height );
     return extent;
   }
 
@@ -78,8 +75,6 @@ namespace wabby::render::vulkan
                                           vk::Extent2D                 extent )
   {
     auto surface_capabilities = hardware.physical_device().getSurfaceCapabilitiesKHR( *surface );
-
-    LOGGER( "vulkan" )->info( "swapchain image count: {}", image_count );
 
     std::array<uint32_t, 2>      queue_family_indices{ *hardware.queue_index( QueueType::GRAPHICS ),
                                                   *hardware.queue_index( QueueType::PRESENT, std::cref( surface ) ) };

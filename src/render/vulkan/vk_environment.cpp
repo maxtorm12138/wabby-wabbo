@@ -98,6 +98,7 @@ namespace wabby::render::vulkan
                                                  void *                                       userdata )
   {
     vk::DebugUtilsMessageTypeFlagsEXT type( message_type );
+    /*
     switch ( message_severity )
     {
       case VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT:
@@ -114,7 +115,7 @@ namespace wabby::render::vulkan
         break;
       default: LOGGER( "vulkan-debugcallback" )->error( "{} {}", message_type == 0 ? "" : vk::to_string( type ), data->pMessage ); break;
     }
-
+    */
     return VK_FALSE;
   }
 }  // namespace wabby::render::vulkan

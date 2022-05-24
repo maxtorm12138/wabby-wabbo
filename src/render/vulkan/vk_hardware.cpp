@@ -76,7 +76,6 @@ namespace wabby::render::vulkan
       queue_index_cache_[type] = *index;
     }
 
-    LOGGER( "vulkan" )->info( "hardware non cached queue_index {} {}", vk::to_string( type ), index.has_value() ? *index : UINT32_MAX );
     return index;
   }
 
@@ -171,7 +170,6 @@ namespace wabby::render::vulkan
         continue;
       }
 
-      LOGGER( "vulkan" )->info( "hardware physical device: {}", properties.deviceName );
       return std::move( physical_device );
     }
 

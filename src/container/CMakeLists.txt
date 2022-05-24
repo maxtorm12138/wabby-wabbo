@@ -3,7 +3,7 @@ project(wabbycontainer VERSION 1.0.0)
 
 file(GLOB WABBY_CONTAINER_SRCS *.cpp *.hpp)
 add_library(wabbycontainer STATIC ${WABBY_CONTAINER_SRCS})
-target_include_directories(wabbycontainer PRIVATE ${PROJECT_SOURCE_DIR}/include)
+target_include_directories(wabbycontainer PRIVATE ${CMAKE_SOURCE_DIR}/include)
 if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
     target_compile_options(wabbycontainer PRIVATE -fno-rtti -Wall -Wextra)
 elseif(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")

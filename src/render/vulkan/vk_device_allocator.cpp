@@ -27,7 +27,6 @@ namespace wabby::render::vulkan
     auto result = static_cast<vk::Result>( vmaCreateAllocator( &allocator_create_info, &allocator_ ) );
     if ( result != vk::Result::eSuccess )
     {
-      LOGGER( "vulkan" )->error( "device_allocator call vmaCreateAllocator {}", vk::to_string( result ) );
       throw vk::SystemError( vk::make_error_code( result ), "vmaCreateAllocator" );
     }
   }
