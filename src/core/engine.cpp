@@ -1,7 +1,7 @@
 #include "engine.hpp"
 
 // container
-#include "container/registry.hpp"
+#include "wabby/container/delayed.hpp"
 
 // sdl2
 #include "sdl/sdl2.hpp"
@@ -41,11 +41,8 @@ namespace wabby::core
     void teardown();
 
   private:
-    std::shared_ptr<container::registry>        registry_;
-    sdl2::context                               sdl_context_;
-    std::unique_ptr<sdl2::window>               window_;
-    std::unique_ptr<boost::dll::shared_library> render_library_;
-    std::unique_ptr<render::backend>            backend_;
+    sdl2::context                    sdl_context_;
+    container::delayed<sdl2::window> window_;
   };
 
   void engine_impl::setup( const engine_setup_info & setup_info )

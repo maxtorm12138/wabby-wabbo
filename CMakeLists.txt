@@ -40,9 +40,10 @@ add_subdirectory("src/render")
 
 file(GLOB WABBY_ENGINE_SRCS src/core/*.cpp src/core/*.hpp)
 add_library(wabbyengine SHARED ${WABBY_ENGINE_SRCS})
+
 target_compile_definitions(wabbyengine PRIVATE -DBOOST_DLL_USE_STD_FS)
+target_include_directories(wabbyengine PRIVATE ${CMAKE_SOURCE_DIR}/include)
 target_link_libraries(wabbyengine PRIVATE wabbysdl spdlog::spdlog_header_only PUBLIC Boost::boost wabbycontainer)
-target_include_directories(wabbyengine PRIVATE src/)
 add_dependencies(wabbyengine wabbyvulkan)
 
 option (WABBY_TESTS_BUILD "Build tests" OFF)

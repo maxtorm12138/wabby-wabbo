@@ -1,8 +1,5 @@
-#ifndef _WABBY_CORE_ENGINE_HPP
-#define _WABBY_CORE_ENGINE_HPP
-
-// container
-#include "container/string.hpp"
+#ifndef WABBY_CORE_ENGINE_HPP
+#define WABBY_CORE_ENGINE_HPP
 
 // boost
 #include "boost/config.hpp"
@@ -12,10 +9,10 @@ namespace wabby::core
 
   struct BOOST_SYMBOL_EXPORT engine_setup_info
   {
-    container::string application_name;
-    uint32_t          application_version;
-    uint32_t          width;
-    uint32_t          height;
+    const char * application_name;
+    uint32_t     application_version;
+    uint32_t     width;
+    uint32_t     height;
   };
 
   class engine_impl;
