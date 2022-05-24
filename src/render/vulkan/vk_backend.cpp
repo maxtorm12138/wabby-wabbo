@@ -6,6 +6,14 @@
 // std
 #include "fstream"
 
+// boost
+#include "boost/algorithm/string.hpp"
+
+// spdlog
+#include "spdlog/sinks/basic_file_sink.h"
+#include "spdlog/sinks/stdout_color_sinks.h"
+#include "spdlog/spdlog.h"
+
 namespace wabby::render::vulkan
 {
   wabby::container::delayed<spdlog::logger> g_logger;
@@ -85,7 +93,30 @@ namespace wabby::render::vulkan
     {
       std::string log_sink_attribute;
       inipp::get_value( config.sections["log"], fmt::format( "sinks_{}", i ), log_sink_attribute );
+
+      std::vector<std::string> attributes;
+      boost::split( attributes, log_sink_attribute, boost::is_any_of( ":" ) );
+      if ( attributes[0] == "file" )
+      {
+        sinks.emplace_back( spdlog::sinks::basic_file_sink_mt( attributes[1], true ) );
+      }
+      else if ( attributes[0] == "console" )
+      {
+        if ( attributes[1] == "stderr" )
+        {
+          sinks.emplace_back( spdlog::sinks::stderr_color_sink_mt() );
+        }
+        else if ( attributes[1] == "stdout" )
+        {
+          sinks.emplace_back( spdlog::sinks::stdout_color_sink_mt() );
+        }
+      }
     }
+
+    spdlog::logger logger( "vulkan", sinks.begin(), sinks.end() );
+    logger.set_level( spdlog::level::from_str( level ) );
+
+    g_logger.construct( std::move( logger ) );
 
     environment_.construct( build_application_info( setup_info ), setup_info->windowsystem_extensions, setup_info->windowsystem_extensions_count );
     surface_.construct( environment_->instance(), setup_info->fn_make_surface( setup_info->fn_make_surface_user_args, *environment_->instance() ) );
