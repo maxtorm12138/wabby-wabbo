@@ -1,7 +1,14 @@
 #include "vk_backend.hpp"
 
+// inipp
+#include "inipp.h"
+
+// std
+#include "fstream"
+
 namespace wabby::render::vulkan
 {
+  wabby::container::delayed<spdlog::logger> g_logger;
 
   vk::ApplicationInfo build_application_info( const vk_backend_setup_info * setup_info )
   {
@@ -63,6 +70,23 @@ namespace wabby::render::vulkan
 
   void vk_backend::setup( const vk_backend_setup_info * setup_info )
   {
+    std::ifstream    config_file( setup_info->configuration_path );
+    inipp::Ini<char> config;
+    config.parse( config_file );
+    config.strip_trailing_comments();
+
+    std::string                                       level;
+    uint32_t                                          sinks_count;
+    std::vector<std::shared_ptr<spdlog::sinks::sink>> sinks;
+    inipp::get_value( config.sections["log"], "level", level );
+    inipp::get_value( config.sections["log"], "sinks_count", sinks_count );
+
+    for ( uint32_t i = 0; i < sinks_count; i++ )
+    {
+      std::string log_sink_attribute;
+      inipp::get_value( config.sections["log"], fmt::format( "sinks_{}", i ), log_sink_attribute );
+    }
+
     environment_.construct( build_application_info( setup_info ), setup_info->windowsystem_extensions, setup_info->windowsystem_extensions_count );
     surface_.construct( environment_->instance(), setup_info->fn_make_surface( setup_info->fn_make_surface_user_args, *environment_->instance() ) );
     hardware_.construct( environment_->instance(), *surface_ );

@@ -33,7 +33,4 @@
 // container
 #include "wabby/container/delayed.hpp"
 
-namespace wabby::render::vulkan
-{
-}
 #endif
