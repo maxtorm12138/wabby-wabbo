@@ -4,6 +4,7 @@
 #include "backend.hpp"
 
 // boost
+#include "boost/dll/library_info.hpp"
 #include "boost/dll/runtime_symbol_info.hpp"
 #include "boost/dll/shared_library.hpp"
 
@@ -12,63 +13,32 @@ namespace wabby::render::raii
   class backend
   {
   public:
-    backend( const boost::dll::fs::path & path, const allocation_callbacks_t * allocation_callbacks )
+    backend( const boost::dll::fs::path & path, backend_allocator allocation_callbacks )
     {
       library_.load( path );
-
-      auto fn_set_allocation_callbacks = library_.get<decltype( ::set_allocation_callbacks )>( "set_allocation_callbacks" );
-
-      auto create_backend = library_.get<decltype( ::create_backend )>( "create_backend" );
-
-      fn_set_allocation_callbacks( allocation_callbacks );
-
-      create_backend( &backend_handle_ );
-    }
-
-    ~backend()
-    {
-      if ( backend_handle_ != nullptr )
+      boost::dll::library_info info( path );
+      for ( auto sym : info.symbols() )
       {
-        auto destroy_backend = library_.get<decltype( ::destroy_backend )>( "destroy_backend" );
-        destroy_backend( backend_handle_ );
+        printf( "%s\n", sym.c_str() );
       }
     }
 
+    ~backend() {}
+
   public:
-    void setup( const backend_setup_info * setup_info )
-    {
-      backend_handle_->setup( backend_handle_, setup_info );
-    }
+    void setup( const void * setup_info ) {}
 
-    void teardown()
-    {
-      backend_handle_->teardown( backend_handle_ );
-    }
+    void teardown() {}
 
-    void begin_frame()
-    {
-      backend_handle_->begin_frame( backend_handle_ );
-    }
+    void begin_frame() {}
 
-    void end_frame()
-    {
-      backend_handle_->end_frame( backend_handle_ );
-    }
+    void end_frame() {}
 
-    void begin_render_pass()
-    {
-      backend_handle_->begin_render_pass( backend_handle_ );
-    }
+    void begin_render_pass() {}
 
-    void end_render_pass()
-    {
-      backend_handle_->end_render_pass( backend_handle_ );
-    }
+    void end_render_pass() {}
 
-    void resized()
-    {
-      backend_handle_->resized( backend_handle_ );
-    }
+    void resized() {}
 
   private:
     boost::dll::shared_library library_{};

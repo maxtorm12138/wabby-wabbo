@@ -65,14 +65,15 @@ namespace wabby::core
 
     auto library_path = find_render_library_path();
 
-    allocation_callbacks allocation_callbacks{ .user_args = nullptr, .allocation = &fn_allocation, .reallocation = &fn_reallocation, .free = &fn_free };
+    backend_allocator_t allocator{ .user_args = nullptr, .fn_allocation = &fn_allocation, .fn_reallocation = &fn_reallocation, .fn_free = &fn_free };
 
-    backend_.construct( library_path, &allocation_callbacks );
+    backend_.construct( library_path, &allocator );
 
     auto backend_configuration_path = ( boost::dll::program_location().parent_path() / "vulkan.ini" ).string();
     auto windowsystem_extensions    = window_->get_vulkan_instance_extensions();
 
-    auto fn_make_surface = []( void * that, VkInstance instance ) { return static_cast<engine_impl *>( that )->window_->create_vulkan_surface( instance ); };
+    auto fn_vk_create_surface = []( void * that, VkInstance instance )
+    { return static_cast<engine_impl *>( that )->window_->create_vulkan_surface( instance ); };
 
     auto fn_get_window_size = []( void * that, uint32_t * w, uint32_t * h )
     {
@@ -84,20 +85,17 @@ namespace wabby::core
     vk_backend_setup_info vk_backend_setup_info{
       .application_name    = setup_info.application_name,
       .application_version = setup_info.application_version,
+      .configuration_path  = backend_configuration_path.c_str(),
 
       .windowsystem_extensions       = windowsystem_extensions.data(),
       .windowsystem_extensions_count = static_cast<uint32_t>( windowsystem_extensions.size() ),
 
-      .fn_make_surface_user_args = this,
-      .fn_make_surface           = fn_make_surface,
-
-      .fn_get_window_size_user_args = this,
-      .fn_get_window_size           = fn_get_window_size,
-
-      .configuration_path = backend_configuration_path.c_str(),
+      .user_args            = this,
+      .fn_vk_create_surface = fn_vk_create_surface,
+      .fn_get_window_size   = fn_get_window_size,
     };
 
-    backend_->setup( reinterpret_cast<const backend_setup_info *>( &vk_backend_setup_info ) );
+    backend_->setup( &vk_backend_setup_info );
   }
 
   void engine_impl::run()

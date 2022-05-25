@@ -16,13 +16,11 @@ namespace wabby::render::vulkan
   class global
   {
   public:
-    static container::delayed<spdlog::logger>      logger;
-    static std::unordered_map<std::string, void *> proc_addr;
-
-    static void *           allocator_user_args;
-    static pfn_allocation   fn_allocation;
-    static pfn_reallocation fn_reallocation;
-    static pfn_free         fn_free;
+    static container::delayed<spdlog::logger> logger;
+    static void *                             allocator_user_args;
+    static pfn_allocation                     fn_allocation;
+    static pfn_reallocation                   fn_reallocation;
+    static pfn_free                           fn_free;
   };
 }  // namespace wabby::render::vulkan
 

@@ -1,2 +1,2 @@
 #define WABBY_ENGINE_ENTRY
-#include "wabby/entry.h"
+#include "wabby/entry.hpp"

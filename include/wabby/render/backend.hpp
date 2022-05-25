@@ -46,13 +46,13 @@ extern "C"
 
   typedef void ( *pfn_set_backend_allocator )( backend_allocator allocator );
 
-  struct backend_allocator_t
+  typedef struct backend_allocator_t
   {
     void *           user_args;
     pfn_allocation   fn_allocation;
     pfn_reallocation fn_reallocation;
     pfn_free         fn_free;
-  };
+  } backend_allocator_t;
 
   typedef struct
   {

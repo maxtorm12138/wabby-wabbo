@@ -14,64 +14,44 @@
 #include "spdlog/sinks/stdout_color_sinks.h"
 #include "spdlog/spdlog.h"
 
-#define REGISTER_PROC_ADDR( PFN, FN )                                                         \
-  auto wabby_proc_addr_register_##FN = []()                                                   \
-  {                                                                                           \
-    static_assert( std::is_same_v<PFN, decltype( &FN )>, "type mismatch" );                   \
-    wabby::render::vulkan::global::proc_addr.emplace( #FN, reinterpret_cast<void *>( &FN ) ); \
-    return 0;                                                                                 \
-  }()
-
-void * get_proc_addr( const char * name )
-{
-  if ( auto addr = wabby::render::vulkan::global::proc_addr.find( name ); addr != wabby::render::vulkan::global::proc_addr.end() )
-  {
-    return addr->second;
-  }
-  return nullptr;
-}
+#define REGISTER_PROC_ADDR( PFN, FN )                                     \
+  static_assert( std::is_same_v<PFN, decltype( &FN )>, "type mismatch" ); \
+  proc_addr.emplace( #FN, reinterpret_cast<void *>( &FN ) );
 
 int backend_setup( backend handle, const void * setup_info )
 {
   return static_cast<wabby::render::vulkan::vk_backend *>( handle )->setup( reinterpret_cast<const vk_backend_setup_info *>( setup_info ) );
 }
-REGISTER_PROC_ADDR( pfn_backend_setup, backend_setup );
 
 int backend_teardown( backend handle )
 {
   return static_cast<wabby::render::vulkan::vk_backend *>( handle )->teardown();
 }
-REGISTER_PROC_ADDR( pfn_backend_teardown, backend_teardown );
 
 int backend_begin_frame( backend handle )
 {
   return static_cast<wabby::render::vulkan::vk_backend *>( handle )->begin_frame();
 }
-REGISTER_PROC_ADDR( pfn_backend_begin_frame, backend_begin_frame );
 
 int backend_end_frame( backend handle )
 {
   return static_cast<wabby::render::vulkan::vk_backend *>( handle )->end_frame();
 }
-REGISTER_PROC_ADDR( pfn_backend_end_frame, backend_end_frame );
 
 int backend_begin_render_pass( backend handle )
 {
   return static_cast<wabby::render::vulkan::vk_backend *>( handle )->begin_render_pass();
 }
-REGISTER_PROC_ADDR( pfn_backend_begin_render_pass, backend_begin_render_pass );
 
 int backend_end_render_pass( backend handle )
 {
   return static_cast<wabby::render::vulkan::vk_backend *>( handle )->end_render_pass();
 }
-REGISTER_PROC_ADDR( pfn_backend_end_render_pass, backend_end_render_pass );
 
 int backend_resized( backend handle )
 {
   return static_cast<wabby::render::vulkan::vk_backend *>( handle )->resized();
 }
-REGISTER_PROC_ADDR( pfn_backend_resized, backend_resized );
 
 int create_backend( backend * backend )
 {
@@ -81,7 +61,6 @@ int create_backend( backend * backend )
   *backend = p_backend;
   return 0;
 }
-REGISTER_PROC_ADDR( pfn_create_backend, create_backend );
 
 void destroy_backend( backend handle )
 {
@@ -90,7 +69,6 @@ void destroy_backend( backend handle )
   std::destroy_at( p_backend );
   global::fn_free( global::allocator_user_args, p_backend );
 }
-REGISTER_PROC_ADDR( pfn_destroy_backend, destroy_backend );
 
 void set_backend_allocator( backend_allocator allocator )
 {
@@ -100,7 +78,31 @@ void set_backend_allocator( backend_allocator allocator )
   global::fn_reallocation     = allocator->fn_reallocation;
   global::fn_free             = allocator->fn_free;
 }
-REGISTER_PROC_ADDR( pfn_set_backend_allocator, set_backend_allocator );
+
+void * get_proc_addr( const char * name )
+{
+  static std::unordered_map<std::string, void *> proc_addr = []()
+  {
+    std::unordered_map<std::string, void *> proc_adddr;
+    REGISTER_PROC_ADDR( pfn_backend_setup, backend_setup );
+    REGISTER_PROC_ADDR( pfn_backend_teardown, backend_teardown );
+    REGISTER_PROC_ADDR( pfn_set_backend_allocator, set_backend_allocator );
+    REGISTER_PROC_ADDR( pfn_destroy_backend, destroy_backend );
+    REGISTER_PROC_ADDR( pfn_create_backend, create_backend );
+    REGISTER_PROC_ADDR( pfn_backend_resized, backend_resized );
+    REGISTER_PROC_ADDR( pfn_backend_end_render_pass, backend_end_render_pass );
+    REGISTER_PROC_ADDR( pfn_backend_begin_render_pass, backend_begin_render_pass );
+    REGISTER_PROC_ADDR( pfn_backend_end_frame, backend_end_frame );
+    REGISTER_PROC_ADDR( pfn_backend_begin_frame, backend_begin_frame );
+    return proc_adddr;
+  }();
+
+  if ( auto addr = proc_addr.find( name ); addr != proc_addr.end() )
+  {
+    return addr->second;
+  }
+  return nullptr;
+}
 
 namespace wabby::render::vulkan
 {
