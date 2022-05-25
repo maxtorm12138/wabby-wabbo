@@ -17,9 +17,9 @@
 namespace wabby::core
 {
 
-  void * fn_allocation( void * user_args, size_t size, size_t alignment )
+  void * fn_allocation( void *, size_t size, size_t alignment )
   {
-    return boost::alignment::aligned_alloc( alignment, size );
+    return boost::alignment::aligned_alloc( alignment == 0 ? sizeof( void * ) : alignment, size );
   }
 
   void * fn_reallocation( void * user_args, void * original, size_t size, size_t alignment )
@@ -28,7 +28,7 @@ namespace wabby::core
     return nullptr;
   }
 
-  void fn_free( void * user_args, void * memory )
+  void fn_free( void *, void * memory )
   {
     boost::alignment::aligned_free( memory );
   }

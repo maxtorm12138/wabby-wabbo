@@ -18,7 +18,9 @@ extern "C"
 {
   typedef void *                       backend;
   typedef struct backend_allocator_t * backend_allocator;
-  typedef void * ( *pfn_get_proc_addr )( const char * name );
+
+  typedef void ( *pfn_void_function )();
+  typedef pfn_void_function ( *pfn_get_proc_addr )( const char * name );
 
   typedef VkSurfaceKHR ( *pfn_vk_create_surface )( void * user_args, VkInstance instance );
   typedef void ( *pfn_get_window_size )( void * user_args, uint32_t * width, uint32_t * height );
@@ -64,7 +66,7 @@ extern "C"
 
   } vk_backend_setup_info;
 
-  extern WABBY_API_PUBLIC void * get_proc_addr( const char * name );
+  extern WABBY_API_PUBLIC pfn_void_function get_proc_addr( const char * name );
 }
 
 #endif
