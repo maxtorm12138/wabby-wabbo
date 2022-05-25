@@ -1,0 +1,17 @@
+cmake_minimum_required(VERSION 3.21.0)
+project(wabbyengine VERSION 1.0.0)
+
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+file(GLOB WABBY_ENGINE_SRCS *.cpp *.hpp)
+add_library(wabbyengine SHARED ${WABBY_ENGINE_SRCS})
+target_compile_definitions(wabbyengine PRIVATE -DBOOST_DLL_USE_STD_FS)
+target_include_directories(wabbyengine PRIVATE ${CMAKE_SOURCE_DIR}/include)
+target_link_libraries(wabbyengine PRIVATE wabbysdl spdlog::spdlog_header_only PUBLIC Boost::boost wabbycontainer)
+add_dependencies(wabbyengine wabbyvulkan)
+if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+    target_compile_options(wabbyengine PRIVATE -fvisibility=hidden -fno-rtti -W -Wextra)
+elseif(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+    target_compile_options(wabbyengine PRIVATE /GR-)
+endif ()

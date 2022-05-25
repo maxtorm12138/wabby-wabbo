@@ -4,27 +4,21 @@
 #include "wabby/api.hpp"
 
 // std
-#include "cstddef"
-#include "cstdint"
+#include "stddef.h"
+#include "stdint.h"
 
 // avoid include vulkan.h
-#ifdef __cplusplus
 extern "C"
 {
-#endif
   typedef struct VkSurfaceKHR_T * VkSurfaceKHR;
   typedef struct VkInstance_T *   VkInstance;
-#ifdef __cplusplus
 }
-#endif  // DEBUG
 
-#ifdef __cplusplus
 extern "C"
 {
-#endif
-
   typedef void *                       backend;
   typedef struct backend_allocator_t * backend_allocator;
+  typedef void * ( *pfn_get_proc_addr )( const char * name );
 
   typedef VkSurfaceKHR ( *pfn_vk_create_surface )( void * user_args, VkInstance instance );
   typedef void ( *pfn_get_window_size )( void * user_args, uint32_t * width, uint32_t * height );
@@ -71,9 +65,6 @@ extern "C"
   } vk_backend_setup_info;
 
   extern WABBY_API_PUBLIC void * get_proc_addr( const char * name );
-
-#ifdef __cplusplus
 }
-#endif
 
 #endif
