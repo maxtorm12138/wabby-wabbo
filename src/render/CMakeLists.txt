@@ -13,6 +13,8 @@ target_compile_definitions(wabbyvulkan PRIVATE -DVULKAN_HPP_NO_SETTERS -DVULKAN_
 target_compile_definitions(wabbyvulkan PRIVATE -DBOOST_DLL_USE_STD_FS)
 # glm defs
 target_compile_definitions(wabbyvulkan PRIVATE -DGLM_FORCE_RADIANS -DGLM_FORCE_DEPTH_ZERO_TO_ONE)
+# dll defs
+target_compile_definitions(wabbyvulkan PRIVATE -DWABBY_API_BUILDING_DLL)
 
 target_link_libraries(wabbyvulkan PRIVATE Vulkan::Vulkan Boost::boost fmt::fmt-header-only vma vulkanhpp spdlog::spdlog_header_only inipp::inipp glm::glm wabbycontainer)
 

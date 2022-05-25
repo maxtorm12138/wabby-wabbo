@@ -38,6 +38,8 @@ add_subdirectory("src/sdl")
 add_subdirectory("src/render")
 add_subdirectory("src/core")
 
+file(GLOB WABBY_CONFIG_FILES config/*.ini)
+file(COPY ${WABBY_CONFIG_FILES} DESTINATION ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
 
 option (WABBY_TESTS_BUILD "Build tests" OFF)
 if (WABBY_TESTS_BUILD)

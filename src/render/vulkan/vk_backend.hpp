@@ -6,8 +6,6 @@
 
 extern "C"
 {
-  WABBY_API_PUBLIC pfn_void_function get_proc_addr( const char * name );
-
   int  backend_setup( backend handle, const void * setup_info );
   int  backend_begin_frame( backend handle );
   int  backend_end_frame( backend handle );
