@@ -1,5 +1,7 @@
 #ifndef WABBY_RENDER_VULKAN_GLOBALS_HPP
 #define WABBY_RENDER_VULKAN_GLOBALS_HPP
+// alloc function defs
+#include "wabby/render/backend.hpp"
 
 // spdlog
 #include "spdlog/spdlog.h"
@@ -9,18 +11,49 @@
 
 namespace wabby::render::vulkan
 {
-  typedef void * ( *pfn_allocation )( void * user_args, size_t size, size_t alignment );
-  typedef void * ( *pfn_reallocation )( void * user_args, void * original, size_t size, size_t alignment );
-  typedef void ( *pfn_free )( void * user_args, void * memory );
+  struct fn_allocation
+  {
+    fn_allocation( pfn_allocation allocation = nullptr, void * user_args = nullptr );
+
+    void * operator()( size_t size, size_t alignment );
+
+  private:
+    void * user_args_;
+
+    pfn_allocation allocation_;
+  };
+
+  struct fn_free
+  {
+    fn_free( pfn_free free = nullptr, void * user_args = nullptr );
+
+    void operator()( void * memory );
+
+  private:
+    void * user_args_;
+
+    pfn_free free_;
+  };
+
+  struct fn_reallocation
+  {
+    fn_reallocation( pfn_reallocation reallocation = nullptr, void * user_args = nullptr );
+
+    void * operator()( void * original, size_t size, size_t alignment );
+
+  private:
+    void * user_args_;
+
+    pfn_reallocation reallocation_;
+  };
 
   class global
   {
   public:
     static container::delayed<spdlog::logger> logger;
-    static void *                             allocator_user_args;
-    static pfn_allocation                     fn_allocation;
-    static pfn_reallocation                   fn_reallocation;
-    static pfn_free                           fn_free;
+    static fn_allocation                      allocation;
+    static fn_reallocation                    realllocation;
+    static fn_free                            free;
   };
 }  // namespace wabby::render::vulkan
 

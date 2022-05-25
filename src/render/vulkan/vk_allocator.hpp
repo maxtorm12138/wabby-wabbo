@@ -25,16 +25,17 @@ namespace wabby::render::vulkan
   public:
     [[nodiscard]] constexpr T * allocate( size_t n )
     {
-      return static_cast<T *>( global::fn_allocation( global::allocator_user_args, sizeof( T ) * n, std::bit_ceil( sizeof( T ) ) ) );
+      return static_cast<T *>( global::allocation( sizeof( T ) * n, std::bit_ceil( sizeof( T ) ) ) );
     }
 
     constexpr void deallocate( T * p, size_t )
     {
-      global::fn_free( global::allocator_user_args, p );
+      global::free( p );
     }
 
   private:
   };
+
 }  // namespace wabby::render::vulkan
 
 #endif

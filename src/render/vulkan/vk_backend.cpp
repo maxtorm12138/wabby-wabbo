@@ -1,4 +1,5 @@
-#include "vk_backend.hpp"
+// backend interface
+#include "wabby/render/backend.hpp"
 
 // module
 #include "vk_allocator.hpp"
@@ -113,7 +114,7 @@ extern "C"
   int create_backend( backend * p_handle )
   {
     using namespace wabby::render::vulkan;
-    auto p_backend = static_cast<vk_backend *>( global::fn_allocation( global::allocator_user_args, sizeof( vk_backend ), 0 ) );
+    auto p_backend = static_cast<vk_backend *>( global::allocation( sizeof( vk_backend ), 0 ) );
     std::construct_at( p_backend );
     *p_handle = p_backend;
     return 0;
@@ -124,16 +125,15 @@ extern "C"
     using namespace wabby::render::vulkan;
     auto p_backend = static_cast<vk_backend *>( handle );
     std::destroy_at( p_backend );
-    global::fn_free( global::allocator_user_args, p_backend );
+    global::free( p_backend );
   }
 
   void set_backend_allocator( backend_allocator allocator )
   {
     using namespace wabby::render::vulkan;
-    global::allocator_user_args = allocator->user_args;
-    global::fn_allocation       = allocator->fn_allocation;
-    global::fn_reallocation     = allocator->fn_reallocation;
-    global::fn_free             = allocator->fn_free;
+    global::allocation    = fn_allocation( allocator->fn_allocation, allocator->user_args );
+    global::realllocation = fn_reallocation( allocator->fn_reallocation, allocator->user_args );
+    global::free          = fn_free( allocator->fn_free, allocator->user_args );
   }
 
   pfn_void_function get_proc_addr( const char * name )
@@ -224,8 +224,8 @@ namespace wabby::render::vulkan
 
   spdlog::logger build_logger( inipp::Ini<char> & config )
   {
-    std::string                                       level;
-    uint32_t                                          sinks_count;
+    std::string                                       level{ "off" };
+    uint32_t                                          sinks_count{ 0 };
     std::vector<std::shared_ptr<spdlog::sinks::sink>> sinks;
     inipp::get_value( config.sections["log"], "level", level );
     inipp::get_value( config.sections["log"], "sink_count", sinks_count );
