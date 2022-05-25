@@ -6,19 +6,37 @@
 #include "cassert"
 #include "cstddef"
 #include "memory"
+#include "unordered_map"
 
 namespace wabby::container
 {
+  namespace detail
+  {
+    class delayed_tracer
+    {
+    protected:
+      void test_constructed();
+
+      void test_not_constructed();
+
+      void set_constructed();
+
+    protected:
+#ifndef NDEBUG
+      static std::unordered_map<void *, bool> constructed_;
+#endif
+    };
+  }  // namespace detail
 
   template <typename T>
-  class delayed
+  class delayed : public detail::delayed_tracer
   {
   public:
     delayed(){};
 
     ~delayed()
     {
-      assert( constructed_ && "object shold be constructed" );
+      test_constructed();
       std::destroy_at( reinterpret_cast<T *>( memory_.data() ) );
     }
 
@@ -26,37 +44,33 @@ namespace wabby::container
     template <typename... Args>
     void construct( Args &&... args )
     {
-      assert( !constructed_ && "construct shold be called once" );
+      test_not_constructed();
       std::construct_at( reinterpret_cast<T *>( memory_.data() ), std::forward<Args>( args )... );
-#ifndef NDEBUG
-      constructed_ = true;
-#endif
+      set_constructed();
     }
 
     T * operator->()
     {
-      assert( constructed_ && "object shold be constructed" );
+      test_constructed();
       return reinterpret_cast<T *>( memory_.data() );
     }
 
     T & operator*()
     {
-      assert( constructed_ && "object shold be constructed" );
+      test_constructed();
       return *( reinterpret_cast<T *>( memory_.data() ) );
     }
 
     operator T &()
     {
-      assert( constructed_ && "object shold be constructed" );
+      test_constructed();
       return *( reinterpret_cast<T *>( memory_.data() ) );
     }
 
   private:
     std::array<uint8_t, sizeof( T )> memory_{};
-#ifndef NDEBUG
-    bool constructed_{ false };
-#endif
   };
+
 }  // namespace wabby::container
 
 #endif
