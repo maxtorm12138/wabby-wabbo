@@ -298,9 +298,20 @@ namespace wabby::render::vulkan
       render_finished_semaphores_ = build_semaphores( hardware_->device(), swapchain_->max_frames_in_flight() );
       in_flight_fences_           = build_fences( hardware_->device(), swapchain_->max_frames_in_flight() );
     }
+    catch ( vk::Error & e )
+    {
+      SPDLOG_LOGGER_ERROR( global::logger, "setup: vk::Error, what: {}", e.what() );
+      return 1;
+    }
+    catch ( std::exception & e )
+    {
+      SPDLOG_LOGGER_ERROR( global::logger, "setup: std::exception, what: {}", e.what() );
+      return 2;
+    }
     catch ( ... )
     {
-      return -1;
+      SPDLOG_LOGGER_ERROR( global::logger, "setup: unknwon exception" );
+      return 3;
     }
     return 0;
   }

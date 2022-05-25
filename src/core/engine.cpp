@@ -1,8 +1,10 @@
 #include "wabby/core/engine.hpp"
 
 #include "wabby/container/delayed.hpp"
-#include "wabby/render/backend_raii.hpp"
 #include "wabby/sdl2/sdl2.hpp"
+#define WABBY_API_INCLUDE_IMPORT
+#include "wabby/render/backend_raii.hpp"
+#undef WABBY_API_INCLUDE_IMPORT
 
 // boost
 #include "boost/align/aligned_alloc.hpp"
