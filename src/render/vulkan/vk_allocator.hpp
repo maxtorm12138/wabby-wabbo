@@ -4,30 +4,13 @@
 // std
 #include "bit"
 
+// module
+#include "vk_globals.hpp"
+
 namespace wabby::render::vulkan
 {
-  namespace detail
-  {
-    class vk_allocator_impl
-    {
-    public:
-      using fn_allocation   = void * (*)( void * user_args, size_t size, size_t alignment );
-      using fn_reallocation = void * (*)( void * user_args, void * original, size_t size, size_t alignment );
-      using fn_free         = void ( * )( void * user_args, void * memory );
-
-    public:
-      static void setup( void * user_args, fn_allocation fn_alloc, fn_reallocation fn_realloc, fn_free fn_fr ) noexcept;
-
-    protected:
-      static void *          user_args_;
-      static fn_allocation   fn_allocation_;
-      static fn_reallocation fn_reallocation_;
-      static fn_free         fn_free_;
-    };
-  }  // namespace detail
-
   template <typename T>
-  class vk_allocator : public detail::vk_allocator_impl
+  class vk_allocator
   {
   public:
     constexpr vk_allocator() noexcept {}
@@ -42,12 +25,12 @@ namespace wabby::render::vulkan
   public:
     [[nodiscard]] constexpr T * allocate( size_t n )
     {
-      return static_cast<T *>( fn_allocation_( user_args_, sizeof( T ) * n, std::bit_ceil( sizeof( T ) ) ) );
+      return static_cast<T *>( global::fn_allocation( global::allocator_user_args, sizeof( T ) * n, std::bit_ceil( sizeof( T ) ) ) );
     }
 
     constexpr void deallocate( T * p, size_t )
     {
-      fn_free_( user_args_, p );
+      global::fn_free( global::allocator_user_args, p );
     }
 
   private:

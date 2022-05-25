@@ -19,10 +19,9 @@
 
 extern "C"
 {
-  BOOST_SYMBOL_EXPORT void set_allocation_callbacks( const allocation_callbacks * allocation_callbacks );
-  BOOST_SYMBOL_EXPORT int  create_backend( backend * backend );
-  BOOST_SYMBOL_EXPORT void destroy_backend( backend backend );
+  WABBY_API_PUBLIC void * get_proc_addr( const char * name );
 }
+
 namespace wabby::render::vulkan
 {
 
@@ -31,19 +30,19 @@ namespace wabby::render::vulkan
   public:
     vk_backend() = default;
 
-    void setup( const vk_backend_setup_info * setup_info );
+    int setup( const vk_backend_setup_info * setup_info ) noexcept;
 
-    void begin_frame();
+    int begin_frame() noexcept;
 
-    void end_frame();
+    int end_frame() noexcept;
 
-    void begin_render_pass();
+    int begin_render_pass() noexcept;
 
-    void end_render_pass();
+    int end_render_pass() noexcept;
 
-    void resized();
+    int resized() noexcept;
 
-    void teardown();
+    int teardown() noexcept;
 
   private:
     wabby::container::delayed<vk_environment>       environment_;

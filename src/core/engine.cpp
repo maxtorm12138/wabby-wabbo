@@ -102,6 +102,7 @@ namespace wabby::core
 
   void engine_impl::run()
   {
+    window_->set_resizeable( true );
     window_->show();
     bool running = true;
     while ( running )
@@ -111,6 +112,14 @@ namespace wabby::core
         if ( event->type == SDL_QUIT )
         {
           running = false;
+        }
+        else if ( event->type == SDL_WINDOWEVENT && event->window.event == SDL_WINDOWEVENT_RESIZED )
+        {
+          window_->set_resizeable( false );
+          window_->set_resizeable( true );
+        }
+        else if ( event->type == SDL_WINDOWEVENT && event->window.event == SDL_WINDOWEVENT_MINIMIZED )
+        {
         }
       }
 

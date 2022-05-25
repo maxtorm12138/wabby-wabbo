@@ -1,80 +1,79 @@
 #ifndef WABBY_RENDERER_RENDERER_HPP
 #define WABBY_RENDERER_RENDERER_HPP
 
-// boost
-#include "boost/config.hpp"
+#include "wabby/api.hpp"
 
 // std
 #include "cstddef"
 #include "cstdint"
 
 // avoid include vulkan.h
+#ifdef __cplusplus
 extern "C"
 {
+#endif
   typedef struct VkSurfaceKHR_T * VkSurfaceKHR;
   typedef struct VkInstance_T *   VkInstance;
+#ifdef __cplusplus
 }
+#endif  // DEBUG
 
+#ifdef __cplusplus
 extern "C"
 {
-  typedef struct
+#endif
+
+  typedef void *                       backend;
+  typedef struct backend_allocator_t * backend_allocator;
+
+  typedef VkSurfaceKHR ( *pfn_vk_create_surface )( void * user_args, VkInstance instance );
+  typedef void ( *pfn_get_window_size )( void * user_args, uint32_t * width, uint32_t * height );
+
+  typedef void * ( *pfn_allocation )( void * user_args, size_t size, size_t alignment );
+  typedef void * ( *pfn_reallocation )( void * user_args, void * original, size_t size, size_t alignment );
+  typedef void ( *pfn_free )( void * user_args, void * memory );
+
+  typedef int ( *pfn_backend_setup )( backend handle, const void * setup_info );
+  typedef int ( *pfn_backend_teardown )( backend handle );
+  typedef int ( *pfn_backend_begin_frame )( backend handle );
+  typedef int ( *pfn_backend_end_frame )( backend handle );
+  typedef int ( *pfn_backend_begin_render_pass )( backend handle );
+  typedef int ( *pfn_backend_end_render_pass )( backend handle );
+  typedef int ( *pfn_backend_resized )( backend handle );
+
+  typedef int ( *pfn_create_backend )( backend * p_backend );
+  typedef void ( *pfn_destroy_backend )( backend backend );
+
+  typedef void ( *pfn_set_backend_allocator )( backend_allocator allocator );
+
+  struct backend_allocator_t
   {
-    const char * application_name;
-    uint32_t     application_version;
-  } backend_setup_info;
+    void *           user_args;
+    pfn_allocation   fn_allocation;
+    pfn_reallocation fn_reallocation;
+    pfn_free         fn_free;
+  };
 
   typedef struct
   {
     const char * application_name;
     uint32_t     application_version;
+
+    const char * configuration_path;
 
     const char ** windowsystem_extensions;
     uint32_t      windowsystem_extensions_count;
 
-    void * fn_make_surface_user_args;
-    VkSurfaceKHR ( *fn_make_surface )( void *, VkInstance );
+    void *                user_args;
+    pfn_vk_create_surface fn_vk_create_surface;
+    pfn_get_window_size   fn_get_window_size;
 
-    void * fn_get_window_size_user_args;
-    void ( *fn_get_window_size )( void *, uint32_t *, uint32_t * );
-
-    const char * configuration_path;
   } vk_backend_setup_info;
 
-  typedef struct backend_t
-  {
-    void * internal_handle;
+  extern WABBY_API_PUBLIC void * get_proc_addr( const char * name );
 
-    void ( *setup )( backend_t * handle, const backend_setup_info * setup_info );
-
-    void ( *teardown )( backend_t * handle );
-
-    void ( *begin_frame )( backend_t * handle );
-
-    void ( *end_frame )( backend_t * handle );
-
-    void ( *begin_render_pass )( backend_t * handle );
-
-    void ( *end_render_pass )( backend_t * handle );
-
-    void ( *resized )( backend_t * handle );
-
-  } * backend;
-
-  typedef void * ( *fn_allocation )( void * user_args, size_t size, size_t alignment );
-  typedef void * ( *fn_reallocation )( void * user_args, void * original, size_t size, size_t alignment );
-  typedef void ( *fn_free )( void * user_args, void * memory );
-
-  typedef struct allocation_callbacks_t
-  {
-    void *          user_args;
-    fn_allocation   allocation;
-    fn_reallocation reallocation;
-    fn_free         free;
-  } allocation_callbacks;
-
-  extern BOOST_SYMBOL_EXPORT void set_allocation_callbacks( const allocation_callbacks * allocation_callbacks );
-  extern BOOST_SYMBOL_EXPORT int  create_backend( backend * backend );
-  extern BOOST_SYMBOL_EXPORT void destroy_backend( backend backend );
+#ifdef __cplusplus
 }
+#endif
 
 #endif

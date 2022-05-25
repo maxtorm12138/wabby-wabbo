@@ -14,6 +14,94 @@
 #include "spdlog/sinks/stdout_color_sinks.h"
 #include "spdlog/spdlog.h"
 
+#define REGISTER_PROC_ADDR( PFN, FN )                                                         \
+  auto wabby_proc_addr_register_##FN = []()                                                   \
+  {                                                                                           \
+    static_assert( std::is_same_v<PFN, decltype( &FN )>, "type mismatch" );                   \
+    wabby::render::vulkan::global::proc_addr.emplace( #FN, reinterpret_cast<void *>( &FN ) ); \
+    return 0;                                                                                 \
+  }()
+
+void * get_proc_addr( const char * name )
+{
+  if ( auto addr = wabby::render::vulkan::global::proc_addr.find( name ); addr != wabby::render::vulkan::global::proc_addr.end() )
+  {
+    return addr->second;
+  }
+  return nullptr;
+}
+
+int backend_setup( backend handle, const void * setup_info )
+{
+  return static_cast<wabby::render::vulkan::vk_backend *>( handle )->setup( reinterpret_cast<const vk_backend_setup_info *>( setup_info ) );
+}
+REGISTER_PROC_ADDR( pfn_backend_setup, backend_setup );
+
+int backend_teardown( backend handle )
+{
+  return static_cast<wabby::render::vulkan::vk_backend *>( handle )->teardown();
+}
+REGISTER_PROC_ADDR( pfn_backend_teardown, backend_teardown );
+
+int backend_begin_frame( backend handle )
+{
+  return static_cast<wabby::render::vulkan::vk_backend *>( handle )->begin_frame();
+}
+REGISTER_PROC_ADDR( pfn_backend_begin_frame, backend_begin_frame );
+
+int backend_end_frame( backend handle )
+{
+  return static_cast<wabby::render::vulkan::vk_backend *>( handle )->end_frame();
+}
+REGISTER_PROC_ADDR( pfn_backend_end_frame, backend_end_frame );
+
+int backend_begin_render_pass( backend handle )
+{
+  return static_cast<wabby::render::vulkan::vk_backend *>( handle )->begin_render_pass();
+}
+REGISTER_PROC_ADDR( pfn_backend_begin_render_pass, backend_begin_render_pass );
+
+int backend_end_render_pass( backend handle )
+{
+  return static_cast<wabby::render::vulkan::vk_backend *>( handle )->end_render_pass();
+}
+REGISTER_PROC_ADDR( pfn_backend_end_render_pass, backend_end_render_pass );
+
+int backend_resized( backend handle )
+{
+  return static_cast<wabby::render::vulkan::vk_backend *>( handle )->resized();
+}
+REGISTER_PROC_ADDR( pfn_backend_resized, backend_resized );
+
+int create_backend( backend * backend )
+{
+  using namespace wabby::render::vulkan;
+  auto p_backend = static_cast<vk_backend *>( global::fn_allocation( global::allocator_user_args, sizeof( vk_backend ), 0 ) );
+  std::construct_at( p_backend );
+  *backend = p_backend;
+  return 0;
+}
+REGISTER_PROC_ADDR( pfn_create_backend, create_backend );
+
+void destroy_backend( backend handle )
+{
+  using namespace wabby::render::vulkan;
+  auto p_backend = static_cast<vk_backend *>( handle );
+  std::destroy_at( p_backend );
+  global::fn_free( global::allocator_user_args, p_backend );
+}
+REGISTER_PROC_ADDR( pfn_destroy_backend, destroy_backend );
+
+void set_backend_allocator( backend_allocator allocator )
+{
+  using namespace wabby::render::vulkan;
+  global::allocator_user_args = allocator->user_args;
+  global::fn_allocation       = allocator->fn_allocation;
+  global::fn_reallocation     = allocator->fn_reallocation;
+  global::fn_free             = allocator->fn_free;
+}
+REGISTER_PROC_ADDR( pfn_set_backend_allocator, set_backend_allocator );
+
 namespace wabby::render::vulkan
 {
   vk::ApplicationInfo build_application_info( const vk_backend_setup_info * setup_info )
@@ -111,7 +199,7 @@ namespace wabby::render::vulkan
     return logger;
   }
 
-  void vk_backend::setup( const vk_backend_setup_info * setup_info )
+  int vk_backend::setup( const vk_backend_setup_info * setup_info ) noexcept
   {
     std::ifstream    config_file( setup_info->configuration_path );
     inipp::Ini<char> config;
@@ -121,12 +209,12 @@ namespace wabby::render::vulkan
     global::logger.construct( build_logger( config ) );
 
     environment_.construct( build_application_info( setup_info ), setup_info->windowsystem_extensions, setup_info->windowsystem_extensions_count );
-    surface_.construct( environment_->instance(), setup_info->fn_make_surface( setup_info->fn_make_surface_user_args, *environment_->instance() ) );
+    surface_.construct( environment_->instance(), setup_info->fn_vk_create_surface( setup_info->user_args, *environment_->instance() ) );
     hardware_.construct( environment_->instance(), *surface_ );
     device_allocator_.construct( environment_->instance(), hardware_->physical_device(), hardware_->device() );
 
     auto fn_get_window_size           = setup_info->fn_get_window_size;
-    auto fn_get_window_size_user_args = setup_info->fn_make_surface_user_args;
+    auto fn_get_window_size_user_args = setup_info->user_args;
 
     auto fn_get_window_size_wrapper = [fn_get_window_size_user_args, fn_get_window_size]()
     {
@@ -147,9 +235,10 @@ namespace wabby::render::vulkan
     image_available_semaphores_ = build_semaphores( hardware_->device(), swapchain_->max_frames_in_flight() );
     render_finished_semaphores_ = build_semaphores( hardware_->device(), swapchain_->max_frames_in_flight() );
     in_flight_fences_           = build_fences( hardware_->device(), swapchain_->max_frames_in_flight() );
+    return 0;
   }
 
-  void vk_backend::begin_frame()
+  int vk_backend::begin_frame() noexcept
   {
     hardware_->device().waitForFences( *in_flight_fences_[frame_index_], VK_TRUE, UINT64_MAX );
     image_index_ = swapchain_->acquire_next_image( image_available_semaphores_[frame_index_] );
@@ -157,9 +246,10 @@ namespace wabby::render::vulkan
 
     vk::CommandBufferBeginInfo command_buffer_begin_info{};
     command_buffers_[frame_index_].begin( command_buffer_begin_info );
+    return 0;
   }
 
-  void vk_backend::end_frame()
+  int vk_backend::end_frame() noexcept
   {
     command_buffers_[frame_index_].end();
     vk::ArrayProxy<const vk::Semaphore>     submit_wait_semaphores( *image_available_semaphores_[frame_index_] );
@@ -191,109 +281,34 @@ namespace wabby::render::vulkan
     hardware_->queue( QueueType::PRESENT, std::cref( *surface_ ) )->presentKHR( present_info );
 
     frame_index_ = ( frame_index_ + 1 ) % swapchain_->max_frames_in_flight();
+    return 0;
   }
 
-  void vk_backend::begin_render_pass()
+  int vk_backend::begin_render_pass() noexcept
   {
     vk::Rect2D     render_area{ .offset = { 0, 0 }, .extent = swapchain_->extent() };
     vk::ClearValue clear_value{};
     clear_value.color.float32 = std::array<float, 4>{ 0.1f, 0.6f, 0.1f, 0.1f };
 
     render_pass_->begin( command_buffers_[frame_index_], framebuffers_->framebuffer( image_index_ ), render_area, clear_value );
-  }
-
-  void vk_backend::end_render_pass()
-  {
-    render_pass_->end( command_buffers_[frame_index_] );
-  }
-
-  void vk_backend::resized() {}
-
-  void vk_backend::teardown()
-  {
-    hardware_->device().waitIdle();
-  }
-
-}  // namespace wabby::render::vulkan
-
-namespace wabby::render::vulkan::detail
-{
-
-  void setup( backend_t * handle, const backend_setup_info * setup_info )
-  {
-    static_cast<wabby::render::vulkan::vk_backend *>( handle->internal_handle )->setup( reinterpret_cast<const vk_backend_setup_info *>( setup_info ) );
-  }
-
-  void begin_frame( backend_t * handle )
-  {
-    static_cast<wabby::render::vulkan::vk_backend *>( handle->internal_handle )->begin_frame();
-  }
-
-  void end_frame( backend_t * handle )
-  {
-    static_cast<wabby::render::vulkan::vk_backend *>( handle->internal_handle )->end_frame();
-  }
-
-  void begin_render_pass( backend_t * handle )
-  {
-    static_cast<wabby::render::vulkan::vk_backend *>( handle->internal_handle )->begin_render_pass();
-  }
-
-  void end_render_pass( backend_t * handle )
-  {
-    static_cast<wabby::render::vulkan::vk_backend *>( handle->internal_handle )->end_render_pass();
-  }
-
-  void resized( backend_t * handle )
-  {
-    static_cast<wabby::render::vulkan::vk_backend *>( handle->internal_handle )->resized();
-  }
-
-  void teardown( backend_t * handle )
-  {
-    static_cast<wabby::render::vulkan::vk_backend *>( handle->internal_handle )->teardown();
-  }
-
-}  // namespace wabby::render::vulkan::detail
-
-extern "C"
-{
-  int create_backend( backend * backend )
-  {
-    wabby::render::vulkan::vk_allocator<backend_t>                         allocator;
-    wabby::render::vulkan::vk_allocator<wabby::render::vulkan::vk_backend> vk_backend_allocator;
-
-    auto vk_backend      = allocator.allocate( 1 );
-    auto vk_backend_impl = vk_backend_allocator.allocate( 1 );
-    std::construct_at( vk_backend_impl );
-
-    vk_backend->internal_handle   = vk_backend_impl;
-    vk_backend->setup             = wabby::render::vulkan::detail::setup;
-    vk_backend->teardown          = wabby::render::vulkan::detail::teardown;
-    vk_backend->begin_frame       = wabby::render::vulkan::detail::begin_frame;
-    vk_backend->end_frame         = wabby::render::vulkan::detail::end_frame;
-    vk_backend->begin_render_pass = wabby::render::vulkan::detail::begin_render_pass;
-    vk_backend->end_render_pass   = wabby::render::vulkan::detail::end_render_pass;
-    vk_backend->resized           = wabby::render::vulkan::detail::resized;
-
-    *backend = vk_backend;
     return 0;
   }
 
-  void destroy_backend( backend backend )
+  int vk_backend::end_render_pass() noexcept
   {
-    wabby::render::vulkan::vk_allocator<backend_t>                         allocator;
-    wabby::render::vulkan::vk_allocator<wabby::render::vulkan::vk_backend> vk_backend_allocator;
-
-    std::destroy_at( static_cast<wabby::render::vulkan::vk_backend *>( backend->internal_handle ) );
-
-    vk_backend_allocator.deallocate( static_cast<wabby::render::vulkan::vk_backend *>( backend->internal_handle ), 1 );
-    allocator.deallocate( backend, 1 );
+    render_pass_->end( command_buffers_[frame_index_] );
+    return 0;
   }
 
-  void set_allocation_callbacks( const allocation_callbacks * allocation_callbacks )
+  int vk_backend::resized() noexcept
   {
-    wabby::render::vulkan::detail::vk_allocator_impl::setup(
-      allocation_callbacks->user_args, allocation_callbacks->allocation, allocation_callbacks->reallocation, allocation_callbacks->free );
+    return 0;
   }
-}
+
+  int vk_backend::teardown() noexcept
+  {
+    hardware_->device().waitIdle();
+    return 0;
+  }
+
+}  // namespace wabby::render::vulkan
