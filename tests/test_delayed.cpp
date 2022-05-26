@@ -33,6 +33,7 @@ TEST_F( delayed_test, test_vector )
 {
   wabby::container::delayed<std::vector<int>> i;
   i.construct( 10, 1 );
-  EXPECT_EQ( i[0], 1 );
+  i[0] = 2;
+  EXPECT_EQ( i[0], 2 );
   EXPECT_EQ( i[1], 1 );
 }

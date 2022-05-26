@@ -65,25 +65,29 @@ namespace wabby::container
 
   }  // namespace detail
 
-  template <class T, class I = std::size_t>
-  concept Indexible = requires( T & t, const I & i )
+  template <typename T, typename = void>
+  struct has_subscript : std::false_type
   {
-    { t[i] };
   };
 
   template <typename T>
+  struct has_subscript<T, std::void_t<decltype( ( *std::declval<T *>() )[std::declval<size_t>()] )>> : std::true_type
+  {
+  };
+
+  template <typename T, typename E = void>
   class delayed : public detail::delayed_impl<T>
   {
   public:
   };
 
-  template <Indexible T>
-  class delayed : public detail::delayed_impl<T>
+  template <typename T>
+  class delayed<T, std::enable_if_t<has_subscript<T>::value>> : public detail::delayed_impl<T>
   {
   public:
-    T & operator[]( size_t pos )
+    decltype( ( *std::declval<T *>() )[std::declval<size_t>()] ) operator[]( size_t pos )
     {
-      return static_cast<std::vector<T, Alloc> &>( *this )[pos];
+      return static_cast<T &>( *this )[pos];
     }
   };
 
