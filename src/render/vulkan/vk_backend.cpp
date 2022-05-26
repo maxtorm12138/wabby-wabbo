@@ -3,6 +3,7 @@
 
 // module
 #include "vk_allocator.hpp"
+#include "vk_command_buffers.hpp"
 #include "vk_defines.hpp"
 #include "vk_device_allocator.hpp"
 #include "vk_environment.hpp"
@@ -12,6 +13,7 @@
 #include "vk_render_pass.hpp"
 #include "vk_semaphores.hpp"
 #include "vk_swapchian.hpp"
+
 // inipp
 #include "inipp.h"
 
@@ -27,13 +29,6 @@
 
 namespace wabby::render::vulkan
 {
-
-  class vk_command_buffers : public vk_vector<vk::raii::CommandBuffer>
-  {
-  public:
-    vk_command_buffers();
-  };
-
   class vk_backend : public boost::noncopyable
   {
   public:
@@ -56,20 +51,21 @@ namespace wabby::render::vulkan
     int teardown();
 
   private:
-    container::delayed<vk_environment>                     environment_;
-    container::delayed<vk::raii::SurfaceKHR>               surface_;
-    container::delayed<vk_hardware>                        hardware_;
-    container::delayed<vk_queue_cache>                     queue_cache_;
-    container::delayed<vk_device_allocator>                device_allocator_;
-    container::delayed<vk_swapchain>                       swapchain_;
-    container::delayed<vk_render_pass>                     render_pass_;
-    container::delayed<vk_framebuffers>                    framebuffers_;
-    uint32_t                                               image_index_;
-    uint64_t                                               frame_index_;
-    container::delayed<vk_vector<vk::raii::CommandBuffer>> command_buffers_;
-    container::delayed<vk_semaphores>                      image_available_semaphores_;
-    container::delayed<vk_semaphores>                      render_finished_semaphores_;
-    container::delayed<vk_fences>                          in_flight_fences_;
+    container::delayed<vk_environment>        environment_;
+    container::delayed<vk::raii::SurfaceKHR>  surface_;
+    container::delayed<vk_hardware>           hardware_;
+    container::delayed<vk_queue_cache>        queue_cache_;
+    container::delayed<vk::raii::CommandPool> graphics_command_pool_;
+    container::delayed<vk_device_allocator>   device_allocator_;
+    container::delayed<vk_swapchain>          swapchain_;
+    container::delayed<vk_render_pass>        render_pass_;
+    container::delayed<vk_framebuffers>       framebuffers_;
+    uint32_t                                  image_index_;
+    uint64_t                                  frame_index_;
+    container::delayed<vk_command_buffers>    command_buffers_;
+    container::delayed<vk_semaphores>         image_available_semaphores_;
+    container::delayed<vk_semaphores>         render_finished_semaphores_;
+    container::delayed<vk_fences>             in_flight_fences_;
   };
 }  // namespace wabby::render::vulkan
 
@@ -243,6 +239,7 @@ namespace wabby::render::vulkan
       environment_.construct( build_application_info( setup_info ), setup_info->windowsystem_extensions, setup_info->windowsystem_extensions_count );
       surface_.construct( environment_->instance(), setup_info->fn_vk_create_surface( setup_info->user_args, *environment_->instance() ) );
       hardware_.construct( environment_->instance(), *surface_ );
+
       device_allocator_.construct( environment_->instance(), hardware_->physical_device(), hardware_->device() );
 
       auto fn_get_window_size           = setup_info->fn_get_window_size;
@@ -263,7 +260,7 @@ namespace wabby::render::vulkan
       image_index_ = 0;
       frame_index_ = 0;
 
-      command_buffers_ = hardware_->allocate_graphics_command_buffers( swapchain_->max_frames_in_flight() );
+      command_buffers_.construct( hardware_->device(), *graphics_command_pool_, swapchain_->max_frames_in_flight() );
       image_available_semaphores_.construct( hardware_->device(), swapchain_->max_frames_in_flight() );
       render_finished_semaphores_.construct( hardware_->device(), swapchain_->max_frames_in_flight() );
       in_flight_fences_.construct( hardware_->device(), swapchain_->max_frames_in_flight() );
