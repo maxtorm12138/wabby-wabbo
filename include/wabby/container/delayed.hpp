@@ -4,6 +4,7 @@
 // std
 #include "array"
 #include "cassert"
+#include "concepts"
 #include "cstddef"
 #include "memory"
 #include "vector"
@@ -64,13 +65,20 @@ namespace wabby::container
 
   }  // namespace detail
 
+  template <class T, class I = std::size_t>
+  concept Indexible = requires( T & t, const I & i )
+  {
+    { t[i] };
+  };
+
   template <typename T>
   class delayed : public detail::delayed_impl<T>
   {
+  public:
   };
 
-  template <typename T, typename Alloc>
-  class delayed<std::vector<T, Alloc>> : public detail::delayed_impl<std::vector<T, Alloc>>
+  template <Indexible T>
+  class delayed : public detail::delayed_impl<T>
   {
   public:
     T & operator[]( size_t pos )

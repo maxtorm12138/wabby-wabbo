@@ -263,10 +263,10 @@ namespace wabby::render::vulkan
       image_index_ = 0;
       frame_index_ = 0;
 
-      command_buffers_            = hardware_->allocate_graphics_command_buffers( swapchain_->max_frames_in_flight() );
-      image_available_semaphores_ = build_semaphores( hardware_->device(), swapchain_->max_frames_in_flight() );
-      render_finished_semaphores_ = build_semaphores( hardware_->device(), swapchain_->max_frames_in_flight() );
-      in_flight_fences_           = build_fences( hardware_->device(), swapchain_->max_frames_in_flight() );
+      command_buffers_ = hardware_->allocate_graphics_command_buffers( swapchain_->max_frames_in_flight() );
+      image_available_semaphores_.construct( hardware_->device(), swapchain_->max_frames_in_flight() );
+      render_finished_semaphores_.construct( hardware_->device(), swapchain_->max_frames_in_flight() );
+      in_flight_fences_.construct( hardware_->device(), swapchain_->max_frames_in_flight() );
     }
     catch ( vk::Error & e )
     {
