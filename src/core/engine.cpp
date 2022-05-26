@@ -24,10 +24,15 @@ namespace wabby::core
     return boost::alignment::aligned_alloc( alignment == 0 ? sizeof( void * ) : alignment, size );
   }
 
-  void * fn_reallocation( void * user_args, void * original, size_t size, size_t alignment )
+  void * fn_reallocation( void *, void * original, size_t size, size_t alignment )
   {
-    std::abort();
-    return nullptr;
+    auto new_memory = boost::alignment::aligned_alloc( alignment == 0 ? sizeof( void * ) : alignment, size );
+    if ( original != nullptr )
+    {
+      memcpy( new_memory, original, size );
+      boost::alignment::aligned_free( original );
+    }
+    return new_memory;
   }
 
   void fn_free( void *, void * memory )
