@@ -39,7 +39,7 @@ namespace wabby::render::vulkan
 
   vk_queue_cache::vk_queue_cache( const vk_hardware & hardware, const vk::SurfaceKHR & surface ) : hardware_( hardware ), surface_( surface ) {}
 
-  std::optional<vk::Queue> vk_queue_cache::queue( QueueType type )
+  std::optional<vk::raii::Queue> vk_queue_cache::queue( QueueType type )
   {
     if ( auto cache_item = cache_.find( type ); cache_item != cache_.end() )
     {
@@ -65,8 +65,8 @@ namespace wabby::render::vulkan
     std::optional<uint32_t> index;
     switch ( type )
     {
-      case QueueType::PRESENT: index = detail::present_queue_index( hardware_.physical_device(), surface_ ); break;
-      case QueueType::GRAPHICS: index = detail::first_queue_index( hardware_.physical_device(), vk::QueueFlagBits::eGraphics ); break;
+      case QueueType::PRESENT: index = detail::present_queue_index( *hardware_.physical_device(), surface_ ); break;
+      case QueueType::GRAPHICS: index = detail::first_queue_index( *hardware_.physical_device(), vk::QueueFlagBits::eGraphics ); break;
       case QueueType::COMPUTE: throw std::runtime_error( "unsupported now" ); break;
       case QueueType::TRANSFER: throw std::runtime_error( "unsupported now" ); break;
     }
@@ -82,6 +82,16 @@ namespace wabby::render::vulkan
   vk_hardware::vk_hardware( const vk::raii::Instance & instance, const vk::SurfaceKHR & surface )
     : physical_device_( pick_physical_device_( instance, surface ) ), device_( build_device_() )
   {
+  }
+
+  const vk::raii::PhysicalDevice & vk_hardware::physical_device() const
+  {
+    return physical_device_;
+  }
+
+  const vk::raii::Device & vk_hardware::device() const
+  {
+    return device_;
   }
 
   vk_vector<vk_string> vk_hardware::check_extensions_supported_( const vk::PhysicalDevice &          physical_device,

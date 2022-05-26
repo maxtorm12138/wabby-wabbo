@@ -15,9 +15,9 @@ namespace wabby::render::vulkan
     vk_hardware( const vk::raii::Instance & instance, const vk::SurfaceKHR & surface );
 
   public:
-    const vk::PhysicalDevice & physical_device() const;
+    const vk::raii::PhysicalDevice & physical_device() const;
 
-    const vk::Device & device() const;
+    const vk::raii::Device & device() const;
 
   public:
     vk_vector<vk::raii::CommandBuffer> allocate_graphics_command_buffers( uint32_t size, bool primary = true );
@@ -37,10 +37,18 @@ namespace wabby::render::vulkan
   class vk_queue_cache : public boost::noncopyable
   {
   public:
+    enum class QueueType
+    {
+      PRESENT,
+      GRAPHICS,
+      COMPUTE,
+      TRANSFER
+    };
+
     vk_queue_cache( const vk_hardware & hardware, const vk::SurfaceKHR & surface );
 
   public:
-    std::optional<vk::Queue> queue( QueueType type );
+    std::optional<vk::raii::Queue> queue( QueueType type );
 
     std::optional<uint32_t> queue_index( QueueType type );
 

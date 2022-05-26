@@ -22,7 +22,7 @@ namespace wabby::render::vulkan
   class vk_device_allocator : public boost::noncopyable
   {
   public:
-    vk_device_allocator( const vk::raii::Instance & instance, const vk::raii::PhysicalDevice & physical_device, const vk::raii::Device & device );
+    vk_device_allocator( const vk::Instance & instance, const vk::PhysicalDevice & physical_device, const vk::Device & device );
     ~vk_device_allocator();
 
   public:

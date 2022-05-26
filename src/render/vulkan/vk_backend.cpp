@@ -6,11 +6,12 @@
 #include "vk_defines.hpp"
 #include "vk_device_allocator.hpp"
 #include "vk_environment.hpp"
+#include "vk_fences.hpp"
 #include "vk_framebuffers.hpp"
 #include "vk_hardware.hpp"
 #include "vk_render_pass.hpp"
+#include "vk_semaphores.hpp"
 #include "vk_swapchian.hpp"
-
 // inipp
 #include "inipp.h"
 
@@ -26,6 +27,13 @@
 
 namespace wabby::render::vulkan
 {
+
+  class vk_command_buffers : public vk_vector<vk::raii::CommandBuffer>
+  {
+  public:
+    vk_command_buffers();
+  };
+
   class vk_backend : public boost::noncopyable
   {
   public:
@@ -48,19 +56,20 @@ namespace wabby::render::vulkan
     int teardown();
 
   private:
-    wabby::container::delayed<vk_environment>       environment_;
-    wabby::container::delayed<vk::raii::SurfaceKHR> surface_;
-    wabby::container::delayed<vk_hardware>          hardware_;
-    wabby::container::delayed<vk_device_allocator>  device_allocator_;
-    wabby::container::delayed<vk_swapchain>         swapchain_;
-    wabby::container::delayed<vk_render_pass>       render_pass_;
-    wabby::container::delayed<vk_framebuffers>      framebuffers_;
-    uint32_t                                        image_index_;
-    uint64_t                                        frame_index_;
-    vk_vector<vk::raii::CommandBuffer>              command_buffers_;
-    vk_vector<vk::raii::Semaphore>                  image_available_semaphores_;
-    vk_vector<vk::raii::Semaphore>                  render_finished_semaphores_;
-    vk_vector<vk::raii::Fence>                      in_flight_fences_;
+    container::delayed<vk_environment>                     environment_;
+    container::delayed<vk::raii::SurfaceKHR>               surface_;
+    container::delayed<vk_hardware>                        hardware_;
+    container::delayed<vk_queue_cache>                     queue_cache_;
+    container::delayed<vk_device_allocator>                device_allocator_;
+    container::delayed<vk_swapchain>                       swapchain_;
+    container::delayed<vk_render_pass>                     render_pass_;
+    container::delayed<vk_framebuffers>                    framebuffers_;
+    uint32_t                                               image_index_;
+    uint64_t                                               frame_index_;
+    container::delayed<vk_vector<vk::raii::CommandBuffer>> command_buffers_;
+    container::delayed<vk_semaphores>                      image_available_semaphores_;
+    container::delayed<vk_semaphores>                      render_finished_semaphores_;
+    container::delayed<vk_fences>                          in_flight_fences_;
   };
 }  // namespace wabby::render::vulkan
 
@@ -164,9 +173,8 @@ namespace wabby::render::vulkan
     vk::ApplicationInfo app_info{ .pApplicationName   = setup_info->application_name,
                                   .applicationVersion = setup_info->application_version,
                                   .pEngineName        = WABBY_ENGINE_NAME.data(),
-                                  .engineVersion      = VK_MAKE_VERSION( 1, 0, 0 ),
-                                  .apiVersion         = VK_API_VERSION_1_1 };
-
+                                  .engineVersion      = WABBY_ENGINE_VERSION,
+                                  .apiVersion         = WABBY_ENGINE_VULKAN_VERSION };
     return app_info;
   }
 
@@ -182,39 +190,6 @@ namespace wabby::render::vulkan
     }
 
     return attachments;
-  }
-
-  vk_vector<vk::raii::Semaphore> build_semaphores( const vk::raii::Device & device, uint32_t size )
-  {
-    vk_vector<vk::raii::Semaphore> semaphores;
-    semaphores.reserve( size );
-
-    vk::SemaphoreCreateInfo semaphore_create_info{};
-    for ( uint32_t i = 0; i < size; i++ )
-    {
-      semaphores.emplace_back( device, semaphore_create_info );
-    }
-    return semaphores;
-  }
-
-  vk_vector<vk::raii::Fence> build_fences( const vk::raii::Device & device, uint32_t size, bool signaled = true )
-  {
-    vk_vector<vk::raii::Fence> fences;
-    fences.reserve( size );
-
-    vk::FenceCreateFlags fence_create_flags;
-    if ( signaled )
-    {
-      fence_create_flags |= vk::FenceCreateFlagBits::eSignaled;
-    }
-
-    vk::FenceCreateInfo fence_create_info{ .flags = fence_create_flags };
-    for ( uint32_t i = 0; i < size; i++ )
-    {
-      fences.emplace_back( device, fence_create_info );
-    }
-
-    return fences;
   }
 
   spdlog::logger build_logger( inipp::Ini<char> & config )

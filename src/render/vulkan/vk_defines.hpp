@@ -5,6 +5,12 @@
 #include "string"
 #include "string_view"
 
+// engine version
+#include "wabby/api.hpp"
+
+// vulkan api version
+#include "vulkan/vulkan.h"
+
 namespace wabby::render::vulkan
 {
 
@@ -16,32 +22,10 @@ namespace wabby::render::vulkan
   constexpr std::string_view EXT_NAME_VK_KHR_shader_non_semantic_info        = "VK_KHR_shader_non_semantic_info";
   constexpr std::string_view EXT_NAME_VK_KHR_portability_enumeration         = "VK_KHR_portability_enumeration";
 
-  constexpr std::string_view WABBY_ENGINE_NAME = "wabby";
-
-  enum class QueueType
-  {
-    PRESENT,
-    GRAPHICS,
-    COMPUTE,
-    TRANSFER
-  };
+  constexpr std::string_view WABBY_ENGINE_NAME           = "wabby";
+  constexpr uint32_t         WABBY_ENGINE_VERSION        = WABBY_API_MAKE_VERSION( 1, 0, 0 );
+  constexpr uint32_t         WABBY_ENGINE_VULKAN_VERSION = VK_API_VERSION_1_1;
 
 }  // namespace wabby::render::vulkan
-
-namespace vk
-{
-  inline std::string to_string( wabby::render::vulkan::QueueType type )
-  {
-    switch ( type )
-    {
-      case wabby::render::vulkan::QueueType::PRESENT: return "Present";
-      case wabby::render::vulkan::QueueType::GRAPHICS: return "Graphics";
-      case wabby::render::vulkan::QueueType::COMPUTE: return "Compute";
-      case wabby::render::vulkan::QueueType::TRANSFER: return "Transfer";
-    }
-
-    return "";
-  };
-}  // namespace vk
 
 #endif
