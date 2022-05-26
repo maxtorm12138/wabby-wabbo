@@ -2,13 +2,11 @@
 #define WABBY_RENDER_VULKAN_COMM_INCLUDE_HPP
 
 // std
+#include "filesystem"
+#include "fstream"
 #include "functional"
 #include "memory"
 #include "optional"
-#include "string"
-#include "unordered_map"
-#include "unordered_set"
-#include "vector"
 
 // vulkan
 #ifdef __GNUC__
@@ -23,7 +21,7 @@
 #endif
 
 // boost
-#include "boost/dll/alias.hpp"
+#include "boost/algorithm/string.hpp"
 #include "boost/noncopyable.hpp"
 #include "boost/predef.h"
 
@@ -34,6 +32,10 @@
 #include "wabby/container/delayed.hpp"
 
 // globals
+#include "vk_container_warpper.hpp"
 #include "vk_globals.hpp"
+
+// fmt
+#include "fmt/format.h"
 
 #endif

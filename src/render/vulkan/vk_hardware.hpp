@@ -29,13 +29,13 @@ namespace wabby::render::vulkan
 
     std::optional<uint32_t> queue_index( QueueType type, const std::optional<std::reference_wrapper<const vk::raii::SurfaceKHR>> surface = {} ) const;
 
-    std::vector<vk::raii::CommandBuffer> allocate_graphics_command_buffers( uint32_t size, bool primary = true );
+    vk_vector<vk::raii::CommandBuffer> allocate_graphics_command_buffers( uint32_t size, bool primary = true );
 
   private:
-    vk::raii::PhysicalDevice                        physical_device_;
-    vk::raii::Device                                device_;
-    mutable std::unordered_map<QueueType, uint32_t> queue_index_cache_;
-    vk::raii::CommandPool                           graphics_command_pool_;
+    vk::raii::PhysicalDevice                      physical_device_;
+    vk::raii::Device                              device_;
+    mutable vk_unordered_map<QueueType, uint32_t> queue_index_cache_;
+    vk::raii::CommandPool                         graphics_command_pool_;
   };
 }  // namespace wabby::render::vulkan
 

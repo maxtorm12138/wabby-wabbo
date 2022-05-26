@@ -1,21 +1,18 @@
 #include "vk_hardware.hpp"
 
-// std
-#include "unordered_set"
-
 // spdlog
 #include "spdlog/spdlog.h"
 
 namespace wabby::render::vulkan
 {
 
-  const std::vector<std::string_view> REQUIRED_DEVICE_EXTENSION{ EXT_NAME_VK_KHR_swapchain };
-  const std::vector<std::string_view> OPTIONAL_DEVICE_EXTENSION{ EXT_NAME_VK_KHR_portability_subset };
+  const vk_vector<std::string_view> REQUIRED_DEVICE_EXTENSION{ EXT_NAME_VK_KHR_swapchain };
+  const vk_vector<std::string_view> OPTIONAL_DEVICE_EXTENSION{ EXT_NAME_VK_KHR_portability_subset };
 
   vk::raii::PhysicalDevice pick_physical_device( const vk::raii::Instance & instance, const vk::raii::SurfaceKHR & surface );
 
-  std::vector<std::string> check_extensions_supported( const vk::raii::PhysicalDevice &      physical_device,
-                                                       const std::vector<std::string_view> & desired_extensions );
+  vk_vector<std::string> check_extensions_supported( const vk::raii::PhysicalDevice &      physical_device,
+                                                     const std::vector<std::string_view> & desired_extensions );
 
   vk::raii::Device build_device( const vk::raii::PhysicalDevice & physical_device );
 
@@ -79,7 +76,7 @@ namespace wabby::render::vulkan
     return index;
   }
 
-  std::vector<vk::raii::CommandBuffer> vk_hardware::allocate_graphics_command_buffers( uint32_t size, bool primary )
+  vk_vector<vk::raii::CommandBuffer> vk_hardware::allocate_graphics_command_buffers( uint32_t size, bool primary )
   {
     vk::CommandBufferAllocateInfo command_buffer_allocate_info{
       .commandPool        = *graphics_command_pool_,

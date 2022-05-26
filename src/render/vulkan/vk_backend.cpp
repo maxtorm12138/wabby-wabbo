@@ -14,12 +14,7 @@
 // inipp
 #include "inipp.h"
 
-// std
-#include "cstring"
-#include "fstream"
-
 // boost
-#include "boost/algorithm/string.hpp"
 
 // spdlog
 #include "spdlog/sinks/basic_file_sink.h"
@@ -62,10 +57,10 @@ namespace wabby::render::vulkan
     wabby::container::delayed<vk_framebuffers>      framebuffers_;
     uint32_t                                        image_index_;
     uint64_t                                        frame_index_;
-    std::vector<vk::raii::CommandBuffer>            command_buffers_;
-    std::vector<vk::raii::Semaphore>                image_available_semaphores_;
-    std::vector<vk::raii::Semaphore>                render_finished_semaphores_;
-    std::vector<vk::raii::Fence>                    in_flight_fences_;
+    vk_vector<vk::raii::CommandBuffer>              command_buffers_;
+    vk_vector<vk::raii::Semaphore>                  image_available_semaphores_;
+    vk_vector<vk::raii::Semaphore>                  render_finished_semaphores_;
+    vk_vector<vk::raii::Fence>                      in_flight_fences_;
   };
 }  // namespace wabby::render::vulkan
 
@@ -175,9 +170,9 @@ namespace wabby::render::vulkan
     return app_info;
   }
 
-  std::vector<vk::ArrayProxy<const vk::ImageView>> build_fb_attachments( const vk_swapchain & swapchain )
+  vk_vector<vk::ArrayProxy<const vk::ImageView>> build_fb_attachments( const vk_swapchain & swapchain )
   {
-    std::vector<vk::ArrayProxy<const vk::ImageView>> attachments;
+    vk_vector<vk::ArrayProxy<const vk::ImageView>> attachments;
     attachments.reserve( swapchain.image_count() );
 
     for ( auto & image_view : swapchain.image_views() )
@@ -189,9 +184,9 @@ namespace wabby::render::vulkan
     return attachments;
   }
 
-  std::vector<vk::raii::Semaphore> build_semaphores( const vk::raii::Device & device, uint32_t size )
+  vk_vector<vk::raii::Semaphore> build_semaphores( const vk::raii::Device & device, uint32_t size )
   {
-    std::vector<vk::raii::Semaphore> semaphores;
+    vk_vector<vk::raii::Semaphore> semaphores;
     semaphores.reserve( size );
 
     vk::SemaphoreCreateInfo semaphore_create_info{};
@@ -202,9 +197,9 @@ namespace wabby::render::vulkan
     return semaphores;
   }
 
-  std::vector<vk::raii::Fence> build_fences( const vk::raii::Device & device, uint32_t size, bool signaled = true )
+  vk_vector<vk::raii::Fence> build_fences( const vk::raii::Device & device, uint32_t size, bool signaled = true )
   {
-    std::vector<vk::raii::Fence> fences;
+    vk_vector<vk::raii::Fence> fences;
     fences.reserve( size );
 
     vk::FenceCreateFlags fence_create_flags;

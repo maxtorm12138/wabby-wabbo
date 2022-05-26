@@ -10,7 +10,9 @@ namespace wabby::render::vulkan
   class vk_shader : public boost::noncopyable
   {
   public:
-    vk_shader( const std::string & name, vk::ShaderStageFlagBits stage );
+    vk_shader( vk_shader && other ) noexcept;
+
+    vk_shader & operator=( vk_shader && other ) noexcept;
 
   public:
     vk::ShaderStageFlagBits stage() const
@@ -20,7 +22,7 @@ namespace wabby::render::vulkan
 
     const std::string & name() const
     {
-      return name_;
+      return entry_;
     }
 
     const vk::raii::ShaderModule & module() const
@@ -28,10 +30,15 @@ namespace wabby::render::vulkan
       return module_;
     }
 
+    static vk_shader from_file( const vk::raii::Device & device, const std::filesystem::path & path, const std::string & entry, vk::ShaderStageFlagBits stage );
+
   private:
-    std::string             name_;
-    vk::ShaderStageFlagBits stage_;
-    vk::raii::ShaderModule  module_;
+    vk_shader() = default;
+
+  private:
+    std::string             entry_{ "main" };
+    vk::ShaderStageFlagBits stage_{};
+    vk::raii::ShaderModule  module_{ nullptr };
   };
 
 }  // namespace wabby::render::vulkan
