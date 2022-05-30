@@ -186,9 +186,9 @@ namespace wabby::render::vulkan
 
       frame_index_ = ( frame_index_ + 1 ) % swapchain_->max_frames_in_flight();
     }
-    catch ( ... )
+    catch ( vk::SystemError & e )
     {
-      return -1;
+      return e.code().value();
     }
     return 0;
   }
