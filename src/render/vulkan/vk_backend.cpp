@@ -23,20 +23,6 @@ namespace wabby::render::vulkan
     return app_info;
   }
 
-  vk_vector<vk::ArrayProxy<const vk::ImageView>> build_fb_attachments( const vk_swapchain & swapchain )
-  {
-    vk_vector<vk::ArrayProxy<const vk::ImageView>> attachments;
-    attachments.reserve( swapchain.image_count() );
-
-    for ( auto & image_view : swapchain.image_views() )
-    {
-      vk::ArrayProxy<const vk::ImageView> attachment( *image_view );
-      attachments.emplace_back( std::move( attachment ) );
-    }
-
-    return attachments;
-  }
-
   spdlog::logger build_logger( inipp::Ini<char> & config )
   {
     std::string                                       level{ "off" };
@@ -86,8 +72,9 @@ namespace wabby::render::vulkan
       global::logger.construct( build_logger( config ) );
 
       environment_.construct( build_application_info( setup_info ), setup_info->windowsystem_extensions, setup_info->windowsystem_extensions_count );
-      surface_.construct( environment_->instance(), setup_info->fn_vk_create_surface( setup_info->user_args, *environment_->instance() ) );
+      surface_.construct( environment_->instance(), setup_info->fn_vk_create_surface, setup_info->user_args );
       hardware_.construct( environment_->instance(), *surface_ );
+      queue_cache_.construct( hardware_, surface_ );
 
       device_allocator_.construct( environment_->instance(), hardware_->physical_device(), hardware_->device() );
 
@@ -103,8 +90,7 @@ namespace wabby::render::vulkan
 
       swapchain_.construct( hardware_, *surface_, fn_get_window_size_wrapper );
       render_pass_.construct( hardware_->device(), swapchain_->surface_format() );
-      framebuffers_.construct(
-        hardware_->device(), render_pass_->render_pass(), swapchain_->image_count(), build_fb_attachments( *swapchain_ ), swapchain_->extent() );
+      framebuffers_.construct( hardware_->device(), render_pass_->render_pass(), swapchain_ );
 
       image_index_ = 0;
       frame_index_ = 0;
@@ -136,15 +122,22 @@ namespace wabby::render::vulkan
   {
     try
     {
-      hardware_->device().waitForFences( *in_flight_fences_[frame_index_], VK_TRUE, UINT64_MAX );
+      hardware_->wait_fences( *in_flight_fences_[frame_index_], VK_TRUE, UINT64_MAX );
+
       image_index_ = swapchain_->acquire_next_image( image_available_semaphores_[frame_index_] );
       hardware_->device().resetFences( *in_flight_fences_[frame_index_] );
 
       vk::CommandBufferBeginInfo command_buffer_begin_info{};
       command_buffers_[frame_index_].begin( command_buffer_begin_info );
     }
+    catch ( vk::SystemError & e )
+    {
+      SPDLOG_LOGGER_ERROR( global::logger, "begin_frame, vk::SystemError: {} {}", e.what(), e.code().value() );
+      return e.code().value();
+    }
     catch ( ... )
     {
+      SPDLOG_LOGGER_ERROR( global::logger, "begin_frame, unknown error" );
       return -1;
     }
     return 0;
@@ -170,7 +163,7 @@ namespace wabby::render::vulkan
         .pSignalSemaphores    = submit_signal_semaphores.data(),
       };
 
-      hardware_->queue( QueueType::GRAPHICS )->submit( submit_info, *in_flight_fences_[frame_index_] );
+      queue_cache_->queue( QueueType::GRAPHICS )->submit( submit_info, *in_flight_fences_[frame_index_] );
 
       vk::ArrayProxy<const vk::Semaphore>    presnet_wait_semaphores( *render_finished_semaphores_[frame_index_] );
       vk::ArrayProxy<const vk::SwapchainKHR> present_swapchains( *swapchain_->swaichain() );
@@ -181,7 +174,10 @@ namespace wabby::render::vulkan
                                        .pSwapchains        = present_swapchains.data(),
                                        .pImageIndices      = &image_index_ };
 
-      hardware_->queue( QueueType::PRESENT, std::cref( *surface_ ) )->presentKHR( present_info );
+      auto result = queue_cache_->queue( QueueType::PRESENT )->presentKHR( present_info );
+      if ( result == vk::Result::eSuboptimalKHR )
+      {
+      }
 
       frame_index_ = ( frame_index_ + 1 ) % swapchain_->max_frames_in_flight();
     }
@@ -200,7 +196,7 @@ namespace wabby::render::vulkan
       vk::ClearValue clear_value{};
       clear_value.color.float32 = std::array<float, 4>{ 0.1f, 0.6f, 0.1f, 0.1f };
 
-      render_pass_->begin( command_buffers_[frame_index_], framebuffers_->framebuffer( image_index_ ), render_area, clear_value );
+      render_pass_->begin( command_buffers_[frame_index_], framebuffers_[image_index_], render_area, clear_value );
     }
     catch ( ... )
     {

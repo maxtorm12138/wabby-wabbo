@@ -13,6 +13,7 @@
 #include "vk_hardware.hpp"
 #include "vk_render_pass.hpp"
 #include "vk_semaphores.hpp"
+#include "vk_surface.hpp"
 #include "vk_swapchian.hpp"
 
 // comm include
@@ -42,20 +43,20 @@ namespace wabby::render::vulkan
     int teardown();
 
   private:
-    container::delayed<vk_environment>       environment_;
-    container::delayed<vk::raii::SurfaceKHR> surface_;
-    container::delayed<vk_hardware>          hardware_;
-    container::delayed<vk_queue_cache>       queue_cache_;
-    container::delayed<vk_command_pool>      graphics_command_pool_;
-    container::delayed<vk_device_allocator>  device_allocator_;
-    container::delayed<vk_swapchain>         swapchain_;
-    container::delayed<vk_render_pass>       render_pass_;
-    container::delayed<vk_framebuffers>      framebuffers_;
-    uint32_t                                 image_index_;
-    uint64_t                                 frame_index_;
-    container::delayed<vk_command_buffers>   command_buffers_;
-    container::delayed<vk_semaphores>        image_available_semaphores_;
-    container::delayed<vk_semaphores>        render_finished_semaphores_;
-    container::delayed<vk_fences>            in_flight_fences_;
+    container::delayed<vk_environment>      environment_;
+    container::delayed<vk_surface>          surface_;
+    container::delayed<vk_hardware>         hardware_;
+    container::delayed<vk_queue_cache>      queue_cache_;
+    container::delayed<vk_command_pool>     graphics_command_pool_;
+    container::delayed<vk_device_allocator> device_allocator_;
+    container::delayed<vk_swapchain>        swapchain_;
+    container::delayed<vk_render_pass>      render_pass_;
+    container::delayed<vk_framebuffers>     framebuffers_;
+    uint32_t                                image_index_;
+    uint64_t                                frame_index_;
+    container::delayed<vk_command_buffers>  command_buffers_;
+    container::delayed<vk_semaphores>       image_available_semaphores_;
+    container::delayed<vk_semaphores>       render_finished_semaphores_;
+    container::delayed<vk_fences>           in_flight_fences_;
   };
 }  // namespace wabby::render::vulkan

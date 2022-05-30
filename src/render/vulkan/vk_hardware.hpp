@@ -19,8 +19,9 @@ namespace wabby::render::vulkan
 
     const vk::raii::Device & device() const;
 
-  public:
-    vk_vector<vk::raii::CommandBuffer> allocate_graphics_command_buffers( uint32_t size, bool primary = true );
+    void wait_fences( const vk::ArrayProxy<const vk::Fence> & fences, bool wait_all = true, uint64_t timeout = UINT64_MAX );
+
+    void wait_fences( vk::ArrayProxy<const vk::raii::Fence> & fences, bool wait_all = true, uint64_t timeout = UINT64_MAX );
 
   private:
     vk_vector<vk_string> check_extensions_supported_( const vk::PhysicalDevice & physical_device, const vk_vector<std::string_view> & desired_extensions );
@@ -34,17 +35,17 @@ namespace wabby::render::vulkan
     vk::raii::Device         device_;
   };
 
+  enum class QueueType : int32_t
+  {
+    PRESENT,
+    GRAPHICS,
+    COMPUTE,
+    TRANSFER
+  };
+
   class vk_queue_cache : public boost::noncopyable
   {
   public:
-    enum class QueueType
-    {
-      PRESENT,
-      GRAPHICS,
-      COMPUTE,
-      TRANSFER
-    };
-
     vk_queue_cache( const vk_hardware & hardware, const vk::SurfaceKHR & surface );
 
   public:

@@ -176,27 +176,31 @@ namespace wabby::render::vulkan
 
     throw std::runtime_error( "no suitable gpu found" );
   }
-  /*
-    vk::raii::CommandPool build_graphics_command_pool( const vk::raii::Device & device, const vk::raii::PhysicalDevice & physical_device )
+
+  void vk_hardware::wait_fences( const vk::ArrayProxy<const vk::Fence> & fences, bool wait_all, uint64_t timeout )
+  {
+    auto result = device_.waitForFences( fences, wait_all, timeout );
+    if ( result == vk::Result::eTimeout )
     {
-      vk::CommandPoolCreateInfo command_pool_create_info{
-        .flags            = vk::CommandPoolCreateFlagBits::eResetCommandBuffer,
-        .queueFamilyIndex = *get_first_queue_index( physical_device, vk::QueueFlagBits::eGraphics ),
-      };
-      return vk::raii::CommandPool( device, command_pool_create_info );
+      throw vk::SystemError( vk::make_error_code( result ), "device::waitForFences" );
+    }
+  }
+
+  void vk_hardware::wait_fences( vk::ArrayProxy<const vk::raii::Fence> & fences, bool wait_all, uint64_t timeout )
+  {
+    vk_vector<const vk::Fence> tmp_fences;
+    tmp_fences.reserve( fences.size() );
+    for ( const auto & fence : fences )
+    {
+      tmp_fences.push_back( *fence );
     }
 
-    vk_vector<vk::raii::CommandBuffer> vk_hardware::allocate_graphics_command_buffers( uint32_t size, bool primary )
+    auto result = device_.waitForFences( tmp_fences, wait_all, timeout );
+    if ( result == vk::Result::eTimeout )
     {
-      vk::CommandBufferAllocateInfo command_buffer_allocate_info{
-        .commandPool        = *graphics_command_pool_,
-        .level              = ( primary ? vk::CommandBufferLevel::ePrimary : vk::CommandBufferLevel::eSecondary ),
-        .commandBufferCount = size,
-      };
-
-      return device_.allocateCommandBuffers( command_buffer_allocate_info );
+      throw vk::SystemError( vk::make_error_code( result ), "device::waitForFences" );
     }
-    */
+  };
 
   vk::raii::Device vk_hardware::build_device_()
   {

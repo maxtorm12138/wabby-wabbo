@@ -41,7 +41,7 @@ namespace wabby::render::vulkan
 
     constexpr void deallocate( T * p, size_t )
     {
-      global::free( p );
+      global::free( const_cast<std::add_pointer_t<std::remove_cv_t<T>>>( p ) );
     }
   };
 }  // namespace wabby::render::vulkan
