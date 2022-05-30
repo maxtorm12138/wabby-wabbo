@@ -148,35 +148,40 @@ namespace wabby::render::vulkan
     try
     {
       command_buffers_[frame_index_].end();
-      vk::ArrayProxy<const vk::Semaphore>     submit_wait_semaphores( *image_available_semaphores_[frame_index_] );
-      vk::ArrayProxy<const vk::Semaphore>     submit_signal_semaphores( *render_finished_semaphores_[frame_index_] );
-      vk::ArrayProxy<const vk::CommandBuffer> submit_command_buffers( *command_buffers_[frame_index_] );
-      std::array<vk::PipelineStageFlags, 1>   wait_dst_stages{ vk::PipelineStageFlagBits::eColorAttachmentOutput };
 
-      vk::SubmitInfo submit_info{
-        .waitSemaphoreCount   = submit_wait_semaphores.size(),
-        .pWaitSemaphores      = submit_wait_semaphores.data(),
-        .pWaitDstStageMask    = wait_dst_stages.data(),
-        .commandBufferCount   = submit_command_buffers.size(),
-        .pCommandBuffers      = submit_command_buffers.data(),
-        .signalSemaphoreCount = submit_signal_semaphores.size(),
-        .pSignalSemaphores    = submit_signal_semaphores.data(),
-      };
-
-      queue_cache_->queue( QueueType::GRAPHICS )->submit( submit_info, *in_flight_fences_[frame_index_] );
-
-      vk::ArrayProxy<const vk::Semaphore>    presnet_wait_semaphores( *render_finished_semaphores_[frame_index_] );
-      vk::ArrayProxy<const vk::SwapchainKHR> present_swapchains( *swapchain_->swaichain() );
-
-      vk::PresentInfoKHR present_info{ .waitSemaphoreCount = presnet_wait_semaphores.size(),
-                                       .pWaitSemaphores    = presnet_wait_semaphores.data(),
-                                       .swapchainCount     = present_swapchains.size(),
-                                       .pSwapchains        = present_swapchains.data(),
-                                       .pImageIndices      = &image_index_ };
-
-      auto result = queue_cache_->queue( QueueType::PRESENT )->presentKHR( present_info );
-      if ( result == vk::Result::eSuboptimalKHR )
       {
+        vk::ArrayProxy<const vk::Semaphore>     submit_wait_semaphores( *image_available_semaphores_[frame_index_] );
+        vk::ArrayProxy<const vk::Semaphore>     submit_signal_semaphores( *render_finished_semaphores_[frame_index_] );
+        vk::ArrayProxy<const vk::CommandBuffer> submit_command_buffers( *command_buffers_[frame_index_] );
+        std::array<vk::PipelineStageFlags, 1>   wait_dst_stages{ vk::PipelineStageFlagBits::eColorAttachmentOutput };
+
+        vk::SubmitInfo submit_info{
+          .waitSemaphoreCount   = submit_wait_semaphores.size(),
+          .pWaitSemaphores      = submit_wait_semaphores.data(),
+          .pWaitDstStageMask    = wait_dst_stages.data(),
+          .commandBufferCount   = submit_command_buffers.size(),
+          .pCommandBuffers      = submit_command_buffers.data(),
+          .signalSemaphoreCount = submit_signal_semaphores.size(),
+          .pSignalSemaphores    = submit_signal_semaphores.data(),
+        };
+
+        queue_cache_->queue( QueueType::GRAPHICS )->submit( submit_info, *in_flight_fences_[frame_index_] );
+      }
+
+      {
+        vk::ArrayProxy<const vk::Semaphore>    presnet_wait_semaphores( *render_finished_semaphores_[frame_index_] );
+        vk::ArrayProxy<const vk::SwapchainKHR> present_swapchains( *swapchain_->swaichain() );
+
+        vk::PresentInfoKHR present_info{ .waitSemaphoreCount = presnet_wait_semaphores.size(),
+                                         .pWaitSemaphores    = presnet_wait_semaphores.data(),
+                                         .swapchainCount     = present_swapchains.size(),
+                                         .pSwapchains        = present_swapchains.data(),
+                                         .pImageIndices      = &image_index_ };
+
+        auto result = queue_cache_->queue( QueueType::PRESENT )->presentKHR( present_info );
+        if ( result == vk::Result::eSuboptimalKHR )
+        {
+        }
       }
 
       frame_index_ = ( frame_index_ + 1 ) % swapchain_->max_frames_in_flight();
