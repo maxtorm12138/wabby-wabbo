@@ -1,13 +1,13 @@
 #include "wabby/core/engine.hpp"
 
 #include "wabby/container/delayed.hpp"
+#include "wabby/memory/memory.hpp"
 #include "wabby/sdl2/sdl2.hpp"
 #define WABBY_API_INCLUDE_IMPORT
 #include "wabby/render/backend_raii.hpp"
 #undef WABBY_API_INCLUDE_IMPORT
 
 // boost
-#include "boost/align/aligned_alloc.hpp"
 #include "boost/dll/runtime_symbol_info.hpp"
 #include "boost/dll/shared_library.hpp"
 
@@ -18,27 +18,6 @@
 
 namespace wabby::core
 {
-
-  void * fn_allocation( void *, size_t size, size_t alignment )
-  {
-    return boost::alignment::aligned_alloc( alignment == 0 ? sizeof( void * ) : alignment, size );
-  }
-
-  void * fn_reallocation( void *, void * original, size_t size, size_t alignment )
-  {
-    auto new_memory = boost::alignment::aligned_alloc( alignment == 0 ? sizeof( void * ) : alignment, size );
-    if ( original != nullptr )
-    {
-      memcpy( new_memory, original, size );
-      boost::alignment::aligned_free( original );
-    }
-    return new_memory;
-  }
-
-  void fn_free( void *, void * memory )
-  {
-    boost::alignment::aligned_free( memory );
-  }
 
   boost::dll::fs::path find_render_library_path()
   {
@@ -72,7 +51,11 @@ namespace wabby::core
 
     auto library_path = find_render_library_path();
 
-    backend_allocator_t allocator{ .user_args = nullptr, .fn_allocation = &fn_allocation, .fn_reallocation = &fn_reallocation, .fn_free = &fn_free };
+    backend_allocator_t allocator{ .user_args     = nullptr,
+                                   .fn_allocation = []( void *, size_t size, size_t align ) { return memory::allocation( size, align ); },
+                                   .fn_reallocation = []( void *, void * orig, size_t size, size_t align )
+                                   { return memory::reallocation( orig, size, align ); },
+                                   .fn_free = []( void *, void * mem ) { return memory::free( mem ); } };
 
     backend_.construct( library_path, &allocator );
 

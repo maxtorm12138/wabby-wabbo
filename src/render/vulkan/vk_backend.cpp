@@ -223,6 +223,7 @@ namespace wabby::render::vulkan
 
   int vk_backend::resized()
   {
+    hardware_->device().waitIdle();
     return 0;
   }
 
