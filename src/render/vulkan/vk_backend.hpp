@@ -58,5 +58,6 @@ namespace wabby::render::vulkan
     container::delayed<vk_semaphores>       image_available_semaphores_;
     container::delayed<vk_semaphores>       render_finished_semaphores_;
     container::delayed<vk_fences>           in_flight_fences_;
+    bool                                    resizing_;
   };
 }  // namespace wabby::render::vulkan

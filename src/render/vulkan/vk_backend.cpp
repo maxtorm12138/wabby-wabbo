@@ -223,7 +223,13 @@ namespace wabby::render::vulkan
 
   int vk_backend::resized()
   {
+    resizing_ = true;
     hardware_->device().waitIdle();
+
+    swapchain_->recreate( *hardware_, *surface_, *queue_cache_ );
+    framebuffers_->recreate( hardware_->device(), render_pass_->render_pass(), *swapchain_ );
+
+    resizing_ = false;
     return 0;
   }
 

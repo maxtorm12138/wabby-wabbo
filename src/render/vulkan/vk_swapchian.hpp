@@ -55,6 +55,8 @@ namespace wabby::render::vulkan
     }
 
   public:
+    void recreate( const vk_hardware & hardware, const vk::raii::SurfaceKHR & surface, vk_queue_cache & queue_cache );
+
     uint32_t acquire_next_image( const vk::raii::Semaphore & image_available_semaphore );
 
   private:
@@ -66,7 +68,8 @@ namespace wabby::render::vulkan
 
     size_t get_image_count( const vk_hardware & hardware, const vk::raii::SurfaceKHR & surface );
 
-    vk::raii::SwapchainKHR build_swapchian( const vk_hardware & hardware, const vk::raii::SurfaceKHR & surface, vk_queue_cache & queue_cache );
+    vk::raii::SwapchainKHR
+      build_swapchian( const vk_hardware & hardware, const vk::raii::SurfaceKHR & surface, vk_queue_cache & queue_cache, bool recreate = false );
 
     vk_vector<vk::raii::ImageView> build_image_views( const vk_hardware & hardware );
 

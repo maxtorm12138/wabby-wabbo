@@ -36,6 +36,22 @@ namespace wabby::render::vulkan
     return index;
   }
 
+  void vk_swapchain::recreate( const vk_hardware & hardware, const vk::raii::SurfaceKHR & surface, vk_queue_cache & queue_cache )
+  {
+    present_mode_         = pick_present_mode( hardware.physical_device(), surface );
+    surface_format_       = pick_surface_format( hardware.physical_device(), surface );
+    extent_               = pick_extent( hardware.physical_device(), surface );
+    image_count_          = get_image_count( hardware, surface );
+    max_frames_in_flight_ = std::min( image_count_, size_t( 2 ) );
+    swapchain_            = std::move( build_swapchian( hardware, surface, queue_cache, true ) );
+    image_views_.clear();
+    auto new_image_views = build_image_views( hardware );
+    for ( auto & img_v : new_image_views )
+    {
+      image_views_.push_back( std::move( img_v ) );
+    }
+  }
+
   vk::PresentModeKHR vk_swapchain::pick_present_mode( const vk::raii::PhysicalDevice & physical_device, const vk::raii::SurfaceKHR & surface )
   {
     auto               present_modes = physical_device.getSurfacePresentModesKHR( *surface );
@@ -97,7 +113,8 @@ namespace wabby::render::vulkan
     return image_count;
   }
 
-  vk::raii::SwapchainKHR vk_swapchain::build_swapchian( const vk_hardware & hardware, const vk::raii::SurfaceKHR & surface, vk_queue_cache & queue_cache )
+  vk::raii::SwapchainKHR
+    vk_swapchain::build_swapchian( const vk_hardware & hardware, const vk::raii::SurfaceKHR & surface, vk_queue_cache & queue_cache, bool recreate )
   {
     auto surface_capabilities = hardware.physical_device().getSurfaceCapabilitiesKHR( *surface );
 
@@ -120,7 +137,7 @@ namespace wabby::render::vulkan
                                                       .compositeAlpha        = vk::CompositeAlphaFlagBitsKHR::eOpaque,
                                                       .presentMode           = present_mode_,
                                                       .clipped               = VK_TRUE,
-                                                      .oldSwapchain          = nullptr };
+                                                      .oldSwapchain          = recreate ? *swapchain_ : nullptr };
 
     return vk::raii::SwapchainKHR( hardware.device(), swapchain_create_info );
   }
