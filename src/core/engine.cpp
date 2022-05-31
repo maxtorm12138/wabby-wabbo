@@ -39,9 +39,15 @@ namespace wabby::core
     void teardown();
 
   private:
+    void handle_event( SDL_Event & event );
+
+  private:
     container::delayed<sdl2::context>         sdl_context_;
     container::delayed<sdl2::window>          window_;
     container::delayed<render::raii::backend> backend_;
+
+    bool running_ = true;
+    bool paused_  = false;
   };
 
   void engine_impl::setup( const engine_setup_info & setup_info )
@@ -92,23 +98,21 @@ namespace wabby::core
   {
     window_->set_resizeable( true );
     window_->show();
-    bool running = true;
-    while ( running )
+    running_ = true;
+    paused_  = false;
+
+    while ( running_ )
     {
-      while ( auto event = sdl_context_->poll_event() )
+      if ( paused_ )
       {
-        if ( event->type == SDL_QUIT )
+        auto event = sdl_context_->wait_event();
+        handle_event( event );
+      }
+      else
+      {
+        while ( auto event = sdl_context_->poll_event() )
         {
-          running = false;
-        }
-        else if ( event->type == SDL_WINDOWEVENT && event->window.event == SDL_WINDOWEVENT_RESIZED )
-        {
-          window_->set_resizeable( false );
-          backend_->resized();
-          window_->set_resizeable( true );
-        }
-        else if ( event->type == SDL_WINDOWEVENT && event->window.event == SDL_WINDOWEVENT_MINIMIZED )
-        {
+          handle_event( *event );
         }
       }
 
@@ -122,6 +126,28 @@ namespace wabby::core
   void engine_impl::teardown()
   {
     backend_->teardown();
+  }
+
+  void engine_impl::handle_event( SDL_Event & event )
+  {
+    if ( event.type == SDL_QUIT )
+    {
+      running_ = false;
+    }
+    else if ( event.type == SDL_WINDOWEVENT && event.window.event == SDL_WINDOWEVENT_RESIZED )
+    {
+      window_->set_resizeable( false );
+      backend_->resized();
+      window_->set_resizeable( true );
+    }
+    else if ( event.type == SDL_WINDOWEVENT && event.window.event == SDL_WINDOWEVENT_MINIMIZED )
+    {
+      paused_ = true;
+    }
+    else if ( event.type == SDL_WINDOWEVENT && event.window.event == SDL_WINDOWEVENT_RESTORED )
+    {
+      paused_ = false;
+    }
   }
 
   engine::engine() : impl_( new engine_impl ) {}
