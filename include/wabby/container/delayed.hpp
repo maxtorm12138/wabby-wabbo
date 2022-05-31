@@ -9,6 +9,9 @@
 #include "memory"
 #include "vector"
 
+// module
+#include "traits.hpp"
+
 namespace wabby::container
 {
 
@@ -64,16 +67,6 @@ namespace wabby::container
     };
 
   }  // namespace detail
-
-  template <typename T, typename = void>
-  struct has_subscript : std::false_type
-  {
-  };
-
-  template <typename T>
-  struct has_subscript<T, std::void_t<decltype( ( *std::declval<T *>() )[std::declval<size_t>()] )>> : std::true_type
-  {
-  };
 
   template <typename T, typename E = void>
   class delayed : public detail::delayed_impl<T>

@@ -121,6 +121,7 @@ namespace wabby::core
         else if ( event->type == SDL_WINDOWEVENT && event->window.event == SDL_WINDOWEVENT_RESIZED )
         {
           window_->set_resizeable( false );
+          backend_->resized();
           window_->set_resizeable( true );
         }
         else if ( event->type == SDL_WINDOWEVENT && event->window.event == SDL_WINDOWEVENT_MINIMIZED )
