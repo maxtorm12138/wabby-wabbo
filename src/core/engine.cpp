@@ -42,6 +42,7 @@ namespace wabby::core
     void handle_event( SDL_Event & event );
 
   private:
+    container::delayed<spdlog::logger>        logger_;
     container::delayed<sdl2::context>         sdl_context_;
     container::delayed<sdl2::window>          window_;
     container::delayed<render::raii::backend> backend_;
@@ -52,6 +53,8 @@ namespace wabby::core
 
   void engine_impl::setup( const engine_setup_info & setup_info )
   {
+    logger_.construct( "engine", std::make_shared<spdlog::sinks::stderr_color_sink_mt>() );
+
     sdl_context_.construct();
     window_.construct( setup_info.application_name, setup_info.width, setup_info.height );
 
@@ -136,16 +139,19 @@ namespace wabby::core
     }
     else if ( event.type == SDL_WINDOWEVENT && event.window.event == SDL_WINDOWEVENT_RESIZED )
     {
+      SPDLOG_LOGGER_INFO( logger_, "window resized" );
       window_->set_resizeable( false );
       backend_->resized();
       window_->set_resizeable( true );
     }
     else if ( event.type == SDL_WINDOWEVENT && event.window.event == SDL_WINDOWEVENT_MINIMIZED )
     {
+      SPDLOG_LOGGER_INFO( logger_, "window minimized" );
       paused_ = true;
     }
     else if ( event.type == SDL_WINDOWEVENT && event.window.event == SDL_WINDOWEVENT_RESTORED )
     {
+      SPDLOG_LOGGER_INFO( logger_, "window restored" );
       paused_ = false;
     }
   }
