@@ -64,6 +64,12 @@ namespace wabby::render::vulkan
   {
     try
     {
+      auto fn_get_window_size         = setup_info->fn_get_window_size;
+      auto fn_vk_make_surface         = setup_info->fn_vk_create_surface;
+      auto user_args                  = setup_info->user_args;
+      auto wrapper_fn_get_window_size = [user_args, fn_get_window_size]( uint32_t * w, uint32_t * h ) { fn_get_window_size( user_args, w, h ); };
+      auto wrapper_fn_vk_make_surface = [user_args, fn_vk_make_surface]( VkInstance instance ) { return fn_vk_make_surface( user_args, instance ); };
+
       std::ifstream    config_file( setup_info->configuration_path );
       inipp::Ini<char> config;
       config.parse( config_file );
@@ -72,23 +78,15 @@ namespace wabby::render::vulkan
       global::logger.construct( build_logger( config ) );
 
       environment_.construct( build_application_info( setup_info ), setup_info->windowsystem_extensions, setup_info->windowsystem_extensions_count );
-      surface_.construct( environment_->instance(), setup_info->fn_vk_create_surface, setup_info->user_args );
+      surface_.construct( environment_->instance(), wrapper_fn_vk_make_surface );
       hardware_.construct( environment_->instance(), *surface_ );
-      queue_cache_.construct( hardware_, surface_ );
+      queue_cache_.construct( *hardware_, *surface_ );
+      graphics_command_pool_.construct(
+        hardware_->device(), *queue_cache_->queue_index( QueueType::GRAPHICS ), vk::CommandPoolCreateFlagBits::eResetCommandBuffer );
 
-      device_allocator_.construct( environment_->instance(), hardware_->physical_device(), hardware_->device() );
+      device_allocator_.construct( environment_->instance(), hardware_ );
 
-      auto fn_get_window_size           = setup_info->fn_get_window_size;
-      auto fn_get_window_size_user_args = setup_info->user_args;
-
-      auto fn_get_window_size_wrapper = [fn_get_window_size_user_args, fn_get_window_size]()
-      {
-        std::pair<uint32_t, uint32_t> result;
-        fn_get_window_size( fn_get_window_size_user_args, &result.first, &result.second );
-        return result;
-      };
-
-      swapchain_.construct( hardware_, *surface_, fn_get_window_size_wrapper );
+      swapchain_.construct( *hardware_, *surface_, *queue_cache_, wrapper_fn_get_window_size );
       render_pass_.construct( hardware_->device(), swapchain_->surface_format() );
       framebuffers_.construct( hardware_->device(), render_pass_->render_pass(), swapchain_ );
 

@@ -9,8 +9,8 @@ namespace wabby::render::vulkan
   class vk_surface : public vk::raii::SurfaceKHR
   {
   public:
-    vk_surface( const vk::raii::Instance & instance, pfn_vk_create_surface fn_create_surface, void * user_args )
-      : SurfaceKHR( instance, fn_create_surface( user_args, *instance ) )
+    vk_surface( const vk::raii::Instance & instance, std::function<VkSurfaceKHR( VkInstance instance )> fn_vk_create_surface )
+      : SurfaceKHR( instance, fn_vk_create_surface( *instance ) )
     {
     }
   };

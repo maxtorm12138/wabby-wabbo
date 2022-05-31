@@ -9,7 +9,7 @@ namespace wabby::render::vulkan
   class vk_fences : public vk_vector<vk::raii::Fence>
   {
   public:
-    vk_fences( const vk::raii::Device & device, uint32_t size, bool signaled )
+    vk_fences( const vk::raii::Device & device, uint32_t size, bool signaled = true )
     {
       reserve( size );
 

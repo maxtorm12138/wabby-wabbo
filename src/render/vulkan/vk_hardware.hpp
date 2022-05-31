@@ -12,7 +12,7 @@ namespace wabby::render::vulkan
   class vk_hardware : public boost::noncopyable
   {
   public:
-    vk_hardware( const vk::raii::Instance & instance, const vk::SurfaceKHR & surface );
+    vk_hardware( const vk::raii::Instance & instance, const vk::raii::SurfaceKHR & surface );
 
   public:
     const vk::raii::PhysicalDevice & physical_device() const;
@@ -46,7 +46,7 @@ namespace wabby::render::vulkan
   class vk_queue_cache : public boost::noncopyable
   {
   public:
-    vk_queue_cache( const vk_hardware & hardware, const vk::SurfaceKHR & surface );
+    vk_queue_cache( const vk_hardware & hardware, const vk::raii::SurfaceKHR & surface );
 
   public:
     std::optional<vk::raii::Queue> queue( QueueType type );
@@ -55,7 +55,7 @@ namespace wabby::render::vulkan
 
   private:
     const vk_hardware &                   hardware_;
-    const vk::SurfaceKHR &                surface_;
+    const vk::raii::SurfaceKHR &          surface_;
     vk_unordered_map<QueueType, uint32_t> cache_;
   };
 }  // namespace wabby::render::vulkan

@@ -8,7 +8,7 @@
 
 namespace wabby::render::vulkan
 {
-  class vk_framebuffers : vk_vector<vk::raii::Framebuffer>
+  class vk_framebuffers : public vk_vector<vk::raii::Framebuffer>
   {
   public:
     vk_framebuffers( const vk::raii::Device & device, const vk::raii::RenderPass & render_pass, const vk_swapchain & swapchain )

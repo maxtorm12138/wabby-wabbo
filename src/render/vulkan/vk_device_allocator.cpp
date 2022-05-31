@@ -16,10 +16,10 @@
 namespace wabby::render::vulkan
 {
 
-  vk_device_allocator::vk_device_allocator( const vk::Instance & instance, const vk::PhysicalDevice & physical_device, const vk::Device & device )
+  vk_device_allocator::vk_device_allocator( const vk::raii::Instance & instance, const vk_hardware & hardware )
   {
     VmaAllocatorCreateInfo allocator_create_info{
-      .physicalDevice = *physical_device, .device = *device, .instance = *instance, .vulkanApiVersion = VK_API_VERSION_1_1
+      .physicalDevice = *hardware.physical_device(), .device = *hardware.device(), .instance = *instance, .vulkanApiVersion = WABBY_ENGINE_VULKAN_VERSION
     };
 
     auto result = static_cast<vk::Result>( vmaCreateAllocator( &allocator_create_info, &allocator_ ) );

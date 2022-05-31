@@ -7,16 +7,11 @@
 namespace wabby::render::vulkan
 {
 
-  class vk_command_pool : public boost::noncopyable
+  class vk_command_pool : public vk::raii::CommandPool
   {
   public:
     vk_command_pool( const vk::raii::Device & device, uint32_t queue_family_index, vk::CommandPoolCreateFlags flags )
-      : pool_( device, vk::CommandPoolCreateInfo{ .flags = flags, .queueFamilyIndex = queue_family_index } ){
-
-      };
-
-  private:
-    vk::raii::CommandPool pool_;
+      : CommandPool( device, vk::CommandPoolCreateInfo{ .flags = flags, .queueFamilyIndex = queue_family_index } ){};
   };
 
 }  // namespace wabby::render::vulkan

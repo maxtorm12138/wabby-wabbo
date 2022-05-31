@@ -13,6 +13,9 @@
 #  pragma GCC diagnostic pop
 #endif
 
+// module
+#include "vk_hardware.hpp"
+
 // comm headers
 #include "vk_comm_include.hpp"
 
@@ -22,7 +25,7 @@ namespace wabby::render::vulkan
   class vk_device_allocator : public boost::noncopyable
   {
   public:
-    vk_device_allocator( const vk::Instance & instance, const vk::PhysicalDevice & physical_device, const vk::Device & device );
+    vk_device_allocator( const vk::raii::Instance & instance, const vk_hardware & hardware );
     ~vk_device_allocator();
 
   public:
